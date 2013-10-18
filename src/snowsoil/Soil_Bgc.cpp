@@ -128,7 +128,7 @@ void Soil_Bgc::prepareIntegration(const bool &mdnfeedback, const bool &mdavlnflg
 
     	 // soil liq. water controlling factor for soil N minralization/immobilization and root N extraction
     	 for (int i=0; i<cd->m_soil.numsl; i++) {
-    		 bd->m_soid.knmoist[i] = getKnsoilmoist(ed->m_soid.sws[i]); //lwc[i]);
+    		 bd->m_soid.knmoist[i] = getKnsoilmoist(ed->m_soid.sws[i]);
     	 }
 
     	 //prepare total liq water and available N in soil zones above drainage depth
@@ -403,12 +403,12 @@ void Soil_Bgc::initMslayerCarbon(double & minec){
 
  	Layer* currl = ground->fstminel;
 	
- 	double totsomc = 0.;
+ 	double totsomc = 0.0;
 	while(currl!=NULL){
  	  	if(currl->isSoil){
 
  			dbm += currl->dz;
-			cumcarbon = ca/cb*(exp(cb*dbm*100)-1)*10000 + 0.0025*dbm*100*10000;
+			cumcarbon = ca/cb*(exp(cb*dbm*100)-1.0)*10000 + 0.0025*dbm*100*10000;
 			if(cumcarbon-prevcumcarbon>0.01 && dbm<=2.0){   // somc will not exist more than 2 m intially
 				currl->rawc  = bgcpar.eqrawc * (cumcarbon -prevcumcarbon);
 				currl->soma  = bgcpar.eqsoma * (cumcarbon -prevcumcarbon);
