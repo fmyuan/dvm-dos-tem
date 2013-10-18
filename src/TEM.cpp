@@ -34,28 +34,22 @@
 using namespace std;
 
 #include "assembler/Runner.h"
-#include "ArgHandler.h"
-
-ArgHandler* args = new ArgHandler();
 
 int main(int argc, char* argv[]){
-	args->parse(argc, argv);
-	if (args->getHelp()){
-		args->showHelp();
-		return 0;
-	}
 	
 	setvbuf(stdout, NULL, _IONBF, 0);
 	setvbuf(stderr, NULL, _IONBF, 0);
 
-	if (args->getMode() == "siterun") {
+	string Mode = "siterun";
+ 	string regnmode = "";
+    string chtid = "1";
+    string controlfile = "config/controlfile_site.txt";
+
+	if (Mode == "siterun") {
 		time_t stime;
 		time_t etime;
 		stime=time(0);
 		cout<<"run TEM stand-alone - start @"<<ctime(&stime)<<"\n";
-
-		string controlfile = args->getCtrlfile();
-		string chtid = args->getChtid();
 
 		Runner siter;
 
@@ -75,19 +69,16 @@ int main(int argc, char* argv[]){
 		cout <<"run TEM stand-alone - done @"<<ctime(&etime)<<"\n";
 		cout <<"total seconds: "<<difftime(etime, stime)<<"\n";
 
-	} else if (args->getMode() == "regnrun") {
+	} else if (Mode == "regnrun") {
 
 		time_t stime;
 		time_t etime;
 		stime=time(0);
 		cout <<"run TEM regionally - start @"<<ctime(&stime)<<"\n";
 
-		string controlfile = args->getCtrlfile();
-		string runmode = args->getRegrunmode();
-
 		Runner regner;
 
-		regner.initInput(controlfile, runmode);
+		regner.initInput(controlfile, regnmode);
 
 		regner.initOutput();
 
@@ -95,9 +86,9 @@ int main(int argc, char* argv[]){
 
 		regner.setupIDs();
 
- 		if (runmode.compare("regner1")==0) {
+ 		if (regnmode.compare("regner1")==0) {
  			regner.runmode2();
- 		} else if (runmode.compare("regner2")==0){
+ 		} else if (regnmode.compare("regner2")==0){
  			regner.runmode3();
 		} else {
 
