@@ -28,6 +28,19 @@ Vegetation_Bgc::Vegetation_Bgc(){
 	//proportional change in c:n per change co2
 	//0.15 increase in C:N with double co2
 	
+	chtlu = NULL;
+	bd    = NULL;
+	cd    = NULL;
+	ed    = NULL;
+
+	ipft       = MISSING_I;
+	d2wdebrisc = MISSING_D;
+	d2wdebrisn = MISSING_D;
+	dleafc     = MISSING_D;
+	fltrfall   = MISSING_D;
+	nfeed      = false;
+	totrzavln  = MISSING_D;
+
 };
 
 Vegetation_Bgc::~Vegetation_Bgc(){

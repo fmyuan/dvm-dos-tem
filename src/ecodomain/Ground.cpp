@@ -25,11 +25,17 @@ Ground::Ground(){
    lstshlwl = NULL;
    fstdeepl = NULL;
    lstdeepl = NULL;
-   fstminel  = NULL;
-   lstminel  = NULL;
+   fstminel = NULL;
+   lstminel = NULL;
 
    fstfntl  = NULL;
    lstfntl  = NULL;
+
+   drainl = NULL;
+   draindepth = -9999;
+
+   ststate = NULL;
+   chtlu   = NULL;
 
    rocklayercreated=false;
    

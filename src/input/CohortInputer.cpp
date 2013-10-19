@@ -358,32 +358,32 @@ void CohortInputer::getClimate(float tair[], float prec[], float nirr[], float v
  	}
 
  	//get the data for ONE recid
-	taV->set_cur(recid, 0, 0);
-	NcBool nb1 = taV->get(&tair[0], 1, yrs, nummon);
+	taV->set_cur(0, 0, recid);
+	NcBool nb1 = taV->get(&tair[0], yrs, nummon, 1);
 	if(!nb1){
 	 	string msg = "problem in reading TAIR in CohortInputer::getClimate";
  		cout<<msg+"\n";
  		exit(-1);
 	}
 
-	precV->set_cur(recid, 0, 0);
-	NcBool nb2 = precV->get(&prec[0], 1, yrs, nummon);
+	precV->set_cur(0, 0, recid);
+	NcBool nb2 = precV->get(&prec[0], yrs, nummon, 1);
 	if(!nb2){
 		string msg = "problem in reading PREC in CohortInputer::getClimate ";
  		cout<<msg+"\n";
  		exit(-1);
 	}
 
-	nirrV->set_cur(recid, 0, 0);
-	NcBool nb3 = nirrV->get(&nirr[0], 1, yrs, nummon);
+	nirrV->set_cur(0, 0, recid);
+	NcBool nb3 = nirrV->get(&nirr[0], yrs, nummon, 1);
 	if(!nb3){
 		string msg = "problem in reading NIRR in CohortInputer::getClimate";
  		cout<<msg+"\n";
  		exit(-1);
 	}
 
-	vapV->set_cur(recid, 0, 0);
-	NcBool nb4 = vapV->get(&vapo[0], 1, yrs, nummon);
+	vapV->set_cur(0, 0, recid);
+	NcBool nb4 = vapV->get(&vapo[0], yrs, nummon, 1);
 	if(!nb4){
 	 	string msg = "problem in reading VAPO in CohortInputer::getClimate";
  		cout<<msg+"\n";
