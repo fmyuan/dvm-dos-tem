@@ -1,7 +1,7 @@
 #ifndef RESTARTINPUTER_H_
 #define RESTARTINPUTER_H_
 
-#include "netcdfcpp.h"
+#include <netcdfcpp.h>
 
 #include <math.h>
 #include <iostream>

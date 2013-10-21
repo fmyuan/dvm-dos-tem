@@ -73,32 +73,51 @@ void CohortLookup::assignBgcCalpar(string & dircmt){
 	}
 
 	getline(fctrcomm, str);     // comment line (column headers)
-	for(int ip=0; ip<NUM_PFT; ip++)	fctrcomm >> cmax[ip];  getline(fctrcomm, str);
-	for(int ip=0; ip<NUM_PFT; ip++)	fctrcomm >> nmax[ip];  getline(fctrcomm, str);
+	for(int ip=0; ip<NUM_PFT; ip++)	fctrcomm >> cmax[ip];
+	getline(fctrcomm, str);
+	for(int ip=0; ip<NUM_PFT; ip++)	fctrcomm >> nmax[ip];
+	getline(fctrcomm, str);
 
-	for(int ip=0; ip<NUM_PFT; ip++)	fctrcomm >> cfall[I_leaf][ip]; getline(fctrcomm, str);
-	for(int ip=0; ip<NUM_PFT; ip++)	fctrcomm >> cfall[I_stem][ip]; getline(fctrcomm, str);
-	for(int ip=0; ip<NUM_PFT; ip++)	fctrcomm >> cfall[I_root][ip]; getline(fctrcomm, str);
+	for(int ip=0; ip<NUM_PFT; ip++)	fctrcomm >> cfall[I_leaf][ip];
+	getline(fctrcomm, str);
+	for(int ip=0; ip<NUM_PFT; ip++)	fctrcomm >> cfall[I_stem][ip];
+	getline(fctrcomm, str);
+	for(int ip=0; ip<NUM_PFT; ip++)	fctrcomm >> cfall[I_root][ip];
+	getline(fctrcomm, str);
 
-	for(int ip=0; ip<NUM_PFT; ip++)	fctrcomm >> nfall[I_leaf][ip];  getline(fctrcomm, str);
-	for(int ip=0; ip<NUM_PFT; ip++)	fctrcomm >> nfall[I_stem][ip];  getline(fctrcomm, str);
-	for(int ip=0; ip<NUM_PFT; ip++)	fctrcomm >> nfall[I_root][ip];  getline(fctrcomm, str);
+	for(int ip=0; ip<NUM_PFT; ip++)	fctrcomm >> nfall[I_leaf][ip];
+	getline(fctrcomm, str);
+	for(int ip=0; ip<NUM_PFT; ip++)	fctrcomm >> nfall[I_stem][ip];
+	getline(fctrcomm, str);
+	for(int ip=0; ip<NUM_PFT; ip++)	fctrcomm >> nfall[I_root][ip];
+	getline(fctrcomm, str);
 
-	for(int ip=0; ip<NUM_PFT; ip++)	fctrcomm >> kra[ip]; getline(fctrcomm, str);
-	for(int ip=0; ip<NUM_PFT; ip++)	fctrcomm >> krb[I_leaf][ip]; getline(fctrcomm, str);
-	for(int ip=0; ip<NUM_PFT; ip++)	fctrcomm >> krb[I_stem][ip]; getline(fctrcomm, str);
-	for(int ip=0; ip<NUM_PFT; ip++)	fctrcomm >> krb[I_root][ip]; getline(fctrcomm, str);
+	for(int ip=0; ip<NUM_PFT; ip++)	fctrcomm >> kra[ip];
+	getline(fctrcomm, str);
+	for(int ip=0; ip<NUM_PFT; ip++)	fctrcomm >> krb[I_leaf][ip];
+	getline(fctrcomm, str);
+	for(int ip=0; ip<NUM_PFT; ip++)	fctrcomm >> krb[I_stem][ip];
+	getline(fctrcomm, str);
+	for(int ip=0; ip<NUM_PFT; ip++)	fctrcomm >> krb[I_root][ip];
+	getline(fctrcomm, str);
 
-	for(int ip=0; ip<NUM_PFT; ip++)	fctrcomm >> frg[ip]; getline(fctrcomm, str);
+	for(int ip=0; ip<NUM_PFT; ip++)	fctrcomm >> frg[ip];
+	getline(fctrcomm, str);
 
 	// soil bgc Calibrated parameters
 	getline(fctrcomm, str);     //comments in the file
-	fctrcomm >> micbnup; getline(fctrcomm, str);
-	fctrcomm >> kdcmoss; getline(fctrcomm, str);
-	fctrcomm >> kdcrawc; getline(fctrcomm, str);
-	fctrcomm >> kdcsoma; getline(fctrcomm, str);
-	fctrcomm >> kdcsompr; getline(fctrcomm, str);
-	fctrcomm >> kdcsomcr; getline(fctrcomm, str);
+	fctrcomm >> micbnup;
+	getline(fctrcomm, str);
+	fctrcomm >> kdcmoss;
+	getline(fctrcomm, str);
+	fctrcomm >> kdcrawc;
+	getline(fctrcomm, str);
+	fctrcomm >> kdcsoma;
+	getline(fctrcomm, str);
+	fctrcomm >> kdcsompr;
+	getline(fctrcomm, str);
+	fctrcomm >> kdcsomcr;
+	getline(fctrcomm, str);
 
 	fctrcomm.close();
 
