@@ -33,13 +33,13 @@ Vegetation_Bgc::Vegetation_Bgc(){
 	cd    = NULL;
 	ed    = NULL;
 
-	ipft       = MISSING_I;
-	d2wdebrisc = MISSING_D;
-	d2wdebrisn = MISSING_D;
-	dleafc     = MISSING_D;
-	fltrfall   = MISSING_D;
+	ipft       = 0;
+	d2wdebrisc = 0.0;
+	d2wdebrisn = 0.0;
+	dleafc     = 0.0;
+	fltrfall   = 0.0;
 	nfeed      = false;
-	totrzavln  = MISSING_D;
+	totrzavln  = 0.0;
 
 };
 

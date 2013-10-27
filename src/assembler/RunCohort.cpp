@@ -38,7 +38,7 @@ int RunCohort::allchtids(){
 	// from 'cohortid.nc'
 	for (int i=0; i<md->act_chtno; i++) {
 		error = cinputer.getChtDataids(id, id1, id2, id3, id4, id5, i);
-		if (error!=0) return error;
+		if (error!=0) return (error);
 
 		chtids.push_back(id);
 		chtinitids.push_back(id1);
@@ -87,7 +87,7 @@ void RunCohort::init(){
 
 	// switches of N cycles
     md->nfeed   = 1;
-    md->avlnflg = 0;
+    md->avlnflg = 1;
 	md->baseline= 1;
 
 	// switches of modules
@@ -149,7 +149,7 @@ int RunCohort::readData(){
   		}
   	}
 
-    return 0;
+    return (0);
 };
 
 // re-initializing state variables for current cohort
@@ -163,7 +163,7 @@ int RunCohort::reinit(){
     // checking
 	if (initrecno < 0 && md->initmode!=1) {
 		cout<<"initial condition record not exists! \n";
-		return -1;
+		return (-1);
 	}
 	 
 	 //initial modes other than lookup (i.e., initmode = 1)
@@ -177,7 +177,7 @@ int RunCohort::reinit(){
 
 		 resinputer.getErrcode(errcode, initrecno);
 		 if (errcode!=0) {
-			 return -1;
+			 return (-1);
 		 } else {
 
 			 resinputer.getReschtId(cht.resid.chtid, initrecno);
@@ -203,7 +203,7 @@ int RunCohort::reinit(){
 	 //clm/fire driving data (monthly/all years)
 	 cht.prepareAllDrivingData();
 
-     return 0;
+     return (0);
 };
 
 // run one cohort for a period of time

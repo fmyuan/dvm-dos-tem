@@ -38,6 +38,7 @@ void RestartInputer::init(string & dirfile){
 	rocklayerD = restartFile->get_dim("ROCKLAYER");
 	frontD     = restartFile->get_dim("FRONTNUM");
 	prvyearD   = restartFile->get_dim("PRVYEAR");
+	prvmonthD  = restartFile->add_dim("PRVMONTH");
 
 	//variable definition
     chtidV   =restartFile->get_var("CHTID");

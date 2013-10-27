@@ -4,7 +4,7 @@
 /*! this class is used to output the state in the netcdf format
  */
 
-#include <netcdfcpp.h>
+#include "netcdfcpp.h"
 
 #include <math.h>
 #include <iostream>
@@ -44,7 +44,6 @@ class RestartOutputer {
    		NcDim * rootlayerD;
    		NcDim * snowlayerD;
    		NcDim * soillayerD;
-   		NcDim * minelayerD ;
    		NcDim * rocklayerD;
    		NcDim * frontD;
    		NcDim * prvyearD;
