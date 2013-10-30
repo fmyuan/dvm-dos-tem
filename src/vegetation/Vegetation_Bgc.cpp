@@ -33,12 +33,10 @@ Vegetation_Bgc::Vegetation_Bgc(){
 	cd    = NULL;
 	ed    = NULL;
 
-	ipft       = 0;
 	d2wdebrisc = 0.0;
 	d2wdebrisn = 0.0;
 	dleafc     = 0.0;
 	fltrfall   = 0.0;
-	nfeed      = false;
 	totrzavln  = 0.0;
 
 };
@@ -444,7 +442,7 @@ void Vegetation_Bgc::deltanfeed(){
 				nppall += del_a2v.npp[i];
 			}
 
-			//N update down-regulation
+			//N uptake down-regulation
 			double inprodcn = nppall/fmax(1.e-8, nsupply);
 			double cneven = nppall/fmax(1.e-8, nrequireall);
 			double nmin = 0.;
@@ -453,8 +451,10 @@ void Vegetation_Bgc::deltanfeed(){
 			}
 			double cnmin = nppall/fmax(1.e-8, nmin);
 
-		  	double nadj = (inprodcn-cnmin)*(inprodcn-2.0*cneven+cnmin);
-		  	nadj /= ((inprodcn-cnmin)*(inprodcn-2.0*cneven+cnmin)-pow(inprodcn-cneven, 2.0));
+		  	//double nadj = inprodcn*(inprodcn-2.0*cneven);  // this eq. is from E.E. 2008 EA paper (something wrong within the code)
+		  	double nadj = 1.0;
+		  	double a1= fmax(1.e-8, fabs((inprodcn-cnmin)*(inprodcn-2.0*cneven+cnmin)));
+		  	nadj = a1/(a1+pow(fabs(inprodcn-cneven), 2.0));   // this eq. is from DOS-TEM
 
 		  	tempnuptake *=nadj;
 		  	if (tempnuptake< 0.0 ) {tempnuptake = 0.0; }
