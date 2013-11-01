@@ -721,6 +721,7 @@ double Vegetation_Bgc::getRaq10(const double & tair){
   
   	double q10 = raq10a0+ (raq10a1*tair) + (raq10a2*pow( tair,2.0 ))
                 + (raq10a3*pow(tair,3.0 ));
+  	q10 = fmax(0., q10);
   	raq10 = pow( q10,tair/10.0 );
  	// if(isnan(raq10)){
   	//	cout <<"raq10 is nan\n";
