@@ -43,10 +43,15 @@ class CohortData{
 		int fireseverity[MAX_FIR_OCRNUM];
 
 	    int act_atm_drv_yr;
-	    float tair[MAX_ATM_DRV_YR*12];
-	    float prec[MAX_ATM_DRV_YR*12];
-		float nirr[MAX_ATM_DRV_YR*12];
-		float vapo[MAX_ATM_DRV_YR*12];
+	    float tair[MAX_ATM_DRV_YR*MINY];
+	    float prec[MAX_ATM_DRV_YR*MINY];
+		float nirr[MAX_ATM_DRV_YR*MINY];
+		float vapo[MAX_ATM_DRV_YR*MINY];
+
+	    float d_tair[DINY];   //current year daily atm data
+	    float d_prec[DINY];
+		float d_nirr[DINY];
+		float d_vapo[DINY];
 
   	  	// community dimension
   	    vegstate_dim d_veg;   //at daily-interval   - 'd' is for daily

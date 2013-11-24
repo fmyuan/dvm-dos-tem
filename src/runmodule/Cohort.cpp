@@ -299,11 +299,19 @@ void Cohort::prepareDayDrivingData(const int & yrindx, const int & usedatmyr){
 			changeco2 = false;
 		}
 
-		atm.prepareDayDrivingData(yrindx, usedatmyr, changeclm, changeco2);
+		if (md->act_clmstep == MINY) {
+			atm.prepareDayDrivingData(yrindx, usedatmyr, changeclm, changeco2);
+		} else if (md->act_clmstep == DINY) {
+			atm.prepareDayDrivingData2(yrindx, changeco2);
+		}
 
 	} else {
 		// run the model at eq stage, climate and co2 driver not controlled by setting in control file.
-		atm.prepareDayDrivingData(yrindx, usedatmyr, false, false);
+		if (md->act_clmstep == MINY) {
+			atm.prepareDayDrivingData(yrindx, usedatmyr, false, false);
+		} else if (md->act_clmstep == DINY) {
+			atm.prepareDayDrivingData2(yrindx, false);
+		}
 
 	}
 };

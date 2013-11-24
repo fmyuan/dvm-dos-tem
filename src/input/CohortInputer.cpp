@@ -97,7 +97,7 @@ int CohortInputer::initClmFile(){
 
  	NcVar* clmyrV = clmncFile.get_var("YEAR");
  	if(clmyrV==NULL){
- 	   string msg = "Cannot get YEAR in 'climate.nc' file! ";
+ 	    string msg = "Cannot get YEAR in 'climate.nc' file! ";
 		cout<<msg+"\n";
 		return -1;
  	} else {
@@ -116,10 +116,22 @@ int CohortInputer::initClmFile(){
  	}
 
  	NcDim* monD = clmncFile.get_dim("MONTH");
- 	if(!monD->is_valid()){
- 		string msg = "MONTH Dimension is not valid in 'climate.nc' !";
+ 	if(monD->is_valid()){
+ 		string msg = "MONTHly time-step in 'climate.nc' !";
  		cout<<msg+"\n";
- 		return -1;
+ 		md->act_clmstep = monD->size();
+ 	} else {
+ 	 	NcDim* doyD = clmncFile.get_dim("DOY");
+ 	 	if(monD->is_valid()){
+ 	 		string msg = "DAIly time-step in 'climate.nc' !";
+ 	 		cout<<msg+"\n";
+ 	 		md->act_clmstep = doyD->size();
+ 	 	} else {
+ 	 	    string msg = "Cannot get MONTH or DOY dimension in 'climate.nc' file! ";
+ 			cout<<msg+"\n";
+ 			return -1;
+
+ 	 	}
  	}
 
  	return 0;
@@ -321,9 +333,9 @@ int CohortInputer::getFireId(int &fireid, const int &recno){
 
 // read-in clm data for 'yrs' years and ONE record only
 void CohortInputer::getClimate(float tair[], float prec[], float nirr[], float vapo[],
-		const int & yrs, const int & recid){
+		const int &yrbeg, const int & yrs, const int & recid){
 
-	int nummon = 12;
+	int numstep = md->act_clmstep;
 
 	//read the data from netcdf file
 	NcError err(NcError::silent_nonfatal);
@@ -358,32 +370,32 @@ void CohortInputer::getClimate(float tair[], float prec[], float nirr[], float v
  	}
 
  	//get the data for ONE recid
-	taV->set_cur(0, 0, recid);
-	NcBool nb1 = taV->get(&tair[0], yrs, nummon, 1);
+	taV->set_cur(yrbeg, 0, recid);   // yrbeg starting from 0
+	NcBool nb1 = taV->get(&tair[0], yrs, numstep, 1);
 	if(!nb1){
 	 	string msg = "problem in reading TAIR in CohortInputer::getClimate";
  		cout<<msg+"\n";
  		exit(-1);
 	}
 
-	precV->set_cur(0, 0, recid);
-	NcBool nb2 = precV->get(&prec[0], yrs, nummon, 1);
+	precV->set_cur(yrbeg, 0, recid);
+	NcBool nb2 = precV->get(&prec[0], yrs, numstep, 1);
 	if(!nb2){
 		string msg = "problem in reading PREC in CohortInputer::getClimate ";
  		cout<<msg+"\n";
  		exit(-1);
 	}
 
-	nirrV->set_cur(0, 0, recid);
-	NcBool nb3 = nirrV->get(&nirr[0], yrs, nummon, 1);
+	nirrV->set_cur(yrbeg, 0, recid);
+	NcBool nb3 = nirrV->get(&nirr[0], yrs, numstep, 1);
 	if(!nb3){
 		string msg = "problem in reading NIRR in CohortInputer::getClimate";
  		cout<<msg+"\n";
  		exit(-1);
 	}
 
-	vapV->set_cur(0, 0, recid);
-	NcBool nb4 = vapV->get(&vapo[0], yrs, nummon, 1);
+	vapV->set_cur(yrbeg, 0, recid);
+	NcBool nb4 = vapV->get(&vapo[0], yrs, numstep, 1);
 	if(!nb4){
 	 	string msg = "problem in reading VAPO in CohortInputer::getClimate";
  		cout<<msg+"\n";

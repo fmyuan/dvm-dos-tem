@@ -77,10 +77,11 @@
    	 		// chort-level data (2D or 3D)
    	 		int act_chtno;
    	 		int act_initchtno;
-   	 		int act_clmno;  // climate data in clmid-year-month(12) (3D)
+   	 		int act_clmno;  // climate data in year-month(12)/doy(365)-clmid(act_clmno) (3D)
    	 		int act_clmyr_beg;
    	 		int act_clmyr_end;
    	 		int act_clmyr;
+   	 		int act_clmstep;  //12 (months) or 365 (days) in a year
    	 		int act_vegno;  // vegetation community data in vegid-yearset (2D)
    			int act_vegset;
    	 		int act_fireno; // fire data in fireid-yearset (2D)

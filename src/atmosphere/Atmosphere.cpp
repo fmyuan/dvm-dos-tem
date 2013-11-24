@@ -17,7 +17,7 @@ Atmosphere::~Atmosphere(){
 	
 };
 
-// calculating daily 'atm' data for all driving years - called in 'RunCohort::reinit()'
+// calculating monthly 'atm' data for all driving years - called in 'RunCohort::reinit()'
 void Atmosphere::prepareMonthDrivingData(){
      float lat = cd->gd->lat;
 
@@ -75,7 +75,7 @@ void Atmosphere::prepareMonthDrivingData(){
 
 };
  
-// calculating daily 'atm' data for ONE year at yearly time-step - called in 'RunCohort.cpp'
+// calculating daily 'atm' data from monthly dataset for ONE year at yearly time-step - called in 'RunCohort.cpp'
 void Atmosphere::prepareDayDrivingData(const int & yrcount, const int & usedatmyr, const bool & changeclm, const bool &changeco2){
 
 	float tad1[31], vapd1[31], precd1[31];
@@ -95,56 +95,56 @@ void Atmosphere::prepareDayDrivingData(const int & yrcount, const int & usedatmy
     		  	  pvalt = eq_tair[11];
     		  	  pvalv = eq_vapo[11];
     		  	  pvalp = eq_prec[11];
-    		  	  
+
     		  	  nvalt = eq_tair[im+1];
     		  	  nvalv = eq_vapo[im+1];
     		  	  nvalp = eq_prec[im+1];
-    		  	  
+
     		  	  dinmprev = DINM[11];
     		  	  dinmnext = DINM[im+1];
 
-    		  	  
+
     		}else if (im==11){
     		  	  pvalt = eq_tair[im-1];
     		  	  pvalv = eq_vapo[im-1];
     		  	  pvalp = eq_prec[im-1];
-    		  	  
+
     		  	  nvalt = eq_tair[0];
     		  	  nvalv = eq_vapo[0];
     		  	  nvalp = eq_prec[0];
-    		  	  
+
     		  	  dinmnext = DINM[0];
     		  	  dinmprev = DINM[im-1];
-    		  	  
+
     		}else{
     		  	  pvalt = eq_tair[im-1];
     		  	  pvalv = eq_vapo[im-1];
     		  	  pvalp = eq_prec[im-1];
-    		  	  
+
     		  	  nvalt = eq_tair[im+1];
     		  	  nvalv = eq_vapo[im+1];
     		  	  nvalp = eq_prec[im+1];
-    		  	  
+
     		  	  dinmprev = DINM[im-1];
     		  	  dinmnext = DINM[im+1];
-    		  	  
+
     		}
-              
+
             autil.updateDailyDriver(tad1, pvalt ,cvalt, nvalt,
                        dinmprev, dinmcurr, dinmnext);
   			autil.updateDailyDriver(vapd1,  pvalv ,cvalv, nvalv,
                     dinmprev, dinmcurr, dinmnext);
   			autil.updateDailyPrec(precd1, dinmcurr, cvalt, cvalp);
-  		   	
+
   		   	for (int id =0; id<31; id++){
   		      	ta_d[im][id]  = tad1[id];
   		      	vap_d[im][id] = vapd1[id];
   		      	precsplt(ta_d[im][id], precd1[id], snow_d[im][id], rain_d[im][id]);
-  		      
+
   		      	rhoa_d[im][id]= getDensity(tad1[id]);
   		      	svp_d[im][id] = getSatVP(tad1[id]);
   		       	vpd_d[im][id] = getVPD(svp_d[im][id], vap_d[im][id]);
-  		       
+
   		      	dersvp_d[im][id]= getDerSVP(tad1[id], svp_d[im][id]);
   		      	abshd_d[im][id] = getAbsHumDeficit(svp_d[im][id], vap_d[im][id], tad1[id]);
 
@@ -153,7 +153,7 @@ void Atmosphere::prepareDayDrivingData(const int & yrcount, const int & usedatmy
   				nirr_d[im][id] = eq_nirr[im];
 
   		   	}
-  		   
+
     	}
 
     } else { // for spinup/transient/scenario
@@ -182,8 +182,8 @@ void Atmosphere::prepareDayDrivingData(const int & yrcount, const int & usedatmy
     		  	  	nvalp = prec[iy][im+1];
     		  	  	dinmnext = DINM[im+1];
     		  	  	dinmprev = DINM[11];
-    		  	  
-    		  	  
+
+
     		  	}else if (im==11){
     		  	  	pvalt = tair[iy][im-1];
     		  	  	pvalv = vapo[iy][im-1];
@@ -199,31 +199,31 @@ void Atmosphere::prepareDayDrivingData(const int & yrcount, const int & usedatmy
     		  	  	}
     		  	  	dinmnext = DINM[0];
     		  	  	dinmprev = DINM[im-1];
-    		  	  
+
     		  	}else{
     		  	  	pvalt = tair[iy][im-1];
     		  	  	pvalv = vapo[iy][im-1];
     		  	  	pvalp = prec[iy][im-1];
-    		  	  
+
     		  	  	nvalt = tair[iy][im+1];
     		  	  	nvalv = vapo[iy][im+1];
     		  	  	nvalp = prec[iy][im+1];
-    		  	  
+
     		  	  	dinmnext = DINM[im+1];
     		  	  	dinmprev = DINM[im-1];
-    		  	  
+
     		  	}
                 autil.updateDailyDriver(tad1, pvalt ,cvalt, nvalt,
                        dinmprev, dinmcurr, dinmnext);
   				autil.updateDailyDriver(vapd1,  pvalv ,cvalv, nvalv,
                      dinmprev, dinmcurr, dinmnext);
   				autil.updateDailyPrec(precd1, dinmcurr, cvalt, cvalp);
-  		   		
+
   		   		for (int id =0; id<dinmcurr; id++){
   		      		ta_d[im][id] = tad1[id];
   		      		vap_d[im][id] = vapd1[id];
   		      		precsplt(ta_d[im][id], precd1[id],snow_d[im][id], rain_d[im][id]);
-  		      
+
   		      		rhoa_d[im][id] = getDensity(tad1[id]);
   		      		svp_d[im][id] = getSatVP(tad1[id]);
   		      		vpd_d[im][id] = getVPD(svp_d[im][id], vap_d[im][id]);
@@ -237,6 +237,46 @@ void Atmosphere::prepareDayDrivingData(const int & yrcount, const int & usedatmy
   		   		} //id
     		}//im
     }
+
+	if (changeco2) {
+		if (yrcount<MAX_CO2_DRV_YR) {
+			co2  = cd->rd->co2[yrcount];
+		} else {
+			co2  = cd->rd->co2[MAX_CO2_DRV_YR-1];	//this reuse the last CO2 data
+		}
+	} else {
+	   	co2  = cd->rd->initco2;
+	}
+
+};
+
+// calculating daily derivative 'atm' data from daily dataset for ONE year at yearly time-step - called in 'RunCohort.cpp'
+void Atmosphere::prepareDayDrivingData2(const int &yrcount, const bool &changeco2){
+
+	float dtemp = 0.f;
+
+    for (int im=1; im<12; im++) {
+  		 for (int id =0; id<DINM[im]; id++){
+
+  			 dtemp  = cd->d_tair[DOYINDFST[im]+id];
+  			 ta_d[im][id]   = dtemp;
+  		     vap_d[im][id]  = cd->d_vapo[DOYINDFST[im]+id];
+  		     rhoa_d[im][id] = getDensity(dtemp);
+  		     svp_d[im][id]  = getSatVP(dtemp);
+  		     vpd_d[im][id]  = getVPD(svp_d[im][id], vap_d[im][id]);
+  		     dersvp_d[im][id] = getDerSVP(dtemp, svp_d[im][id]);
+  		     abshd_d[im][id]  = getAbsHumDeficit(svp_d[im][id], vap_d[im][id] , dtemp);
+
+  			 dtemp  = cd->d_prec[DOYINDFST[im]+id];
+      		 precsplt(ta_d[im][id], dtemp, snow_d[im][id], rain_d[im][id]);
+
+ 			 nirr_d[im][id] = cd->d_nirr[DOYINDFST[im]+id];
+ 			 girr_d[im][id] = getGIRRd(cd->gd->lat, DOYINDFST[im]+id);
+ 			 float clds = getCLDS(girr_d[im][id], nirr_d[im][id]);
+      		 par_d[im][id]  = getPAR(clds, nirr_d[im][id]);
+
+  		 } //id
+    }//im
 
 	if (changeco2) {
 		if (yrcount<MAX_CO2_DRV_YR) {
@@ -298,10 +338,10 @@ float Atmosphere::getSatVP(const float & tair){
 /* 	% Guide to Meteorological Instruments and Methods of Observation (CIMO Guide)
  	%      (WMO, 2008), for saturation vapor pressure
  	%      (1) ew = 6.112 e(17.62 t/(243.12 + t))                                                                  [2]
- 	%      with t in [°C] and ew in [hPa, mbar]
+ 	%      with t in [C] and ew in [hPa, mbar]
 
  	%      (2) ei = 6.112 e(22.46 t/(272.62 + t))                                                                      [14]
- 	%      with t in [°C] and ei in [hPa]
+ 	%      with t in [C] and ei in [hPa]
 */
  	if(tair>0){
  		svp = 6.112 * exp(17.63 * tair/ (243.12 + tair) ) * 100.0;
@@ -405,6 +445,40 @@ float Atmosphere::getGIRR(const float &lat, const int& dinm){
   	gross *= 0.484; // convert from cal/cm2day to W/m2
 
   	return gross;
+
+};
+
+float Atmosphere::getGIRRd(const float &lat, const int&doy){
+
+  	const float pi = 3.141592654;                // Greek "pi"
+  	const float sp = 1368.0 * 3600.0 / 41860.0;  // solar constant
+
+  	float lambda;
+  	float sumd;
+  	float sig;
+  	float eta;
+  	float sinbeta;
+  	float sb;
+  	float sotd;
+
+  	lambda = lat * pi / 180.0;
+  	sumd = 0;
+    sig = -23.4856*cos(2 * pi * (doy + 10.0)/365.25);
+    sig *= pi / 180.0;
+
+    for ( int hour = 0; hour < 24; hour++ ){
+      		eta = (float) ((hour+1) - 12) * pi / 12.0;
+      		sinbeta = sin(lambda)*sin(sig) + cos(lambda)*cos(sig)*cos(eta);
+      		sotd = 1 - (0.016729 * cos(0.9856 * (doy - 4.0)
+             * pi / 180.0));
+
+      		sb = sp * sinbeta / pow((double)sotd,2.0);
+      		if (sb >= 0.0) { sumd += sb; }
+    }
+
+  	sumd *= 0.484; // convert from cal/cm2day to W/m2
+
+  	return (sumd);
 
 };
 

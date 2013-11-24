@@ -39,7 +39,7 @@ class CohortInputer{
 		int getFireId(int &fireid, const int &recno);
 
 		void getClimate(float tair[], float prec[], float nirr[], float vap[],
-				const int& yrno, const int & recno);
+				const int& yrbeg, const int& yrno, const int & recno);
 
 		void getVegetation(int vsetyr[], int vtype[], double vfrac[], const int & recno);
 

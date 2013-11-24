@@ -20,6 +20,7 @@ class Atmosphere{
 	
     	void prepareMonthDrivingData();
     	void prepareDayDrivingData(const int & mid, const int & usedatmyr, const bool & changeclm, const bool &changeco2);
+    	void prepareDayDrivingData2(const int &yrcount, const bool &changeco2);
 
     	void setCohortData(CohortData* cdp);
     	void setEnvData(EnvData* edp);
@@ -50,6 +51,7 @@ class Atmosphere{
 		float vap_d[12][31];
 		float par_d[12][31];
 		float nirr_d[12][31];
+		float girr_d[12][31];
 	
 		float rhoa_d[12][31];
 		float svp_d[12][31];
@@ -84,6 +86,7 @@ class Atmosphere{
    	         
     	float getPET( const float & nirr, const float & tair,const int & dinm);
 		float getGIRR( const float &lat, const int& dinm);			
+		float getGIRRd( const float &lat, const int& doy);
 		float getNIRR( const float& clds, const float& girr );				
 		float getPAR( const float& clds, const float& nirr );	
 		float getCLDS( const float& girr, const float& nirr );

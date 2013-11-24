@@ -114,7 +114,35 @@ int RunCohort::readData(){
 
 	//reading the climate data
 	cht.cd.act_atm_drv_yr = md->act_clmyr;
-	cinputer.getClimate(cht.cd.tair, cht.cd.prec, cht.cd.nirr, cht.cd.vapo, cht.cd.act_atm_drv_yr, clmrecno);
+	if (md->act_clmstep == MINY) { //if climate data is in monthly time-step, read it all-years
+		cinputer.getClimate(cht.cd.tair, cht.cd.prec, cht.cd.nirr, cht.cd.vapo, 0, cht.cd.act_atm_drv_yr, clmrecno);
+	} else if (md->act_clmstep == DINY) { //if climate data is in daily time-step, read it yearly and calculate monthly data
+	    float ta[DINY];
+	    float pre[DINY];
+	    float nir[DINY];
+	    float vap[DINY];
+
+	    for (int iyr=0; iyr<cht.cd.act_atm_drv_yr; iyr++) {
+			cinputer.getClimate(ta, pre, nir, vap, iyr, 1, clmrecno);
+			for (int im=0; im<MINY; im++) {
+				float mta = 0.f;
+				float mpre = 0.f;
+				float mnir = 0.f;
+				float mvap = 0.f;
+				for (int id=0; id<DINM[im]; id++) {
+					mta  += ta[DOYINDFST[im]+id];
+					mpre += pre[DOYINDFST[im]+id];
+					mnir += nir[DOYINDFST[im]+id];
+					mvap += vap[DOYINDFST[im]+id];
+				}
+				cht.cd.tair[iyr*MINY+im] = mta/DINM[im];
+				cht.cd.prec[iyr*MINY+im] = mpre;
+				cht.cd.nirr[iyr*MINY+im] = mnir/DINM[im];
+				cht.cd.vapo[iyr*MINY+im] = mvap/DINM[im];
+			}
+	    }
+		//
+	}
 
 	//reading the vegetation community type data from 'vegetation.nc'
 	cht.cd.act_vegset = md->act_vegset;
@@ -324,6 +352,10 @@ void RunCohort::run_timeseries(){
 		 int yrindex = cht.timer->getCurrentYearIndex();   //starting from 0
 		 cht.cd.year = cht.timer->getCalendarYear();
 
+		 if (md->act_clmstep == DINY) { //if climate data is in daily time-step, read it yearly
+			 int clmyrcount = yrindex%used_atmyr;  // this will recycle climate data series
+			cinputer.getClimate(cht.cd.d_tair, cht.cd.d_prec, cht.cd.d_nirr, cht.cd.d_vapo, clmyrcount, 1, clmrecno);
+		 }
 		 cht.prepareDayDrivingData(yrindex, used_atmyr);
 
 		 int outputyrind = cht.timer->getOutputYearIndex();
