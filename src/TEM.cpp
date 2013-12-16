@@ -42,7 +42,7 @@ int main(int argc, char* argv[]){
 
 	string Mode = "siterun";
  	string regnmode = "";
-    string chtid = "7";
+    string chtid = "1";
     string controlfile = "config/controlfile_site.txt";
 
 	if (Mode == "siterun") {

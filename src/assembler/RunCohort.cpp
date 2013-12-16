@@ -157,7 +157,7 @@ int RunCohort::readData(){
 	}
 
 	// read-in parameters AND initial conditions for the above 'cmttype'
-	 string configdir = "config/";
+	 string configdir = md->configdir; //"config/";
 	 cht.chtlu.dir = configdir;
 	 stringstream ss;
 	 ss<<cht.cd.cmttype;
