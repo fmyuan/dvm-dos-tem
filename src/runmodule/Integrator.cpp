@@ -139,7 +139,20 @@ Integrator::~Integrator(){
 };
 
 void Integrator::setBgcData(BgcData * bdp){
-   	 bd = bdp;
+     // veg. bgc at monthly time-step
+	 vegs = bdp->m_vegs;
+     a2v  = bdp->m_a2v;
+	 v2a  = bdp->m_v2a;
+	 v2soi= bdp->m_v2soi;
+	 soi2v= bdp->m_soi2v;
+	 v2v  = bdp->m_v2v;
+
+	 // soil bgc at daily time-step (so, be cautious here if need data from veg.)
+   	 soils = bdp->d_sois;
+	 soi2l = bdp->d_soi2l;
+	 soi2a = bdp->d_soi2a;
+	 soi2soi = bdp->d_soi2soi;
+
 };
 
 void Integrator::setSoil_Bgc(Soil_Bgc * soip){
@@ -171,7 +184,7 @@ void Integrator::updateMonthlyVbgc(){
 
 };
 
-void Integrator::updateMonthlySbgc(const int & numsoillayer){
+void Integrator::updateDailySbgc(const int & numsoillayer){
 	 vegbgc = false;
 	 soibgc = true;      // these two switches will only allow soil_bgc call in 'delta'
 
@@ -197,29 +210,29 @@ void Integrator::updateMonthlySbgc(const int & numsoillayer){
 void Integrator::c2ystate_veg(float y[]){
 
 	for (int i=0; i<NUM_PFT_PART; i++) {
-		y[I_VEGC+i] = bd->m_vegs.c[i];
-		y[I_STRN+i] = bd->m_vegs.strn[i];
+		y[I_VEGC+i] = vegs->c[i];
+		y[I_STRN+i] = vegs->strn[i];
 	}
 
-    y[I_LABN]       = bd->m_vegs.labn;
+    y[I_LABN]       = vegs->labn;
 
-    y[I_DEADC]      = bd->m_vegs.deadc;
-    y[I_DEADN]      = bd->m_vegs.deadn;
+    y[I_DEADC]      = vegs->deadc;
+    y[I_DEADN]      = vegs->deadn;
 };
 
 void Integrator::c2ystate_soi(float y[]){
     for(int il =0; il<numsl; il++){
-      	y[I_L_RAWC+il] = bd->m_sois.rawc[il];
-      	y[I_L_SOMA+il] = bd->m_sois.soma[il];
-      	y[I_L_SOMPR+il]= bd->m_sois.sompr[il];
-      	y[I_L_SOMCR+il]= bd->m_sois.somcr[il];
-        y[I_L_ORGN+il] = bd->m_sois.orgn[il];
-        y[I_L_AVLN+il] = bd->m_sois.avln[il];
+      	y[I_L_RAWC+il] = soils->rawc[il];
+      	y[I_L_SOMA+il] = soils->soma[il];
+      	y[I_L_SOMPR+il]= soils->sompr[il];
+      	y[I_L_SOMCR+il]= soils->somcr[il];
+        y[I_L_ORGN+il] = soils->orgn[il];
+        y[I_L_AVLN+il] = soils->avln[il];
     }
-    y[I_WDEBRISC] = bd->m_sois.wdebrisc;
-    y[I_WDEBRISN] = bd->m_sois.wdebrisn;
-    y[I_DMOSSC] = bd->m_sois.dmossc;
-    y[I_DMOSSN] = bd->m_sois.dmossn;
+    y[I_WDEBRISC] = soils->wdebrisc;
+    y[I_WDEBRISN] = soils->wdebrisn;
+    y[I_DMOSSC] = soils->dmossc;
+    y[I_DMOSSN] = soils->dmossn;
 
 };
 
@@ -276,7 +289,7 @@ int Integrator::adapt(float pstate[], const int & numeq){
     	}    /* end rkf integrator (if) */
   	}      /* end time while */
 
-  	return mflag;
+  	return (mflag);
 
 };
 
@@ -300,7 +313,7 @@ bool Integrator::rkf45( const int& numeq, float pstate[], float& pdt) {
   	step( numeq,dum4,f11,ydum,ptdt );
   	negativepool = checkPools();
   	if(negativepool>=0){
-  	  	return false;	
+  	  	return (false);
   	}
   	
   	delta(ydum,f2);
@@ -311,7 +324,7 @@ bool Integrator::rkf45( const int& numeq, float pstate[], float& pdt) {
   	step( numeq,dum4,f13,ydum,pdt );
  	negativepool = checkPools();
   	if(negativepool>=0){
-  	  return false;	
+  	  return (false);
   	}
   	
   	delta(ydum,f3 );
@@ -324,7 +337,7 @@ bool Integrator::rkf45( const int& numeq, float pstate[], float& pdt) {
   	step( numeq,dum4,f14,ydum,pdt );
   	negativepool = checkPools();
   	if(negativepool>=0){
-  	  return false;	
+  	  return (false);
   	}
   	
   	delta(ydum,f4 );
@@ -337,7 +350,7 @@ bool Integrator::rkf45( const int& numeq, float pstate[], float& pdt) {
   	step( numeq,dum4,f15,ydum,pdt );
   	negativepool = checkPools();
   	if(negativepool>=0){
-  	  return false;	
+  	  return (false);
   	}
   	
   	delta(ydum,f5 );
@@ -350,7 +363,7 @@ bool Integrator::rkf45( const int& numeq, float pstate[], float& pdt) {
   	step( numeq,dum4,f16,ydum,pdt );
   	negativepool = checkPools();
   	if(negativepool>=0){
-  	  return false;	
+  	  return (false);
   	}
   	
   	delta(ydum,f6 );
@@ -361,91 +374,91 @@ bool Integrator::rkf45( const int& numeq, float pstate[], float& pdt) {
     	error[i] = fabs( dum4[i] - dum5[i] );
   	}
   
-    return true;
+    return (true);
 };
 
 void Integrator::y2cstate_veg(float y[]){
 
 	for (int i=0; i<NUM_PFT_PART; i++) {
-		bd->m_vegs.c[i] = y[I_VEGC+i];
-		bd->m_vegs.strn[i] = y[I_STRN+i] ;
+		vegs->c[i] = y[I_VEGC+i];
+		vegs->strn[i] = y[I_STRN+i] ;
 	}
 
     if(y[I_LABN]<0){
     	 y[I_STRN] += y[I_LABN] -0.001;
     	 y[I_LABN]= 0.001;
 	}
-    bd->m_vegs.labn  = y[I_LABN] ;
+    vegs->labn  = y[I_LABN] ;
 
-	bd->m_vegs.deadc = y[I_DEADC];
-    bd->m_vegs.deadn = y[I_DEADN];
+	vegs->deadc = y[I_DEADC];
+    vegs->deadn = y[I_DEADN];
 
 };
 
 void Integrator::y2cstate_soi(float y[]){
 
     for(int il=0; il<numsl; il++){
-     	bd->m_sois.rawc[il] = y[I_L_RAWC +il];
-        bd->m_sois.soma[il] = y[I_L_SOMA +il];
-        bd->m_sois.sompr[il]= y[I_L_SOMPR +il];
-        bd->m_sois.somcr[il]= y[I_L_SOMCR +il];
+     	soils->rawc[il] = y[I_L_RAWC +il];
+        soils->soma[il] = y[I_L_SOMA +il];
+        soils->sompr[il]= y[I_L_SOMPR +il];
+        soils->somcr[il]= y[I_L_SOMCR +il];
 
         if(y[I_L_AVLN+il]<0){//add by shuhua Dec 8 2007
         	y[I_L_ORGN+il]+=y[I_L_AVLN+il] -0.001;
         	y[I_L_AVLN+il]=0.001;
         }
-        bd->m_sois.orgn[il] = y[I_L_ORGN+il];
-        bd->m_sois.avln[il] = y[I_L_AVLN+il];
+        soils->orgn[il] = y[I_L_ORGN+il];
+        soils->avln[il] = y[I_L_AVLN+il];
     }
 
-	bd->m_sois.wdebrisc = y[I_WDEBRISC];
-	bd->m_sois.wdebrisn = y[I_WDEBRISN];
-	bd->m_sois.dmossc   = y[I_DMOSSC];
-	bd->m_sois.dmossn   = y[I_DMOSSN];
+	soils->wdebrisc = y[I_WDEBRISC];
+	soils->wdebrisn = y[I_WDEBRISN];
+	soils->dmossc   = y[I_DMOSSC];
+	soils->dmossn   = y[I_DMOSSN];
 
 };
 
 void Integrator::y2cflux_veg(float y[]){
 
 	for (int i=0; i<NUM_PFT_PART; i++) {
-		bd->m_a2v.ingpp[i] = y[I_INGPP+i];
-		bd->m_a2v.innpp[i] = y[I_INNPP+i];
-		bd->m_a2v.gpp[i]   = y[I_GPP+i];
-		bd->m_a2v.npp[i]   = y[I_NPP+i];
+		a2v->ingpp[i] = y[I_INGPP+i];
+		a2v->innpp[i] = y[I_INNPP+i];
+		a2v->gpp[i]   = y[I_GPP+i];
+		a2v->npp[i]   = y[I_NPP+i];
 
-		bd->m_v2a.rm[i] = y[I_RM+i];
-		bd->m_v2a.rg[i] = y[I_RG+i];
+		v2a->rm[i] = y[I_RM+i];
+		v2a->rg[i] = y[I_RG+i];
 
-		bd->m_v2soi.ltrfalc[i] = y[I_LTRC+i];
+		v2soi->ltrfalc[i] = y[I_LTRC+i];
 
-		bd->m_soi2v.snuptake[i]  = y[I_SNUP+i];
-		bd->m_v2v.nmobil[i]      = y[I_NMBOL+i];
-		bd->m_v2v.nresorb[i]     = y[I_NRSRB+i];
+		soi2v->snuptake[i]  = y[I_SNUP+i];
+		v2v->nmobil[i]      = y[I_NMBOL+i];
+		v2v->nresorb[i]     = y[I_NRSRB+i];
 
-		bd->m_v2soi.ltrfaln[i]   = y[I_LTRN+i];
+		v2soi->ltrfaln[i]   = y[I_LTRN+i];
 	}
 
-	bd->m_soi2v.innuptake = y[I_INNUP];
-	bd->m_soi2v.lnuptake  = y[I_LNUP];
+	soi2v->innuptake = y[I_INNUP];
+	soi2v->lnuptake  = y[I_LNUP];
 
 };
 
 void Integrator::y2cflux_soi(float y[]){
 
   	for(int il =0; il<numsl; il++){
-  		bd->m_soi2a.rhrawc[il]    = y[I_L_RH_RAW +il];
-  		bd->m_soi2a.rhsoma[il]    = y[I_L_RH_SOMA +il];
-  		bd->m_soi2a.rhsompr[il]   = y[I_L_RH_SOMPR +il];
-  		bd->m_soi2a.rhsomcr[il]   = y[I_L_RH_SOMCR +il];
-  	  	bd->m_soi2soi.nimmob[il]  = y[I_L_NIMMOB+il];
-  	  	bd->m_soi2soi.netnmin[il] = y[I_L_NMIN+il];
+  		soi2a->rhrawc[il]    = y[I_L_RH_RAW +il];
+  		soi2a->rhsoma[il]    = y[I_L_RH_SOMA +il];
+  		soi2a->rhsompr[il]   = y[I_L_RH_SOMPR +il];
+  		soi2a->rhsomcr[il]   = y[I_L_RH_SOMCR +il];
+  	  	soi2soi->nimmob[il]  = y[I_L_NIMMOB+il];
+  	  	soi2soi->netnmin[il] = y[I_L_NMIN+il];
   	}
-  	bd->m_soi2a.rhwdeb   = y[I_RH_WD];
-  	bd->m_soi2a.rhmossc  = y[I_RH_DMOSS];
+  	soi2a->rhwdeb   = y[I_RH_WD];
+  	soi2a->rhmossc  = y[I_RH_DMOSS];
 
   	//
-    bd->m_soi2l.avlnlost = y[I_AVLNLOSS];
-    bd->m_soi2l.orgnlost = y[I_ORGNLOSS];
+    soi2l->avlnlost = y[I_AVLNLOSS];
+    soi2l->orgnlost = y[I_ORGNLOSS];
 
 };
 

@@ -334,7 +334,7 @@ void Cohort::updateMonthly(const int & yrcnt, const int & currmind, const int & 
 
    	//thirdly, update the BGC process to get the C/N states and fluxes
   	if(md->bgcmodule){
-  		updateMonthly_Bgc(currmind);
+  		updateMonthly_Bgc(currmind, dinmcurr);
   	}
 
   	// fourthly, run the disturbance module
@@ -432,7 +432,7 @@ void Cohort::updateMonthly_Env(const int & currmind, const int & dinmcurr){
 					// get the soil moisture controling factor on plant transpiration
 					double frootfr[MAX_SOI_LAY];
 					for (int i=0; i<MAX_SOI_LAY; i++){
-						frootfr[i] = cd.m_soil.frootfrac[i][ip];
+						frootfr[i] = cd.d_soil.frootfrac[i][ip];
 					}
 
 					soilenv.getSoilTransFactor(ed[ip].d_soid.fbtran, ground.fstsoill, frootfr);
@@ -534,7 +534,7 @@ void Cohort::updateMonthly_Env(const int & currmind, const int & dinmcurr){
 ///////////////////////////////////////////////////////////////////////////////////////////
 // Biogeochemical Module Calling at monthly timestep
 ///////////////////////////////////////////////////////////////////////////////////////////
-void Cohort::updateMonthly_Bgc(const int & currmind){
+void Cohort::updateMonthly_Bgc(const int & currmind, const int & dinmcurr){
 	//
 	if(currmind==0){		
 
@@ -560,7 +560,7 @@ void Cohort::updateMonthly_Bgc(const int & currmind){
 		 	vegintegrator[ip].updateMonthlyVbgc();
     		vegbgc[ip].afterIntegration();
 
-    		bd[ip].veg_endOfMonth();                // yearly data accumulation
+    		bd[ip].veg_endOfMonth(dinmcurr);                // yearly data accumulation and daily data assignment
     		if(currmind==11){
     			vegbgc[ip].adapt();             // this will evolve C/N ratio with CO2
     			bd[ip].veg_endOfYear();
@@ -569,22 +569,59 @@ void Cohort::updateMonthly_Bgc(const int & currmind){
 	}
 
 	getBd4allveg_monthly();      // integrating the monthly pfts' 'bd' to allveg 'bdall'
-   	bdall->veg_endOfMonth();    // yearly data accumulation
+   	bdall->veg_endOfMonth(dinmcurr);    // yearly data accumulation and daily data assignment
 	if(currmind==11){
 		bdall->veg_endOfYear();
 	}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-	// soil BGC module calling
-	soilbgc.prepareIntegration(md->nfeed, md->avlnflg, md->baseline);
-	solintegrator.updateMonthlySbgc(MAX_SOI_LAY);
-    soilbgc.afterIntegration();
+	// soil BGC module calling at daily time-step
+    bdall->soil_beginOfMonth();   // initialize monthly mean/cumulative variables
+	for(int id =0; id<dinmcurr; id++){
 
-	bdall->soil_endOfMonth();   // yearly data accumulation
-	bdall->land_endOfMonth();
+		cd.day = id+1;
 
-	assignSoilBd2pfts_monthly();      //sharing the 'ground' portion in 'bdall' with each pft 'bd'
+		// refresh daily env data for driving soil bgc (note: in soil bgc, edall is used)
+        edall->cd->d_snow = cd.d_snow;
+        edall->cd->d_soil = cd.d_soil;
+        edall->cd->d_veg  = cd.d_veg;
+        edall->cd->d_vegd = cd.d_vegd;
 
+        edall->d_atms = outbuffer.envoddlyall[id];
+        edall->d_vegs = outbuffer.envoddlyall[id].d_vegs;
+        edall->d_snws = outbuffer.envoddlyall[id].d_snws;
+        edall->d_sois = outbuffer.envoddlyall[id].d_sois;
+
+        edall->d_atmd = outbuffer.envoddlyall[id].d_atmd;
+        edall->d_vegd = outbuffer.envoddlyall[id].d_vegd;
+        edall->d_snwd = outbuffer.envoddlyall[id].d_snwd;
+        edall->d_soid = outbuffer.envoddlyall[id].d_soid;
+
+        edall->d_l2a = outbuffer.envoddlyall[id].d_l2a;
+        edall->d_a2l = outbuffer.envoddlyall[id].d_a2l;
+        edall->d_a2v = outbuffer.envoddlyall[id].d_a2v;
+        edall->d_v2a = outbuffer.envoddlyall[id].d_v2a;
+        edall->d_v2g = outbuffer.envoddlyall[id].d_v2g;
+        edall->d_soi2l = outbuffer.envoddlyall[id].d_soi2l;
+        edall->d_soi2a = outbuffer.envoddlyall[id].d_soi2a;
+        edall->d_snw2a = outbuffer.envoddlyall[id].d_snw2a;
+        edall->d_snw2soi = outbuffer.envoddlyall[id].d_snw2soi;
+
+        // call the ODE for soil bgc
+		soilbgc.prepareIntegration(md->nfeed, md->avlnflg, md->baseline);
+		solintegrator.updateDailySbgc(MAX_SOI_LAY);
+		soilbgc.afterIntegration();
+
+		bdall->soil_endOfDay(dinmcurr);
+
+		if (id==dinmcurr-1) {
+
+			bdall->soil_endOfMonth();   // yearly data accumulation
+			bdall->land_endOfMonth();
+
+			assignSoilBd2pfts_monthly();      //sharing the 'ground' portion in 'bdall' with each pft 'bd'
+		}
+	}
 };
 
 //fire disturbance module calling
@@ -624,13 +661,13 @@ void Cohort::updateMonthly_Fir(const int & yrind, const int & currmind){
    		}
 
    		// assign the updated soil C/N pools during firing to double-linked layer matrix in 'ground'
-   		soilbgc.assignCarbonBd2LayerMonthly();
+   		soilbgc.assignCarbonBd2Layer();
 
 		// then, adjusting soil structure after fire burning (Don't do this prior to the previous calling)
 		ground.adjustSoilAfterburn();
 
 		// and finally save the data back to 'bdall'
-		soilbgc.assignCarbonLayer2BdMonthly();
+		soilbgc.assignCarbonLayer2Bd();
 
 		// update all other pft's 'bd'
 		assignSoilBd2pfts_monthly();
@@ -687,7 +724,7 @@ void Cohort::updateMonthly_DIMveg(const int & currmind, const bool & dvmmodule){
 void Cohort::updateMonthly_DIMgrd(const int & currmind, const bool & dslmodule){
 
 	// re-call the 'bdall' soil C contents and assign them to the double-linked layer matrix
-	soilbgc.assignCarbonBd2LayerMonthly();
+	soilbgc.assignCarbonBd2Layer();
 
 	//only update the thickness at begin of year, since it is a slow process
 	if(dslmodule && currmind==0){
@@ -710,7 +747,7 @@ void Cohort::updateMonthly_DIMgrd(const int & currmind, const bool & dslmodule){
 	    ground.redivideSoilLayers();
 
 		// and save the bgc data in double-linked structure back to 'bdall'
-		soilbgc.assignCarbonLayer2BdMonthly();
+		soilbgc.assignCarbonLayer2Bd();
 
 	}
 
@@ -824,7 +861,7 @@ double Cohort::assignSoilLayerRootFrac(const double & topz, const double & botz,
 		frfrac = 0.;
 	}
 
-	return frfrac;
+	return (frfrac);
 
 };
 

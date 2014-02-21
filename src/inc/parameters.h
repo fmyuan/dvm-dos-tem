@@ -172,6 +172,8 @@ struct soipar_bgc{
   	double kdsompr[MAX_SOI_LAY];
   	double kdsomcr[MAX_SOI_LAY];
 
+  	double rp;        // parameter related to plant-mediated CH4 emission
+
 };
 
 struct snwpar_dim{

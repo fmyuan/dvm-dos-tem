@@ -33,6 +33,8 @@ struct vegstate_dim{
 struct vegstate_env{
     double snow;   // snow on veg // mm (H2O)
     double rwater;  // rain water on veg // mm (H2O)
+
+    double tveg;
 };
 
 struct vegstate_bgc{
@@ -136,6 +138,8 @@ struct soistate_bgc{
 
 	double orgn[MAX_SOI_LAY];   // soil total N content kg/m2
 	double avln[MAX_SOI_LAY];   // soil available N content kg/m2
+
+	double ch4[MAX_SOI_LAY];
 };
 
 #endif /*STATES_H_*/

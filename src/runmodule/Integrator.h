@@ -94,7 +94,7 @@ class Integrator{
        void setVegetation_Bgc(Vegetation_Bgc * vegb);
        
        void updateMonthlyVbgc();
-       void updateMonthlySbgc(const int &numsl);
+       void updateDailySbgc(const int &numsl);
 
   private:
 
@@ -163,8 +163,21 @@ class Integrator{
 	 
       Soil_Bgc * ssl;
 	  Vegetation_Bgc * veg;
-	  BgcData *bd;
 	  
+	  soistate_bgc *soils;
+  	  vegstate_bgc *vegs;
+
+      atm2veg_bgc *a2v;
+	  veg2atm_bgc *v2a;
+	  veg2soi_bgc *v2soi;
+	  soi2veg_bgc *soi2v;
+	  veg2veg_bgc *v2v;
+
+	  soi2lnd_bgc *soi2l;
+	  soi2atm_bgc *soi2a;
+	  soi2soi_bgc *soi2soi;
+
+
 };
 #endif /*INTEGRATOR_H_*/
 

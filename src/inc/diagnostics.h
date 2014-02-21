@@ -85,7 +85,12 @@ struct soidiag_env{
 	double lwc[MAX_SOI_LAY];  // Yuan: liquid water content: volume fraction of liquid water/total soil volume (Theta)
 	double sws[MAX_SOI_LAY];  // soil liquid water saturation (liq vwc/total porosity) for use in Soil_Bgc
 	double aws[MAX_SOI_LAY];  // adjusted soil liquid water saturation (liq vwc/(porosity-ice vwc)) for use in Soil_Bgc
-	  
+
+	// CH4 related variables
+	double oxid;
+	double ch4flux;
+	double dfratio;
+
 	double minliq[MAX_SOI_LAY];
 	double tcond[MAX_SOI_LAY];
 	double hcond[MAX_SOI_LAY];

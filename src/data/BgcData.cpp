@@ -66,7 +66,7 @@ void BgcData::veg_beginOfMonth(){
 //
 };
 
-void BgcData::veg_endOfMonth(){
+void BgcData::veg_endOfMonth(const int & dinm){
 
 	// average yearly status variables
  	for (int i=0; i<NUM_PFT_PART; i++){
@@ -131,6 +131,74 @@ void BgcData::veg_endOfMonth(){
 	y_soi2v.innuptake += m_soi2v.innuptake;
 	y_soi2v.lnuptake  += m_soi2v.lnuptake;
 	y_soi2v.snuptakeall+= m_soi2v.snuptakeall;
+
+	//vegetation BGC runs at monthly time-step, while soil BGC at daily time-step
+	// so, need to compute daily veg. BGC data for soil BGC
+	// Here, we simply take monthly variables averaged by DAYS in a month for rates
+	//    and assume no variation for states
+ 	//state variables
+	for (int i=0; i<NUM_PFT_PART; i++){
+ 		d_vegs.c[i] = m_vegs.c[i];
+ 		d_vegs.strn[i] = m_vegs.strn[i];
+ 	}
+ 	d_vegs.labn   = m_vegs.labn;
+ 	d_vegs.strnall= m_vegs.strnall;
+ 	d_vegs.call   = m_vegs.call;
+ 	d_vegs.nall   = m_vegs.nall;
+ 	d_vegs.deadc  = m_vegs.deadc;
+ 	d_vegs.deadn  = m_vegs.deadn;
+
+ 	d_vegd.fca     = m_vegd.fca;
+ 	d_vegd.fna     = m_vegd.fna;
+ 	d_vegd.ftemp   = m_vegd.ftemp;
+ 	for (int i=0; i<NUM_PFT_PART; i++){
+ 		d_vegd.kr[i] = m_vegd.kr[i];
+ 	}
+ 	d_vegd.gv      = m_vegd.gv;
+ 	d_vegd.raq10   = m_vegd.raq10;
+
+	// flux variables
+ 	for (int i=0; i<NUM_PFT_PART; i++){
+ 		d_a2v.ingpp[i] = m_a2v.ingpp[i]/dinm;
+ 		d_a2v.innpp[i] = m_a2v.innpp[i]/dinm;
+ 		d_a2v.gpp[i]   = m_a2v.gpp[i]/dinm;
+ 		d_a2v.npp[i]   = m_a2v.npp[i]/dinm;
+
+ 		d_v2a.rg[i] = m_v2a.rg[i]/dinm;
+ 		d_v2a.rm[i] = m_v2a.rm[i]/dinm;
+
+ 		d_v2v.nmobil[i] = m_v2v.nmobil[i]/dinm;
+ 		d_v2v.nresorb[i]= m_v2v.nresorb[i]/dinm;
+
+ 		d_v2soi.ltrfalc[i] = m_v2soi.ltrfalc[i]/dinm;
+ 		d_v2soi.ltrfaln[i] = m_v2soi.ltrfaln[i]/dinm;
+
+ 		d_soi2v.snuptake[i] = m_soi2v.snuptake[i]/dinm;
+ 	}
+
+ 	d_a2v.ingppall = m_a2v.ingppall/dinm;
+	d_a2v.innppall = m_a2v.innppall/dinm;
+	d_a2v.gppall   = m_a2v.gppall/dinm;
+	d_a2v.nppall   = m_a2v.nppall/dinm;
+
+	d_v2a.rgall = m_v2a.rgall/dinm;
+	d_v2a.rmall = m_v2a.rmall/dinm;
+
+	d_v2soi.ltrfalcall = m_v2soi.ltrfalcall/dinm;
+	d_v2soi.ltrfalnall = m_v2soi.ltrfalnall/dinm;
+	d_v2soi.mossdeathc = m_v2soi.mossdeathc/dinm;
+	d_v2soi.mossdeathn = m_v2soi.mossdeathn/dinm;
+
+	d_v2v.nmobilall  = m_v2v.nmobilall/dinm;
+	d_v2v.nresorball = m_v2v.nresorball/dinm;
+
+	for (int il=0; il<MAX_SOI_LAY; il++) {
+		d_soi2v.nextract[il]  = m_soi2v.nextract[il]/dinm;
+	}
+	d_soi2v.innuptake = m_soi2v.innuptake/dinm;
+	d_soi2v.lnuptake  = m_soi2v.lnuptake/dinm;
+	d_soi2v.snuptakeall= m_soi2v.snuptakeall/dinm;
+
 
 }
 
@@ -199,24 +267,73 @@ void BgcData::veg_endOfYear(){
 }
 
 void BgcData::soil_beginOfMonth(){
-/*
-	for(int il=0; il<MAX_SOI_LAY; il++){
-		m_sois.rawc[il] = 0.;
-		m_sois.soma[il] = 0.;
-		m_sois.sompr[il]= 0.;
-		m_sois.somcr[il]= 0.;
 
-		m_sois.orgn[il] = 0.;
-		m_sois.avln[il] = 0.;
+ 	//initialize monthly mean/accumulative variables
+ 	for (int il =0; il<MAX_SOI_LAY; il++){
+ 	   	//mean for states
+ 		m_soid.tsomc[il]  = 0.;
 
-		m_soi2a.rhrawc[il] = 0.;
-	  	m_soi2a.rhsoma[il] = 0.;
-	  	m_soi2a.rhsoma[il] = 0.;
-	  	m_soi2a.rhsompr[il]= 0.;
-	  	m_soi2a.rhsomcr[il]= 0.;
+ 	    m_soid.rhmoist[il]  = 0.;
+ 	   	m_soid.rhq10[il]    = 0.;
+ 	   	m_soid.ltrfcn[il]   = 0.;
 
-	}
-*/
+ 	    m_soid.knmoist[il]  = 0.;
+
+ 	   	m_sois.rawc[il]   = 0.;
+   		m_sois.soma[il]   = 0.;
+   		m_sois.sompr[il]  = 0.;
+   		m_sois.somcr[il]  = 0.;
+   		m_sois.orgn[il]   = 0.;
+   		m_sois.avln[il]   = 0.;
+
+   		// accumulative for fluxes
+   		m_soi2a.rhrawc[il] = 0.;
+   		m_soi2a.rhsoma[il] = 0.;
+   		m_soi2a.rhsompr[il]= 0.;
+   		m_soi2a.rhsomcr[il]= 0.;
+
+   	 	m_soi2soi.netnmin[il]= 0.;
+   	 	m_soi2soi.nimmob[il] = 0.;
+
+ 	}
+
+ 	//mean for states
+   	m_sois.dmossc   = 0.;
+   	m_sois.dmossn   = 0.;
+
+   	m_sois.wdebrisc = 0.;
+   	m_sois.wdebrisn = 0.;
+
+   	m_soid.shlwc   = 0.;
+   	m_soid.deepc   = 0.;
+   	m_soid.mineac  = 0.;
+   	m_soid.minebc  = 0.;
+   	m_soid.minecc  = 0.;
+
+ 	m_soid.rawcsum   = 0.;
+ 	m_soid.somasum   = 0.;
+ 	m_soid.somprsum  = 0.;
+ 	m_soid.somcrsum  = 0.;
+
+ 	m_soid.avlnsum   = 0.;
+ 	m_soid.orgnsum   = 0.;
+
+ 	// accumulative for fluxes
+ 	m_soi2a.rhwdeb    = 0.;
+	m_soi2a.rhmossc   = 0.;
+ 	m_soi2a.rhrawcsum = 0.;
+ 	m_soi2a.rhsomasum = 0.;
+ 	m_soi2a.rhsomprsum= 0.;
+ 	m_soi2a.rhsomcrsum= 0.;
+ 	m_soi2a.rhtot     = 0.;
+	m_soi2soi.netnminsum= 0.;
+	m_soi2soi.nimmobsum = 0.;
+
+	m_a2soi.orgninput = 0.;
+	m_soi2l.orgnlost  = 0.;
+	m_a2soi.avlninput = 0.;
+	m_soi2l.avlnlost  = 0.;
+
 };
 
 void BgcData::soil_beginOfYear(){
@@ -238,7 +355,7 @@ void BgcData::soil_beginOfYear(){
  	y_soid.orgnsum = 0.;
  	y_soid.avlnsum = 0.;
 
- 	y_soi2a.rhtot  =0.;
+ 	y_soi2a.rhtot     =0.;
  	y_soi2a.rhwdeb    =0.;
 	y_soi2a.rhrawcsum =0.;
 	y_soi2a.rhsomasum =0.;
@@ -282,6 +399,140 @@ void BgcData::soil_beginOfYear(){
 	y_a2soi.avlninput = 0.0;
     y_soi2l.orgnlost  = 0.0;
     y_soi2l.avlnlost = 0.0;
+
+};
+
+void BgcData::soil_endOfDay(const int & dinm){
+
+	// status variable (diagnostics)
+ 	d_soid.shlwc   = 0.;
+ 	d_soid.deepc   = 0.;
+ 	d_soid.mineac  = 0.;
+ 	d_soid.minebc  = 0.;
+ 	d_soid.minecc  = 0.;
+
+ 	d_soid.orgnsum = 0.;
+ 	d_soid.avlnsum = 0.;
+
+ 	d_soid.rawcsum = 0.;
+ 	d_soid.somasum = 0.;
+ 	d_soid.somprsum= 0.;
+ 	d_soid.somcrsum= 0.;
+
+ 	int mlind = 0;
+ 	for (int il =0; il<MAX_SOI_LAY; il++){
+ 		d_soid.tsomc[il]= d_sois.rawc[il]+d_sois.soma[il]+d_sois.sompr[il]+d_sois.somcr[il];
+ 		if(cd->d_soil.type[il]==1){
+   	 		d_soid.shlwc += d_soid.tsomc[il];
+   		} else if(cd->d_soil.type[il]==2){
+   	 		d_soid.deepc += d_soid.tsomc[il];
+   		} else if(cd->d_soil.type[il]==3){
+   			if (mlind>=0 && mlind<=MINEZONE[0])
+   				d_soid.mineac += d_soid.tsomc[il];
+
+   			if (mlind>MINEZONE[0] && mlind<=MINEZONE[1])
+   				d_soid.minebc += d_soid.tsomc[il];
+
+   			if (mlind>MINEZONE[1] && mlind<=MINEZONE[2])
+   				d_soid.minecc += d_soid.tsomc[il];
+
+   			mlind ++;
+   		}
+
+   		d_soid.rawcsum += d_sois.rawc[il];
+   		d_soid.somasum += d_sois.soma[il];
+   		d_soid.somprsum+= d_sois.sompr[il];
+   		d_soid.somcrsum+= d_sois.somcr[il];
+
+   		d_soid.orgnsum += d_sois.orgn[il];
+   		d_soid.avlnsum += d_sois.avln[il];
+ 	}
+
+ 	//monthly mean variables
+ 	for (int il =0; il<MAX_SOI_LAY; il++){
+ 	   	m_soid.tsomc[il]  += d_soid.tsomc[il]/dinm;
+
+ 	    m_soid.rhmoist[il]+= d_soid.rhmoist[il]/dinm;
+ 	   	m_soid.rhq10[il]  += d_soid.rhq10[il]/dinm;
+ 	   	m_soid.ltrfcn[il] += d_soid.ltrfcn[il]/dinm;
+
+ 	    m_soid.knmoist[il]+= d_soid.knmoist[il]/dinm;
+
+ 	   	m_sois.rawc[il] += d_sois.rawc[il]/dinm;
+   		m_sois.soma[il] += d_sois.soma[il]/dinm;
+   		m_sois.sompr[il]+= d_sois.sompr[il]/dinm;
+   		m_sois.somcr[il]+= d_sois.somcr[il]/dinm;
+   		m_sois.orgn[il] += d_sois.orgn[il]/dinm;
+   		m_sois.avln[il] += d_sois.avln[il]/dinm;
+ 	}
+   	m_sois.dmossc += d_sois.dmossc/dinm;
+   	m_sois.dmossn += d_sois.dmossn/dinm;
+
+   	m_sois.wdebrisc += d_sois.wdebrisc/dinm;
+   	m_sois.wdebrisn += d_sois.wdebrisn/dinm;
+
+   	m_soid.shlwc += d_soid.shlwc/dinm;
+   	m_soid.deepc += d_soid.deepc/dinm;
+   	m_soid.mineac += d_soid.mineac/dinm;
+   	m_soid.minebc += d_soid.minebc/dinm;
+   	m_soid.minecc += d_soid.minecc/dinm;
+
+ 	m_soid.rawcsum += d_soid.rawcsum/dinm;
+ 	m_soid.somasum += d_soid.somasum/dinm;
+ 	m_soid.somprsum+= d_soid.somprsum/dinm;
+ 	m_soid.somcrsum+= d_soid.somcrsum/dinm;
+
+ 	m_soid.avlnsum += d_soid.avlnsum/dinm;
+ 	m_soid.orgnsum += d_soid.orgnsum/dinm;
+
+   	// fluxes
+   	m_soi2a.rhrawcsum = 0.;
+ 	m_soi2a.rhsomasum = 0.;
+ 	m_soi2a.rhsomprsum= 0.;
+ 	m_soi2a.rhsomcrsum= 0.;
+ 	m_soi2soi.netnminsum= 0.;
+ 	m_soi2soi.nimmobsum = 0.;
+
+ 	for (int il =0; il<MAX_SOI_LAY; il++){
+
+   		m_soi2a.rhrawcsum += d_soi2a.rhrawc[il];
+   		m_soi2a.rhsomasum += d_soi2a.rhsoma[il];
+   		m_soi2a.rhsomprsum+= d_soi2a.rhsompr[il];
+   		m_soi2a.rhsomcrsum+= d_soi2a.rhsomcr[il];
+
+   	 	m_soi2soi.netnminsum+= d_soi2soi.netnmin[il];
+   	 	m_soi2soi.nimmobsum += d_soi2soi.nimmob[il];
+
+ 	}
+ 	m_soi2a.rhtot = m_soi2a.rhrawcsum + m_soi2a.rhsomasum
+ 			    +m_soi2a.rhsomprsum + m_soi2a.rhsomcrsum
+ 			    +m_soi2a.rhwdeb + m_soi2a.rhmossc;
+
+ 	//cumulative monthly
+ 	m_soi2a.rhwdeb    += d_soi2a.rhwdeb;
+	m_soi2a.rhmossc   += d_soi2a.rhmossc;
+ 	m_soi2a.rhrawcsum += d_soi2a.rhrawcsum;
+ 	m_soi2a.rhsomasum += d_soi2a.rhsomasum;
+ 	m_soi2a.rhsomprsum+= d_soi2a.rhsomprsum;
+ 	m_soi2a.rhsomcrsum+= d_soi2a.rhsomcrsum;
+ 	m_soi2a.rhtot     += d_soi2a.rhtot;
+ 	for (int il =0; il<MAX_SOI_LAY; il++){
+   		m_soi2a.rhrawc[il] += d_soi2a.rhrawc[il];
+   		m_soi2a.rhsoma[il] += d_soi2a.rhsoma[il];
+   		m_soi2a.rhsompr[il]+= d_soi2a.rhsompr[il];
+   		m_soi2a.rhsomcr[il]+= d_soi2a.rhsomcr[il];
+
+   	 	m_soi2soi.netnmin[il]+= d_soi2soi.netnmin[il];
+   	 	m_soi2soi.nimmob[il] += d_soi2soi.nimmob[il];
+ 	}
+	m_soi2soi.netnminsum+= d_soi2soi.netnminsum;
+	m_soi2soi.nimmobsum += d_soi2soi.nimmobsum;
+
+    // connection to open-N cycle
+	m_a2soi.orgninput += d_a2soi.orgninput;
+	m_soi2l.orgnlost += d_soi2l.orgnlost;
+	m_a2soi.avlninput += d_a2soi.avlninput;
+	m_soi2l.avlnlost += d_soi2l.avlnlost;
 
 };
 

@@ -54,12 +54,13 @@ class Soil_Bgc{
   	void initializeState();
   	void initializeState5restart(RestartData * resdata);
 
-  	void assignCarbonBd2LayerMonthly();
-  	void assignCarbonLayer2BdMonthly();
+  	void assignCarbonBd2Layer();
+  	void assignCarbonLayer2Bd();
 
   	void deltac();
   	void deltan();
   	void deltastate();
+  	void CH4Flux(const int mind, const int id);
 
   	void prepareIntegration(const bool &mdnfeedback, const bool &mdavlnflg, const bool &mdbaseline);
   	void afterIntegration();
@@ -114,6 +115,11 @@ class Soil_Bgc{
   	void updateKdyrly4all();
 
   	double getKdyrly(double& yrltrcn, const double lcclnc, const double & kdc);
+
+  	void tri(int matrix_size, double *A, double *D, double *C, double *B, double *X);
+  	double * MallocM1d(int size);
+  	void FreeM1d(double *s);
+
 					  					 
 };
 #endif /*SOIL_BGC_H_*/

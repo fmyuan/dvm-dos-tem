@@ -29,6 +29,22 @@ class BgcData{
 	
 		CohortData * cd;
 
+        //daily
+		vegstate_bgc d_vegs;
+		soistate_bgc d_sois;
+		vegdiag_bgc d_vegd;
+		soidiag_bgc d_soid;
+		lnd2atm_bgc d_l2a;
+		atm2veg_bgc d_a2v;
+		veg2atm_bgc d_v2a;
+		veg2soi_bgc d_v2soi;
+		soi2veg_bgc d_soi2v;
+		veg2veg_bgc d_v2v;
+		soi2lnd_bgc d_soi2l;
+		soi2atm_bgc d_soi2a;
+		atm2soi_bgc d_a2soi;
+		soi2soi_bgc d_soi2soi;
+
 		//monthly
 		vegstate_bgc m_vegs;
 		soistate_bgc m_sois;
@@ -68,11 +84,12 @@ class BgcData{
 
    		void veg_beginOfYear();
    		void veg_beginOfMonth();
-   		void veg_endOfMonth();
+   		void veg_endOfMonth(const int & dinm);
    		void veg_endOfYear();
 
    		void soil_beginOfYear();
    		void soil_beginOfMonth();
+   		void soil_endOfDay(const int & dinm);
    		void soil_endOfMonth();
     
     private:
