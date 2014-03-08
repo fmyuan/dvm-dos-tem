@@ -18,10 +18,17 @@
  * 			Tobey Carman - modifications and maintenance
  *            1) update application entry point with boost command line arg. handling.
  *
- * Affilation: Spatial Ecology Lab, University of Alaska Fairbanks 
+ * Affiliation: Spatial Ecology Lab, University of Alaska Fairbanks
  *
  * started: 11/01/2010
- * last modified: 09/18/2012
+ *
+ * daily TEM: 12/02/2013,
+ *    by Fengming Yuan
+ *    Climate Change Science Institute
+ *    Environmental Science Division
+ *    Oak Ridge National Laboratory
+ *
+ * last modified: 02/18/2014
 */
 
 #include <string>

@@ -587,7 +587,7 @@ void Cohort::updateMonthly_Bgc(const int & currmind, const int & dinmcurr){
         edall->cd->d_veg  = cd.d_veg;
         edall->cd->d_vegd = cd.d_vegd;
 
-        edall->d_atms = outbuffer.envoddlyall[id];
+        edall->d_atms = outbuffer.envoddlyall[id].d_atms;
         edall->d_vegs = outbuffer.envoddlyall[id].d_vegs;
         edall->d_snws = outbuffer.envoddlyall[id].d_snws;
         edall->d_sois = outbuffer.envoddlyall[id].d_sois;

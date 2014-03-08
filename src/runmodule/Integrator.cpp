@@ -140,18 +140,18 @@ Integrator::~Integrator(){
 
 void Integrator::setBgcData(BgcData * bdp){
      // veg. bgc at monthly time-step
-	 vegs = bdp->m_vegs;
-     a2v  = bdp->m_a2v;
-	 v2a  = bdp->m_v2a;
-	 v2soi= bdp->m_v2soi;
-	 soi2v= bdp->m_soi2v;
-	 v2v  = bdp->m_v2v;
+	 vegs = &bdp->m_vegs;
+     a2v  = &bdp->m_a2v;
+	 v2a  = &bdp->m_v2a;
+	 v2soi= &bdp->m_v2soi;
+	 soi2v= &bdp->m_soi2v;
+	 v2v  = &bdp->m_v2v;
 
 	 // soil bgc at daily time-step (so, be cautious here if need data from veg.)
-   	 soils = bdp->d_sois;
-	 soi2l = bdp->d_soi2l;
-	 soi2a = bdp->d_soi2a;
-	 soi2soi = bdp->d_soi2soi;
+   	 soils = &bdp->d_sois;
+	 soi2l = &bdp->d_soi2l;
+	 soi2a = &bdp->d_soi2a;
+	 soi2soi = &bdp->d_soi2soi;
 
 };
 
