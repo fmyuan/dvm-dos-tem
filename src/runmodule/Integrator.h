@@ -79,10 +79,10 @@ class Integrator{
                      I_L_CH4_PROD  = NUM_SOI_STATE + 6*MAX_SOI_LAY,
                      I_L_CH4_OXID  = NUM_SOI_STATE + 7*MAX_SOI_LAY,   // 2*MAX_SOI_LAY methane production/oxidation flux variables
 
-                     I_CH4_FLUX2A  = NUM_SOI_STATE + 8*MAX_SOI_LAY,   //because indexed from zero, so here is the sum of all above
+                     I_CH4_TOTFLUX2A  = NUM_SOI_STATE + 8*MAX_SOI_LAY,   //because indexed from zero, so here is the sum of all above
                      I_CH4_TOTPLANT,
                      I_CH4_TOTEBUL,
-                     I_CH4_CH4FLUX,
+                     I_CH4_TOTFLUX,
 
                      I_RH_WD,
                      I_RH_DMOSS,

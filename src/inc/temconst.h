@@ -24,8 +24,8 @@
 			                 +2;             // INGPP, N uptake for labile N pool
 
 	// number of soil C/N flux variables
-	const int NUM_SOI_FLUX = 6*MAX_SOI_LAY    // RHRAWC, RHSOMA, RHSOMPR, RHSOMCR, NNETMIN, NIMMOB
-							+4;               // RH_WDERIS, AVLNIN, ORGNIN, AVLNLOST
+	const int NUM_SOI_FLUX = 8*MAX_SOI_LAY    // RHRAWC, RHSOMA, RHSOMPR, RHSOMCR, NNETMIN, NIMMOB,PROD_M,OXID_M
+							+8;               // RH_WDERIS, AVLNIN, ORGNIN, AVLNLOST,totFLUX2A_m,totPlant_m,totEbul_m,CH4FLUX
 
 	// number of ODE equations
 	const int NUMEQ_VEG = NUM_VEG_STATE + NUM_VEG_FLUX;

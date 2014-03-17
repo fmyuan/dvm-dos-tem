@@ -121,17 +121,18 @@ Integrator::Integrator(){
 		strcpy(predstr_soi[I_L_RH_SOMPR+il],(string("RHSOMPR") +str2).c_str() );   // soil rh
 		strcpy(predstr_soi[I_L_RH_SOMCR+il],(string("RHSOMCR") +str2).c_str() );   // soil rh
 
-	    strcpy(predstr_soi[I_L_NMIN+il],(string("NMIN") +str2).c_str() );   // soil net N minerization
+	    strcpy(predstr_soi[I_L_NMIN+il],(string("NMIN") +str2).c_str() );       // soil net N minerization
 	    strcpy(predstr_soi[I_L_NIMMOB+il],(string("NIMMOB") +str2).c_str() );   // soil net N minerization
 
 	    strcpy(predstr_soi[I_L_CH4_PROD+il],(string("CH4PROD") +str2).c_str() );   // soil CH4 production
 	    strcpy(predstr_soi[I_L_CH4_OXID+il],(string("CH4OXID") +str2).c_str() );   // soil CH4 oxidation
 
 	}
-	strcpy(predstr_soi[I_CH4_FLUX2A],"CH4FLUX2A" );   // methane direct diffusion from top soil to atm
+	strcpy(predstr_soi[I_CH4_TOTFLUX2A],"CH4FLUX2A" );// methane direct diffusion from top soil to atm
     strcpy(predstr_soi[I_CH4_TOTPLANT],"CH4PLANT");   // soil CH4 plant-mediated transport
     strcpy(predstr_soi[I_CH4_TOTEBUL],"CH4EBUL");     // soil CH4 ebullition
-	strcpy(predstr_soi[I_RH_WD],"RHWD" );   // woody debris respiration
+    strcpy(predstr_soi[I_CH4_TOTFLUX],"CH4FLUX");     // soil CH4 total flux(diffusion+plant-mediated transport+ebullition)
+	strcpy(predstr_soi[I_RH_WD],"RHWD" );         // woody debris respiration
 	strcpy(predstr_soi[I_RH_DMOSS],"RHDMOSS" );   // dead moss respiration
 
   	// Total Ecosystem N loss
@@ -467,9 +468,10 @@ void Integrator::y2cflux_soi(float y[]){
   	  	soi2a->Oxid_m[il]  = y[I_L_CH4_OXID+il];
 
   	}
-  	soi2a->Flux2A_m   = y[I_CH4_FLUX2A];
- 	soi2a->totPlant_m = y[I_CH4_TOTPLANT];
-  	soi2a->totEbul_m  = y[I_CH4_TOTEBUL];
+  	soi2a->totFlux2A_m = y[I_CH4_TOTFLUX2A];
+ 	soi2a->totPlant_m  = y[I_CH4_TOTPLANT];
+  	soi2a->totEbul_m   = y[I_CH4_TOTEBUL];
+  	soi2a->totCH4Flux_m= y[I_CH4_TOTFLUX];
   	soi2a->rhwdeb   = y[I_RH_WD];
   	soi2a->rhmossc  = y[I_RH_DMOSS];
 

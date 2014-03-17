@@ -1083,10 +1083,8 @@ void Soil_Bgc::deltaCH4Flux(const int &hours) {
 
     totFlux_m = totPlant_m + Flux2A_m + totEbul_m;                 // umol/m2/time-step
 	del_soi2a.totCH4Flux_m = 12.0e-6 * totFlux_m;                  //kgC/m2/time-step
-    del_soi2a.Flux2A_m = 12.0e-6*Flux2A_m;
-	del_soi2a.totPlant_m = 12.0e-6*totPlant_m;
+    del_soi2a.totFlux2A_m = 12.0e-6*Flux2A_m;
 	del_soi2a.totEbul_m = 12.0e-6*totEbul_m;
-	del_soi2a.totOxid_m = 12.0e-6*totOxid_m;
 
 	FreeM1d(C);
 	FreeM1d(D);

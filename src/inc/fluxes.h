@@ -178,7 +178,7 @@
   		double totProd_m;
   		double totOxid_m;
         // CH4 emission pathway
-  		double Flux2A_m;
+  		double totFlux2A_m;
   		double totPlant_m;
   		double totEbul_m;
   		double totCH4Flux_m;
