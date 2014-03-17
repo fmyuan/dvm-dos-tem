@@ -93,11 +93,11 @@ struct vegpar_bgc{
 struct soipar_cal{
 	double micbnup;  // parameter related to N immoblization by soil microbial
 
-    double kdcmoss;    // calibrated dead moss C material respiration rate (at 0oC, favoriable soil moisture)
-    double kdcrawc;    // calibrated soil raw C material respiration rate (at 0oC, favoriable soil moisture, and not litter C/N adjusted)
-    double kdcsoma;    // calibrated soil active SOM respiration rate (at 0oC)
-    double kdcsompr;   // calibrated soil physically-resistant SOM respiration rate (at 0oC)
-    double kdcsomcr;   // calibrated soil chemically-resistant SOM respiration rate (at 0oC)
+    double kdcmoss;    // calibrated dead moss C material respiration rate (1/day, at 0oC, favoriable soil moisture)
+    double kdcrawc;    // calibrated soil raw C material respiration rate (1/day, at 0oC, favoriable soil moisture, and not litter C/N adjusted)
+    double kdcsoma;    // calibrated soil active SOM respiration rate (1/day, at 0oC)
+    double kdcsompr;   // calibrated soil physically-resistant SOM respiration rate (1/day, at 0oC)
+    double kdcsomcr;   // calibrated soil chemically-resistant SOM respiration rate (1/day, at 0oC)
 
 };
 
@@ -165,14 +165,17 @@ struct soipar_bgc{
     // dead moss material decomposition rate
     double kdmoss;
 
-    // litter C/N ratio adjusted C decomposition rate
+    // litter C/N ratio adjusted C decomposition rate (1/day, 0oC, favarable moisture)
     double lcclnc;    // the litterfalling C/N ratio base for adjusting 'kdc' to 'kd'
     double kdrawc[MAX_SOI_LAY];
     double kdsoma[MAX_SOI_LAY];
   	double kdsompr[MAX_SOI_LAY];
   	double kdsomcr[MAX_SOI_LAY];
 
-  	double rp;        // parameter related to plant-mediated CH4 emission
+  	// ch4 parameters
+  	double kdch4factor;  // factor of SOM C decomposition rate for methane production
+  	double rp;           // rate for plant-mediated CH4 emission (unit: 1/hour/LAI)
+  	double roxid;        // rate for CH4 oxidation (unit: umol/L/hour)
 
 };
 

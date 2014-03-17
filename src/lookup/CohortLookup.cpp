@@ -172,6 +172,9 @@ void CohortLookup::assignVegDimension(string &dircmt){
 	for(int ip=0; ip<NUM_PFT; ip++)	fctrpft >> nonvascular[ip];
 	getline(fctrpft,str);     // read comments
 
+	for(int ip=0; ip<NUM_PFT; ip++)	fctrpft >> aerenchyma[ip];
+	getline(fctrpft,str);     // read comments
+
 	for(int ip=0; ip<NUM_PFT; ip++)	fctrpft >> sla[ip];
 	getline(fctrpft,str);     // read comments
 

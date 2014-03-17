@@ -59,6 +59,7 @@ void RestartInputer::init(string & dirfile){
 	vegageV  =restartFile->get_var("VEGAGE");
 	vegcovV  =restartFile->get_var("VEGCOV");
 	laiV     =restartFile->get_var("LAI");
+	aerenchymaV =restartFile->get_var("AERENCHYMA");
 	rootfracV=restartFile->get_var("ROOTFRAC");
     vegwaterV=restartFile->get_var("VEGWATER");
     vegsnowV =restartFile->get_var("VEGSNOW");
@@ -235,6 +236,14 @@ void RestartInputer::getRestartData(RestartData *resid, const int &cid){
 	varbool = laiV->get(&resid->lai[0], 1, NUM_PFT);
 	if(!varbool){
 		string msg = "problem in reading 'LAI' in RestartInputer";
+ 		cout<<msg+"\n";
+ 		exit(-1);
+	}
+
+	aerenchymaV->set_cur(cid, 0);
+	varbool = aerenchymaV->get(&resid->aerenchyma[0], 1, NUM_PFT);
+	if(!varbool){
+		string msg = "problem in reading 'AERENCHYMA' in RestartInputer";
  		cout<<msg+"\n";
  		exit(-1);
 	}

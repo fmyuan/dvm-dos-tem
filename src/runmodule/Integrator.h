@@ -62,9 +62,10 @@ class Integrator{
                      I_L_SOMPR = 2*MAX_SOI_LAY,
                      I_L_SOMCR = 3*MAX_SOI_LAY,     // (4*LAYERS) these 4 lines - Layered Soil C state variables
                      I_L_ORGN  = 4*MAX_SOI_LAY,
-                     I_L_AVLN  = 5*MAX_SOI_LAY,     // (4*LAYERS) these 2 lines - Layered Soil N state variables
+                     I_L_AVLN  = 5*MAX_SOI_LAY,     // (2*LAYERS) these 2 lines - Layered Soil N state variables
+                     I_L_CH4   = 6*MAX_SOI_LAY,     // (1*LAYERS) this 1 line - Layered Soil CH4 state variable (gas, umol/L)
 
-                     I_WDEBRISC= 6*MAX_SOI_LAY,    //because indexed from zero, so here is the sum of all above
+                     I_WDEBRISC= 7*MAX_SOI_LAY,    //because indexed from zero, so here is the sum of all above
                      I_WDEBRISN,
                      I_DMOSSC, I_DMOSSN,
 
@@ -73,9 +74,17 @@ class Integrator{
                      I_L_RH_SOMPR= NUM_SOI_STATE + 2*MAX_SOI_LAY,
                      I_L_RH_SOMCR= NUM_SOI_STATE + 3*MAX_SOI_LAY,
                      I_L_NMIN    = NUM_SOI_STATE + 4*MAX_SOI_LAY,
-                     I_L_NIMMOB  = NUM_SOI_STATE + 5*MAX_SOI_LAY,   // 6*MAX_SOI_LAY soil C/N flux variables
+                     I_L_NIMMOB  = NUM_SOI_STATE + 5*MAX_SOI_LAY,     // 6*MAX_SOI_LAY soil C/N flux variables
 
-                     I_RH_WD = NUM_SOI_STATE + 6*MAX_SOI_LAY,       //because indexed from zero, so here is the sum of all above
+                     I_L_CH4_PROD  = NUM_SOI_STATE + 6*MAX_SOI_LAY,
+                     I_L_CH4_OXID  = NUM_SOI_STATE + 7*MAX_SOI_LAY,   // 2*MAX_SOI_LAY methane production/oxidation flux variables
+
+                     I_CH4_FLUX2A  = NUM_SOI_STATE + 8*MAX_SOI_LAY,   //because indexed from zero, so here is the sum of all above
+                     I_CH4_TOTPLANT,
+                     I_CH4_TOTEBUL,
+                     I_CH4_CH4FLUX,
+
+                     I_RH_WD,
                      I_RH_DMOSS,
 
                      I_ORGNLOSS, I_AVLNLOSS

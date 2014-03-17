@@ -500,6 +500,9 @@ void Soil_Bgc::deltac(){
 
  	} // loop for each soil layer
 
+ 	// methane flux
+ 	deltaCH4Flux(24);
+
  	// for moss layers - only take a total of the horizon and occurs in the first soil layer
 	kmoss = bgcpar.kdmoss;
    	del_soi2a.rhmossc = 0.;
@@ -863,44 +866,43 @@ void Soil_Bgc::deltastate(){
 
 };
 
-// operating at daily time-step
-void Soil_Bgc::CH4Flux(const int mind, const int id) {
-	const double ub = 0.076; //umol L-1
-	const double diff_a = 720.0 / 10000.0; //m2 h-1
-	const double diff_w = 0.072 / 10000.0; //m2 h-1
-	const int m = 24;
+// operating at one time-step, but the actual is in hourly
+void Soil_Bgc::deltaCH4Flux(const int &hours) {
+    //
+	const int m = hours;                    // hours per time-step
+	double dt = 1.0 / m;
+	const double ub = 0.076;                //umol L-1
+	const double diff_a = 720.0 / 10000.0;  //m2 h-1
+	const double diff_w = 0.072 / 10000.0;  //m2 h-1
 
 	int il, j;
 	double *C, *D, *V, *diff, *r, *s;
-	double dt = 1.0 / m;
-	double SS, torty, torty_tmp, diff_tmp, tmp_flux, Flux2A = 0.0, Flux2A_m = 0.0;
-	double Prod, Ebul, Oxid, Plant;
-	double Ebul_m, Plant_m, totFlux_m, Oxid_m;
-	double krawc, ksoma, ksompr, ksomcr, TResp;
-	double totPlant = 0.0, totEbul = 0.0, totPlant_m = 0.0, totEbul_m = 0.0, totOxid_m = 0.0;
+	double SS, torty, torty_tmp, diff_tmp, tmp_flux, tmp;
+	double Flux2A = 0.0;                                  // unit: umol/L/hour   (per volume of air-pore or liq-pore in saturated)
+	double Prod=0., Ebul=0., Oxid=0., Plant=0.;           // unit: umol/L/hour
+	double Flux2A_m, Ebul_m, Plant_m, totFlux_m;          // unit: umol/m2/hour  (per ground-surface area)
+	double totPlant_m = 0.0, totEbul_m = 0.0, totOxid_m = 0.0;
 	double SB, SM, Pressure;
 	int wtbflag = 0;
+	double totEbul = 0.;
 	double rootfrac = 0.;
-	double veglai = 0.;
+	double veglai = 0., tveg = 0.;
+	double krawc_m, ksoma_m, ksompr_m, ksomcr_m, TResp;
 
 	double numsl = cd->d_soil.numsl;
-
 	C = MallocM1d(numsl);
 	D = MallocM1d(numsl);
 	V = MallocM1d(numsl);
 	diff = MallocM1d(numsl);
 	r = MallocM1d(numsl);
 	s = MallocM1d(numsl);
-
 	for (il = 0; il < numsl; il++) {
 
 		if (ed->d_sois.watertab > 0.01) {
 			torty_tmp = cd->d_soil.por[il] - ed->d_soid.lwc[il]
-					- ed->d_soid.iwc[il];
-			if (torty_tmp < 0.05)
-				torty_tmp = 0.05;
-
-			torty = 0.66 * torty_tmp * pow(torty_tmp / cd->d_soil.por[il], 3.0);
+					  - ed->d_soid.iwc[il];
+			if (torty_tmp < 0.05) torty_tmp = 0.05;
+			torty = 0.66 * torty_tmp * pow(torty_tmp/cd->d_soil.por[il], 3.0);
 			diff_tmp = diff_a;
 
 		} else {
@@ -910,158 +912,181 @@ void Soil_Bgc::CH4Flux(const int mind, const int id) {
 			diff_tmp = diff_w;
 		}
 
-		diff[il] = diff_tmp * torty * pow(
-				(ed->d_sois.ts[il] + 273.15) / 293.15, 1.75);
+		diff[il] = diff_tmp * torty *
+				   pow((ed->d_sois.ts[il] + 273.15)/293.15, 1.75);
 
 		s[il] = cd->d_soil.dz[il] * cd->d_soil.dz[il] / (diff[il] * dt);
-		r[il] = 2 + s[il];
+		r[il] = 2.0 + s[il];
 
 	}
 
 	for (il = 1; il < numsl; il++) {
-		if (il == (numsl - 1))
+		if (il == (numsl - 1)) {
 			D[il] = r[il] - 1.0;
-		else
+		} else {
 			D[il] = r[il];
+		}
 
-		if (il == 1)
+		if (il == 1) {
 			C[il] = -1.0 - ub;
-		else
+	    }else {
 			C[il] = -1.0;
-	}
+	    }
 
-	ed->d_soid.oxid = 0.0;
+		//initializing
+		del_soi2a.Prod_m[il]  = 0.;
+		del_soi2a.Oxid_m[il]  = 0.;
+	}
 
 	for (j = 1; j <= m; j++) {
 		wtbflag = 0;
 
 		for (il = numsl - 1; il > 0; il--) {
+
+			krawc_m  = bgcpar.kdrawc[il]/m * bgcpar.kdch4factor;   //1/deltaT -> 1/hour
+			ksoma_m  = bgcpar.kdsoma[il]/m * bgcpar.kdch4factor;
+			ksompr_m = bgcpar.kdsompr[il]/m * bgcpar.kdch4factor;
+			ksomcr_m = bgcpar.kdsomcr[il]/m * bgcpar.kdch4factor;
+
 			TResp = getRhq10(ed->d_sois.ts[il]);
-			if (ed->d_sois.ts[il] >= -2.0 && ed->d_sois.ts[il] < 0.1)
+			if (ed->d_sois.ts[il] >= -2.0 && ed->d_sois.ts[il] < 0.1){
 				TResp = getRhq10(0.0) * 0.3;
-			else if (ed->d_sois.ts[il] < -2.0)
+			} else if (ed->d_sois.ts[il] < -2.0) {
 				TResp = 0.0;
-
-			krawc  = bgcpar.kdrawc[il] * 0.5; //0.5
-			ksoma  = bgcpar.kdsoma[il] * 0.5;
-			ksompr = bgcpar.kdsompr[il] * 0.5;
-			ksomcr = bgcpar.kdsomcr[il] * 0.5;
-
+			}
 			for (int ip = 0; ip<=NUM_PFT; ip++) {
                if (cd->d_veg.vegcov[ip]>0.) {
             	   rootfrac += cd->d_soil.frootfrac[il][ip];
             	   veglai += cd->d_veg.lai[ip]*cd->d_veg.vegcov[ip];
+            	   tveg += cd->d_veg.aerenchyma[ip]*cd->d_veg.vegcov[ip];
                }
 			}
-			Plant = bgcpar.rp * rootfrac * bd->d_sois.ch4[il]
-					* ed->d_vegs.tveg * veglai / 2.0;
+			Plant = bgcpar.rp * tmp_sois.ch4[il]
+					* tveg * veglai * rootfrac;                               //umol/L/hour
 
-			if (ed->d_sois.watertab > (cd->d_soil.z[il] + cd->d_soil.dz[il]
-					/ 2.0)) {
+			if (ed->d_sois.watertab >
+			     (cd->d_soil.z[il] + cd->d_soil.dz[il]/2.0)) {
 
+				// production
 				if (wtbflag == 0) {
-					Prod = totEbul;
+					Prod = totEbul;  // 'Prod' involves the 'tri' to calculate 'ch4' profiling
 					wtbflag = 1;
+					totEbul = 0.0;  // reset for summing over whole soil profile to atm
 				} else {
 					Prod = 0.0;
 				}
 
-				tmp_flux = cd->d_soil.por[il] - ed->d_soid.lwc[il]
-						- ed->d_soid.iwc[il];
-				if (tmp_flux < 0.05)
-					tmp_flux = 0.05;
+				//
+				tmp = cd->d_soil.por[il] - ed->d_soid.lwc[il]-ed->d_soid.iwc[il];
+				if (tmp < 0.05) tmp = 0.05;                                   //air occupied porosity
 
-				Oxid = 5.0 * bd->d_sois.ch4[il] * TResp / (20.0
-						+ bd->d_sois.ch4[il]);
-				Oxid_m = Oxid * tmp_flux * cd->d_soil.dz[il] * 1000.0;
-				Oxid_m = Oxid_m * 12.0 * 1000.0 / 1000000.0;
-				totOxid_m = totOxid_m + Oxid_m;
-				ed->d_soid.oxid = totOxid_m;
+				// oxidation
+				bgcpar.roxid = 5.0;
+				Oxid = bgcpar.roxid * tmp_sois.ch4[il]*TResp/(20.0+tmp_sois.ch4[il]);  // umol/L/hour
 
-				Plant_m = Plant * tmp_flux * cd->d_soil.dz[il] * 1000.0;
+				//plant-mediated transport
+				Plant_m = Plant_m+Plant * tmp * cd->d_soil.dz[il] * 1000.0;           // umol/m2/hour (layerly summed)
+
+				// ebullition
+				Ebul = 0.0;
 
 			} else {
 
-				Prod = 1000.0 * (del_soi2a.rhrawc[il] + del_soi2a.rhsoma[il] +
-						         del_soi2a.rhsompr[il] + del_soi2a.rhsomcr[il])
-						/ (cd->d_soil.dz[il] * cd->d_soil.por[il]) / 12.0;
+				//
+                double rh_m = 0.;
+				Prod = 0.;
+                if (tmp_sois.rawc[il] > 0.) {
+					rh_m = krawc_m * tmp_sois.rawc[il] * TResp;
+				    tmp_sois.rawc[il] -= rh_m;
+				    del_soi2a.Prod_m[il] += rh_m;
+				    Prod += rh_m;
+				}
+                if (tmp_sois.soma[il] > 0.) {
+					rh_m = ksoma_m * tmp_sois.soma[il] * TResp;
+				    tmp_sois.soma[il] -= rh_m;
+				    del_soi2a.Prod_m[il] += rh_m;
+				    Prod += rh_m;
+				}
+                if (tmp_sois.sompr[il] > 0.) {
+					rh_m = ksompr_m * tmp_sois.sompr[il] * TResp;
+				    tmp_sois.sompr[il] -= rh_m;
+				    del_soi2a.Prod_m[il] += rh_m;
+				    Prod += rh_m;
+				}
+                if (tmp_sois.somcr[il] > 0.) {
+					rh_m = ksomcr_m * tmp_sois.somcr[il] * TResp;
+				    tmp_sois.somcr[il] -= rh_m;
+				    del_soi2a.Prod_m[il] += rh_m;
+				    Prod += rh_m;                                             // kgC/m2/hour
+				}
+				Prod = Prod / 12.0
+						/(cd->d_soil.dz[il] * cd->d_soil.por[il]);            // umol/L/hour
 
-				SB = 0.05708 - 0.001545 * ed->d_sois.ts[il] + 0.00002069
-						* ed->d_sois.ts[il] * ed->d_sois.ts[il]; //volume
-
-				Pressure = DENLIQ * G * (cd->d_soil.z[il] + cd->d_soil.dz[il]
-						/ 2.0) + Pstd;
-
-				//SM = 1000.0 * Pressure * SB / (GASR * (ed->d_sois.ts[il]
-				//		+ 273.15)); //mass
-
-				SM = Pressure * SB / (GASR * (ed->d_sois.ts[il]
-						+ 273.15)); //mass
-
-				Ebul = (bd->d_sois.ch4[il] - SM) * 1.0;
-
-				if (Ebul < 0.0)
-					Ebul = 0.0;
-
-				Ebul_m = Ebul * ed->d_soid.lwc[il] * cd->d_soil.dz[il]
-						* 1000.0;
-
+				//
 				Oxid = 0.0;
 
-				if (ed->d_sois.ts[il] > 0.0)
-					Plant_m = Plant * cd->d_soil.por[il] * cd->d_soil.dz[il]
-							* 1000.0;
-				else
-					Plant_m = Plant * ed->d_soid.lwc[il] * cd->d_soil.dz[il]
-							* 1000.0;
+				//
+				Pressure = DENLIQ * G * (cd->d_soil.z[il] + cd->d_soil.dz[il]
+						/ 2.0) + Pstd;
+				SB = 0.05708 - 0.001545 * ed->d_sois.ts[il] + 0.00002069
+						* ed->d_sois.ts[il] * ed->d_sois.ts[il];               //volume
+				SM = Pressure * SB / (GASR * (ed->d_sois.ts[il]+273.15));      //mass
+				Ebul = (tmp_sois.ch4[il] - SM) * 1.0;                          // umol/L/hour
+				if (Ebul < 0.0)	Ebul = 0.0;
+				Ebul_m = Ebul_m+
+						Ebul * ed->d_soid.lwc[il] * cd->d_soil.dz[il]*1000.0; // umol/m2/hour (layerly summed)
+
+				//
+				if (ed->d_sois.ts[il] > 0.0) {
+					Plant_m = Plant_m+Plant * cd->d_soil.por[il] * cd->d_soil.dz[il]*1000.0;
+				} else {
+					Plant_m = Plant_m+Plant * ed->d_soid.lwc[il] * cd->d_soil.dz[il]*1000.0;
+				}
 			}
-
-			totPlant = totPlant + Plant;
-			totPlant_m = totPlant_m + Plant_m;
-
-			totEbul = totEbul + Ebul;
-			totEbul_m = totEbul_m + Ebul_m;
+			totEbul = totEbul + Ebul;    // integrating from bottom until water-table
 
 			SS = Prod - Ebul - Oxid - Plant;
 
-			if (il == (numsl - 1))
+			if (il == (numsl - 1)){
 				D[il] = r[il] - 1.0;
-			else
+		    } else {
 				D[il] = r[il];
+		    }
 
-			V[il] = s[il] * bd->d_sois.ch4[il] + s[il] * dt * SS;
+			V[il] = s[il] * tmp_sois.ch4[il] + s[il] * dt * SS;
+
+			// summing for each layer over time (hourly)
+			del_soi2a.Prod_m[il]  = del_soi2a.Prod_m[il]+
+					           Prod*cd->d_soil.por[il]*cd->d_soil.dz[il]*1000.0*12.0e-6;    // kgC/m2/time-step
+			del_soi2a.Oxid_m[il]  = del_soi2a.Oxid_m[il]+
+					           Oxid*cd->d_soil.por[il]*cd->d_soil.dz[il]*1000.0*12.0e-6;    // kgC/m2/time-step
 
 		}
 
-		tri(numsl - 1, C, D, C, V, V);
+		tri(numsl-1, C, D, C, V, V);
 
-		for (il = 1; il < numsl; il++)
-			bd->d_sois.ch4[il] = V[il];
+		for (il = 1; il < numsl; il++) tmp_sois.ch4[il] = V[il];    // umol/L
 
-		tmp_flux = diff[1] * (bd->d_sois.ch4[1] - ub) / cd->d_soil.dz[1];
+		// methane gas diffusion into atm (from surface soil)
+		tmp_flux = diff[1] * (tmp_sois.ch4[1] - ub) / cd->d_soil.dz[1];
+		if (tmp_flux < 0.0) tmp_flux = 0.0;                        // umol/L/hour
+		Flux2A = Flux2A + tmp_flux;                                // umol/L/time-step
+		tmp = (cd->d_soil.por[1] - ed->d_soid.lwc[1] - ed->d_soid.iwc[1]);
+		if (tmp < 0.05) tmp = 0.05;
+		Flux2A_m = Flux2A * tmp * cd->d_soil.dz[1] * 1000.0;       // umol/m2/time-step
 
-		if (tmp_flux < 0.0)
-			tmp_flux = 0.0;
-
-		Flux2A = Flux2A + tmp_flux;
-
-		tmp_flux = (cd->d_soil.por[1] - ed->d_soid.lwc[1] - ed->d_soid.iwc[1]);
-		if (tmp_flux < 0.05) tmp_flux = 0.05;
-
-		Flux2A_m = Flux2A * tmp_flux * cd->d_soil.dz[1] * 1000.0;
+		//
+		totPlant_m = totPlant_m + Plant_m;   //umol/m2/time-step (timely summed)
+	    //
+		totEbul_m = totEbul_m + Ebul_m;      //umol/m2/time-step (timely summed)
 	}
 
-	if (ed->d_sois.watertab < 0.0)
-		totFlux_m = 0.5 * totPlant_m + Flux2A_m + totEbul_m;
-	else
-		totFlux_m = 0.5 * totPlant_m + Flux2A_m;
-
-	if (totFlux_m > 0)
-		ed->d_soid.dfratio = Flux2A_m / totFlux_m * 100.0;
-	else
-		ed->d_soid.dfratio = 0.0;
-
-	ed->d_soid.ch4flux = (12.0 * 1000.0 / 1000000.0) * totFlux_m;
+    totFlux_m = totPlant_m + Flux2A_m + totEbul_m;                 // umol/m2/time-step
+	del_soi2a.totCH4Flux_m = 12.0e-6 * totFlux_m;                  //kgC/m2/time-step
+    del_soi2a.Flux2A_m = 12.0e-6*Flux2A_m;
+	del_soi2a.totPlant_m = 12.0e-6*totPlant_m;
+	del_soi2a.totEbul_m = 12.0e-6*totEbul_m;
+	del_soi2a.totOxid_m = 12.0e-6*totOxid_m;
 
 	FreeM1d(C);
 	FreeM1d(D);
@@ -1070,7 +1095,7 @@ void Soil_Bgc::CH4Flux(const int mind, const int id) {
 	FreeM1d(r);
 	FreeM1d(s);
 
-}
+};
 
 double Soil_Bgc::getRhmoist(const double &vsm, const double &moistmin, 
 	                        const double &moistmax, const double &moistopt){

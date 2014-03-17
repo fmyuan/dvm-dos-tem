@@ -166,13 +166,23 @@
   		double rhsoma[MAX_SOI_LAY];
   		double rhsompr[MAX_SOI_LAY];
   		double rhsomcr[MAX_SOI_LAY];
-
   	   	double rhrawcsum;
   	   	double rhsomasum;
   	   	double rhsomprsum;
   	   	double rhsomcrsum;
-
   	   	double rhtot;  //total rhs
+
+  		// CH4 production/oxidation
+  		double Prod_m[MAX_SOI_LAY];
+  		double Oxid_m[MAX_SOI_LAY];
+  		double totProd_m;
+  		double totOxid_m;
+        // CH4 emission pathway
+  		double Flux2A_m;
+  		double totPlant_m;
+  		double totEbul_m;
+  		double totCH4Flux_m;
+
 	};
 
 	struct snw2atm_env{

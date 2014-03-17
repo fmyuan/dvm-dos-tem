@@ -54,12 +54,15 @@ class CohortLookup{
 	  	int ifwoody[NUM_PFT];        // woody (1) or non-woody (0)
 	  	int ifdeciwoody[NUM_PFT];    // deciduous (1) or evergreen (0) woodland (forest or shrubland)
 	  	int ifperenial[NUM_PFT];     // perenial plant (1) or not (0)
-	  	int nonvascular[NUM_PFT];    //vascular plant (0), sphagnum (1), feathermoss (2), lichen (3)
+	  	int nonvascular[NUM_PFT];    // vascular plant (0), sphagnum (1), feathermoss (2), lichen (3)
 
 	  	double envlai[12][NUM_PFT];  // input static monthly lai for a year
 
     // root distribution
 	    double frootfrac[MAX_ROT_LAY][NUM_PFT];   // percentage
+
+   // plant aerenchyma index (0 - 1): index for pft's capacity to transport gas via aerenchyma
+	    double aerenchyma[NUM_PFT];
 
    // snow dimensions
 	    double snwdenmax;        // max. snow bulk density: kg snow /m3

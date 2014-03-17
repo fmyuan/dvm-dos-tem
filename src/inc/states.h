@@ -27,6 +27,7 @@ struct vegstate_dim{
     double lai[NUM_PFT];             // lai
     double fpc[NUM_PFT];             // foliage percentage coverage (seasonally dynamics), related to LAI
     double frootfrac[MAX_ROT_LAY][NUM_PFT];    // fine root distribution
+    double aerenchyma[NUM_PFT];      // plant aerenchyma index (0 - 1): index for pft's capacity to transport gas via aerenchyma
 
 };
 
@@ -139,7 +140,7 @@ struct soistate_bgc{
 	double orgn[MAX_SOI_LAY];   // soil total N content kg/m2
 	double avln[MAX_SOI_LAY];   // soil available N content kg/m2
 
-	double ch4[MAX_SOI_LAY];
+	double ch4[MAX_SOI_LAY];    // methane concentration umolC/L
 };
 
 #endif /*STATES_H_*/

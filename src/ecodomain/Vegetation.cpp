@@ -85,6 +85,8 @@ void Vegetation::initializeState(){
 
     		cd->m_veg.lai[i]         = chtlu->lai[i];
 
+    		cd->m_veg.aerenchyma[i]  = chtlu->aerenchyma[i];
+
     		for (int il=0; il<MAX_ROT_LAY; il++) {
     			cd->m_veg.frootfrac[il][i] = chtlu->frootfrac[il][i]/100.;   //chtlu - in %
     		}
@@ -111,6 +113,7 @@ void Vegetation::initializeState5restart(RestartData *resin){
     	cd->m_veg.ifperenial[ip]  = resin->ifperenial[ip];
     	cd->m_veg.nonvascular[ip] = resin->nonvascular[ip];
     	cd->m_veg.lai[ip]         = resin->lai[ip];
+    	cd->m_veg.aerenchyma[ip]  = resin->aerenchyma[ip];
 
     	for (int il=0; il<MAX_ROT_LAY; il++) {
           cd->m_veg.frootfrac[il][ip] = resin->rootfrac[il][ip];

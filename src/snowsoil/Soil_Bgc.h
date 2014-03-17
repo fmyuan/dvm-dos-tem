@@ -60,7 +60,6 @@ class Soil_Bgc{
   	void deltac();
   	void deltan();
   	void deltastate();
-  	void CH4Flux(const int mind, const int id);
 
   	void prepareIntegration(const bool &mdnfeedback, const bool &mdavlnflg, const bool &mdbaseline);
   	void afterIntegration();
@@ -105,17 +104,15 @@ class Soil_Bgc{
 
  	double getNimmob(const double & soilh2o, const double & soilorgc, const double & soilorgn,
 					 const double & availn, const double & ksoil, const double kn2);
-					 
   	double getNetmin(const double & nimmob, const double & soilorgc, const double & soilorgn,
 					 const double & rh, const double & tcnsoil,
 					  const double & decay, const double & nup );
 
   	double getKnsoilmoist(const double & vsm);   //
-
   	void updateKdyrly4all();
-
   	double getKdyrly(double& yrltrcn, const double lcclnc, const double & kdc);
 
+  	void deltaCH4Flux(const int &hours);
   	void tri(int matrix_size, double *A, double *D, double *C, double *B, double *X);
   	double * MallocM1d(int size);
   	void FreeM1d(double *s);

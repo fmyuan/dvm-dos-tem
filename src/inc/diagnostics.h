@@ -86,11 +86,6 @@ struct soidiag_env{
 	double sws[MAX_SOI_LAY];  // soil liquid water saturation (liq vwc/total porosity) for use in Soil_Bgc
 	double aws[MAX_SOI_LAY];  // adjusted soil liquid water saturation (liq vwc/(porosity-ice vwc)) for use in Soil_Bgc
 
-	// CH4 related variables
-	double oxid;
-	double ch4flux;
-	double dfratio;
-
 	double minliq[MAX_SOI_LAY];
 	double tcond[MAX_SOI_LAY];
 	double hcond[MAX_SOI_LAY];
@@ -126,17 +121,13 @@ struct soidiag_env{
 	double hkmineb;
 	double hkminec;
 
-
 };
 
 struct soidiag_bgc{
 	double knmoist[MAX_SOI_LAY];        // soil liq water factor to be used in N immobilization and mineralization
-
   	double rhmoist[MAX_SOI_LAY];
   	double rhq10[MAX_SOI_LAY];
-
   	double ltrfcn[MAX_SOI_LAY];        //litterfall (root death) input C/N ratios in each soil layer for adjusting 'kd'
-
   	double tsomc[MAX_SOI_LAY];
 
   	//variables of summarized over soil horizons

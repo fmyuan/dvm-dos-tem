@@ -13,7 +13,7 @@
 	const int NUM_VEG_STATE = 2*NUM_PFT_PART    // C & structrual N content in defined-no. of tissues
 	                          +	3;              // labible N, C & N in dead veg
 	// number of layered soil BGC state variables
-	const int NUM_SOI_STATE = 6*MAX_SOI_LAY     // 4 soil C pools, orgn, and avln
+	const int NUM_SOI_STATE = 7*MAX_SOI_LAY     // 4 soil C pools, orgn, avln, and ch4 concentration
                               +4;               // wderis C and N, dmoss C and N
 
 	// number of state variables

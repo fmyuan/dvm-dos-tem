@@ -54,6 +54,7 @@ void RestartOutputer::init(string& outputdir,string& stage){
 	vegageV  =restartFile->add_var("VEGAGE", ncInt, chtD, pftD);
 	vegcovV  =restartFile->add_var("VEGCOV", ncDouble, chtD, pftD);
 	laiV     =restartFile->add_var("LAI", ncDouble, chtD, pftD);
+	aerenchymaV=restartFile->add_var("AERENCHYMA", ncDouble, chtD, pftD);
 	rootfracV=restartFile->add_var("ROOTFRAC", ncDouble, chtD, rootlayerD, pftD);
     vegwaterV=restartFile->add_var("VEGWATER", ncDouble, chtD, pftD);
     vegsnowV =restartFile->add_var("VEGSNOW", ncDouble, chtD, pftD);
@@ -147,6 +148,7 @@ void RestartOutputer::outputVariables(const int & chtcount){
 	vegageV->put_rec(&resod->vegage[0], chtcount);
 	vegcovV->put_rec(&resod->vegcov[0], chtcount);
 	laiV->put_rec(&resod->lai[0], chtcount);
+	aerenchymaV->put_rec(&resod->aerenchyma[0], chtcount);
 	rootfracV->put_rec(&resod->rootfrac[0][0], chtcount);
 
 	vegwaterV->put_rec(&resod->vegwater[0], chtcount);

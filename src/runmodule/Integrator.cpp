@@ -101,6 +101,9 @@ Integrator::Integrator(){
 		strcpy(predstr_soi[I_L_SOMA+il],(string("SOMA") +str2).c_str() );   // soil active som carbon
 		strcpy(predstr_soi[I_L_SOMPR+il],(string("SOMPR") +str2).c_str() );   // soil physically-resistant som carbon
 		strcpy(predstr_soi[I_L_SOMCR+il],(string("SOMCR") +str2).c_str() );   // soil chemically-resistant som carbon
+		strcpy(predstr_soi[I_L_ORGN+il],(string("ORGN") +str2).c_str() );  // soil organic nitrogen
+	    strcpy(predstr_soi[I_L_AVLN+il],(string("AVLN") +str2).c_str() );  // soil available nitrogen
+	    strcpy(predstr_soi[I_L_CH4+il],(string("CH4") +str2).c_str() );  // soil CH4 concentration (umol/L)
 	}
   	strcpy(predstr_soi[I_WDEBRISC],"WDEBRISC"); // wood debris C
   	strcpy(predstr_soi[I_WDEBRISN],"WDEBRISN"); // wood debris N
@@ -118,13 +121,16 @@ Integrator::Integrator(){
 		strcpy(predstr_soi[I_L_RH_SOMPR+il],(string("RHSOMPR") +str2).c_str() );   // soil rh
 		strcpy(predstr_soi[I_L_RH_SOMCR+il],(string("RHSOMCR") +str2).c_str() );   // soil rh
 
-		strcpy(predstr_soi[I_L_ORGN+il],(string("ORGN") +str2).c_str() );  // soil organic nitrogen
-	    strcpy(predstr_soi[I_L_AVLN+il],(string("AVLN") +str2).c_str() );  // soil available nitrogen
-
 	    strcpy(predstr_soi[I_L_NMIN+il],(string("NMIN") +str2).c_str() );   // soil net N minerization
 	    strcpy(predstr_soi[I_L_NIMMOB+il],(string("NIMMOB") +str2).c_str() );   // soil net N minerization
 
+	    strcpy(predstr_soi[I_L_CH4_PROD+il],(string("CH4PROD") +str2).c_str() );   // soil CH4 production
+	    strcpy(predstr_soi[I_L_CH4_OXID+il],(string("CH4OXID") +str2).c_str() );   // soil CH4 oxidation
+
 	}
+	strcpy(predstr_soi[I_CH4_FLUX2A],"CH4FLUX2A" );   // methane direct diffusion from top soil to atm
+    strcpy(predstr_soi[I_CH4_TOTPLANT],"CH4PLANT");   // soil CH4 plant-mediated transport
+    strcpy(predstr_soi[I_CH4_TOTEBUL],"CH4EBUL");     // soil CH4 ebullition
 	strcpy(predstr_soi[I_RH_WD],"RHWD" );   // woody debris respiration
 	strcpy(predstr_soi[I_RH_DMOSS],"RHDMOSS" );   // dead moss respiration
 
@@ -228,6 +234,7 @@ void Integrator::c2ystate_soi(float y[]){
       	y[I_L_SOMCR+il]= soils->somcr[il];
         y[I_L_ORGN+il] = soils->orgn[il];
         y[I_L_AVLN+il] = soils->avln[il];
+        y[I_L_CH4+il] = soils->ch4[il];
     }
     y[I_WDEBRISC] = soils->wdebrisc;
     y[I_WDEBRISN] = soils->wdebrisn;
@@ -409,6 +416,9 @@ void Integrator::y2cstate_soi(float y[]){
         }
         soils->orgn[il] = y[I_L_ORGN+il];
         soils->avln[il] = y[I_L_AVLN+il];
+
+        soils->ch4[il] = y[I_L_CH4+il];
+
     }
 
 	soils->wdebrisc = y[I_WDEBRISC];
@@ -452,7 +462,14 @@ void Integrator::y2cflux_soi(float y[]){
   		soi2a->rhsomcr[il]   = y[I_L_RH_SOMCR +il];
   	  	soi2soi->nimmob[il]  = y[I_L_NIMMOB+il];
   	  	soi2soi->netnmin[il] = y[I_L_NMIN+il];
+
+  	  	soi2a->Prod_m[il]  = y[I_L_CH4_PROD+il];
+  	  	soi2a->Oxid_m[il]  = y[I_L_CH4_OXID+il];
+
   	}
+  	soi2a->Flux2A_m   = y[I_CH4_FLUX2A];
+ 	soi2a->totPlant_m = y[I_CH4_TOTPLANT];
+  	soi2a->totEbul_m  = y[I_CH4_TOTEBUL];
   	soi2a->rhwdeb   = y[I_RH_WD];
   	soi2a->rhmossc  = y[I_RH_DMOSS];
 

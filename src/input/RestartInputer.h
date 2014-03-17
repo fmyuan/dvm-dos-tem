@@ -60,6 +60,7 @@ class RestartInputer {
 	    NcVar* vegageV;
 	    NcVar* vegcovV;
 	    NcVar* laiV;
+	    NcVar* aerenchymaV;
 	    NcVar* rootfracV;
 
 		NcVar* vegwaterV;

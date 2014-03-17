@@ -27,6 +27,7 @@ class RestartData {
 	    int vegage[NUM_PFT];
 	    double vegcov[NUM_PFT];
 	    double lai[NUM_PFT];
+	    double aerenchyma[NUM_PFT];
 	    double rootfrac[MAX_ROT_LAY][NUM_PFT];
 
 	    double vegwater[NUM_PFT];             //canopy water - 'vegs_env'
