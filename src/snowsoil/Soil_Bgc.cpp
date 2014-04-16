@@ -41,6 +41,7 @@ void Soil_Bgc::assignCarbonBd2Layer(){
  			currl->soma  =	bd->d_sois.soma[currl->solind-1];
  			currl->sompr =	bd->d_sois.sompr[currl->solind-1];
  			currl->somcr =	bd->d_sois.somcr[currl->solind-1];
+ 			currl->ch4   =	bd->d_sois.ch4[currl->solind-1];
  		}else{
 			break;
  		}
@@ -65,6 +66,7 @@ void Soil_Bgc::assignCarbonLayer2Bd(){
 			bd->d_sois.soma[currl->solind-1] = currl->soma;
 			bd->d_sois.sompr[currl->solind-1]= currl->sompr;
 			bd->d_sois.somcr[currl->solind-1]= currl->somcr;
+			bd->d_sois.ch4[currl->solind-1]= currl->ch4;
 
  		}else{
  			break;
@@ -78,6 +80,7 @@ void Soil_Bgc::assignCarbonLayer2Bd(){
  		bd->d_sois.soma[il]=0.;
  		bd->d_sois.sompr[il]=0.;
  		bd->d_sois.somcr[il]=0.;
+ 		bd->d_sois.ch4[il]=0.;
  	}
 
  	bd->d_sois.dmossc = ground->moss.dmossc;
@@ -195,12 +198,13 @@ void Soil_Bgc::initializeState(){
 	   double totc = bd->d_sois.rawc[il]+bd->d_sois.soma[il]
 			           +bd->d_sois.sompr[il]+bd->d_sois.somcr[il];
 	   if (totc > 0. && sumtotc > 0.) {
-		   bd->d_sois.avln [il] = chtlu->initavln*totc/sumtotc;
-		   bd->d_sois.orgn [il] = chtlu->initsoln*totc/sumtotc;
+		   bd->d_sois.avln[il] = chtlu->initavln*totc/sumtotc;
+		   bd->d_sois.orgn[il] = chtlu->initsoln*totc/sumtotc;
 	   } else {
-		   bd->d_sois.avln [il] = 0.;
-		   bd->d_sois.orgn [il] = 0.;
+		   bd->d_sois.avln[il] = 0.;
+		   bd->d_sois.orgn[il] = 0.;
 	   }
+	   bd->d_sois.ch4[il] = chtlu->initch4[il]
 
    }
    
@@ -217,6 +221,8 @@ void Soil_Bgc::initializeState5restart(RestartData* resin){
 
 		bd->d_sois.orgn[il] = resin->orgn[il];
 		bd->d_sois.avln[il] = resin->avln[il];
+
+		bd->d_sois.ch4[il] = resin->ch4[il];
 
     	for(int i=0; i<10; i++){
     		bd->prvltrfcnque[il].clear();
@@ -273,6 +279,12 @@ void Soil_Bgc::initializeParameter(){
                     - (0.42956*pow( (double) bgcpar.propftos,2.0 ));
 
   	bgcpar.fnloss       = chtlu->fnloss;
+
+  	//
+  	bgcpar.kdch4factor = chtlu->kdcratio4me/(1.+chtlu->kdcratio4me);
+  	bgcpar.rebul = chtlu->rebul;
+  	bgcpar.roxid = chtlu->roxid;
+  	bgcpar.rp    = chtlu->rp;
 
 };
 
@@ -465,10 +477,10 @@ void Soil_Bgc::deltac(){
 	 		   bgcpar.moistmin, bgcpar.moistmax, bgcpar.moistopt);	   
 		bd->d_soid.rhq10[il] = getRhq10(ed->d_sois.ts[il]);
 	 
-		krawc  = bgcpar.kdrawc[il];
-		ksoma  = bgcpar.kdsoma[il];
-	   	ksompr = bgcpar.kdsompr[il];
-	   	ksomcr = bgcpar.kdsomcr[il];
+		krawc  = bgcpar.kdrawc[il]*(1.0-bgcpar.kdch4factor);
+		ksoma  = bgcpar.kdsoma[il]*(1.0-bgcpar.kdch4factor);
+	   	ksompr = bgcpar.kdsompr[il]*(1.0-bgcpar.kdch4factor);
+	   	ksomcr = bgcpar.kdsomcr[il]*(1.0-bgcpar.kdch4factor);
 
 		if(tmp_sois.rawc[il]>0.){
 			del_soi2a.rhrawc[il] = (krawc * tmp_sois.rawc[il]
@@ -881,7 +893,7 @@ void Soil_Bgc::deltaCH4Flux(const int &hours) {
 	double Flux2A = 0.0;                                  // unit: umol/L/hour   (per volume of air-pore or liq-pore in saturated)
 	double Prod=0., Ebul=0., Oxid=0., Plant=0.;           // unit: umol/L/hour
 	double Flux2A_m, Ebul_m, Plant_m, totFlux_m;          // unit: umol/m2/hour  (per ground-surface area)
-	double totPlant_m = 0.0, totEbul_m = 0.0, totOxid_m = 0.0;
+	double totPlant_m = 0.0, totEbul_m = 0.0;
 	double SB, SM, Pressure;
 	int wtbflag = 0;
 	double totEbul = 0.;
@@ -981,7 +993,7 @@ void Soil_Bgc::deltaCH4Flux(const int &hours) {
 				if (tmp < 0.05) tmp = 0.05;                                   //air occupied porosity
 
 				// oxidation
-				bgcpar.roxid = 5.0;
+				if(bgcpar.roxid <= 0.) bgcpar.roxid = 5.0;  //5.0 is the default value
 				Oxid = bgcpar.roxid * tmp_sois.ch4[il]*TResp/(20.0+tmp_sois.ch4[il]);  // umol/L/hour
 
 				//plant-mediated transport
@@ -997,25 +1009,25 @@ void Soil_Bgc::deltaCH4Flux(const int &hours) {
 				Prod = 0.;
                 if (tmp_sois.rawc[il] > 0.) {
 					rh_m = krawc_m * tmp_sois.rawc[il] * TResp;
-				    tmp_sois.rawc[il] -= rh_m;
+				    del_soi2a.rhrawc[il] += rh_m;           // note: 'rh' includes CH4 production
 				    del_soi2a.Prod_m[il] += rh_m;
 				    Prod += rh_m;
 				}
                 if (tmp_sois.soma[il] > 0.) {
 					rh_m = ksoma_m * tmp_sois.soma[il] * TResp;
-				    tmp_sois.soma[il] -= rh_m;
+				    del_soi2a.rhsoma[il] += rh_m;
 				    del_soi2a.Prod_m[il] += rh_m;
 				    Prod += rh_m;
 				}
                 if (tmp_sois.sompr[il] > 0.) {
 					rh_m = ksompr_m * tmp_sois.sompr[il] * TResp;
-				    tmp_sois.sompr[il] -= rh_m;
+				    del_soi2a.rhsompr[il] += rh_m;
 				    del_soi2a.Prod_m[il] += rh_m;
 				    Prod += rh_m;
 				}
                 if (tmp_sois.somcr[il] > 0.) {
 					rh_m = ksomcr_m * tmp_sois.somcr[il] * TResp;
-				    tmp_sois.somcr[il] -= rh_m;
+				    del_soi2a.rhsomcr[il] += rh_m;
 				    del_soi2a.Prod_m[il] += rh_m;
 				    Prod += rh_m;                                             // kgC/m2/hour
 				}
@@ -1031,7 +1043,7 @@ void Soil_Bgc::deltaCH4Flux(const int &hours) {
 				SB = 0.05708 - 0.001545 * ed->d_sois.ts[il] + 0.00002069
 						* ed->d_sois.ts[il] * ed->d_sois.ts[il];               //volume
 				SM = Pressure * SB / (GASR * (ed->d_sois.ts[il]+273.15));      //mass
-				Ebul = (tmp_sois.ch4[il] - SM) * 1.0;                          // umol/L/hour
+				Ebul = (tmp_sois.ch4[il] - SM) * bgcpar.rebul;                          // umol/L/hour
 				if (Ebul < 0.0)	Ebul = 0.0;
 				Ebul_m = Ebul_m+
 						Ebul * ed->d_soid.lwc[il] * cd->d_soil.dz[il]*1000.0; // umol/m2/hour (layerly summed)

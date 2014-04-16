@@ -12,6 +12,22 @@ BgcData::~BgcData(){
 void BgcData::clear(){
 	cd->clear();
 
+	//daily
+	d_vegs = vegstate_bgc();
+	d_sois = soistate_bgc();
+	d_vegd = vegdiag_bgc();
+	d_soid = soidiag_bgc();
+	d_l2a  = lnd2atm_bgc();
+	d_a2v  = atm2veg_bgc();
+	d_v2a  = veg2atm_bgc();
+	d_v2soi = veg2soi_bgc();
+	d_soi2v = soi2veg_bgc();
+	d_v2v   = veg2veg_bgc();
+	d_soi2l = soi2lnd_bgc();
+	d_soi2a = soi2atm_bgc();
+	d_a2soi = atm2soi_bgc();
+	d_soi2soi = soi2soi_bgc();
+
 	//monthly
 	m_vegs = vegstate_bgc();
 	m_sois = soistate_bgc();
@@ -285,6 +301,7 @@ void BgcData::soil_beginOfMonth(){
    		m_sois.somcr[il]  = 0.;
    		m_sois.orgn[il]   = 0.;
    		m_sois.avln[il]   = 0.;
+   		m_sois.ch4[il]   = 0.;
 
    		// accumulative for fluxes
    		m_soi2a.rhrawc[il] = 0.;
@@ -294,6 +311,10 @@ void BgcData::soil_beginOfMonth(){
 
    	 	m_soi2soi.netnmin[il]= 0.;
    	 	m_soi2soi.nimmob[il] = 0.;
+
+  		// CH4 production/oxidation
+  		m_soi2a.Prod_m[il] = 0.;
+  		m_soi2a.Oxid_m[il] = 0.;
 
  	}
 
@@ -334,6 +355,14 @@ void BgcData::soil_beginOfMonth(){
 	m_a2soi.avlninput = 0.;
 	m_soi2l.avlnlost  = 0.;
 
+    // CH4 emissions
+	m_soi2a.totProd_m    = 0.;
+	m_soi2a.totOxid_m    = 0.;
+	m_soi2a.totFlux2A_m  = 0.;
+	m_soi2a.totPlant_m   = 0.;
+	m_soi2a.totEbul_m    = 0.;
+	m_soi2a.totCH4Flux_m = 0.;
+
 };
 
 void BgcData::soil_beginOfYear(){
@@ -373,9 +402,9 @@ void BgcData::soil_beginOfYear(){
  		y_sois.somcr[il]=0.;
 
  		y_sois.orgn[il]=0.;
- 		y_sois.avln[il]=0.;
+ 		y_sois.avln[il]  = 0.;
 
- 	 	y_soid.tsomc[il] =0.;
+ 	 	y_soid.tsomc[il] = 0.;
 
  		y_soid.ltrfcn[il] = 0.;
    		y_soid.knmoist[il]= 0.;
@@ -392,6 +421,9 @@ void BgcData::soil_beginOfYear(){
    		y_soi2soi.netnmin[il] = 0.;
    		y_soi2soi.nimmob[il]  = 0.;
 
+  		y_soi2a.Prod_m[il] = 0.;
+  		y_soi2a.Oxid_m[il] = 0.;
+
  	}
  
 	//
@@ -399,6 +431,15 @@ void BgcData::soil_beginOfYear(){
 	y_a2soi.avlninput = 0.0;
     y_soi2l.orgnlost  = 0.0;
     y_soi2l.avlnlost = 0.0;
+
+    //
+	y_soi2a.totProd_m    = 0.;
+	y_soi2a.totOxid_m    = 0.;
+	y_soi2a.totFlux2A_m  = 0.;
+	y_soi2a.totPlant_m   = 0.;
+	y_soi2a.totEbul_m    = 0.;
+	y_soi2a.totCH4Flux_m = 0.;
+
 
 };
 
@@ -446,6 +487,7 @@ void BgcData::soil_endOfDay(const int & dinm){
 
    		d_soid.orgnsum += d_sois.orgn[il];
    		d_soid.avlnsum += d_sois.avln[il];
+
  	}
 
  	//monthly mean variables
@@ -464,6 +506,8 @@ void BgcData::soil_endOfDay(const int & dinm){
    		m_sois.somcr[il]+= d_sois.somcr[il]/dinm;
    		m_sois.orgn[il] += d_sois.orgn[il]/dinm;
    		m_sois.avln[il] += d_sois.avln[il]/dinm;
+   		m_sois.ch4[il] += d_sois.ch4[il]/dinm;
+
  	}
    	m_sois.dmossc += d_sois.dmossc/dinm;
    	m_sois.dmossn += d_sois.dmossn/dinm;
@@ -524,6 +568,10 @@ void BgcData::soil_endOfDay(const int & dinm){
 
    	 	m_soi2soi.netnmin[il]+= d_soi2soi.netnmin[il];
    	 	m_soi2soi.nimmob[il] += d_soi2soi.nimmob[il];
+
+  		m_soi2a.Prod_m[il] += d_soi2a.Prod_m[il];
+  		m_soi2a.Oxid_m[il] += d_soi2a.Oxid_m[il];
+
  	}
 	m_soi2soi.netnminsum+= d_soi2soi.netnminsum;
 	m_soi2soi.nimmobsum += d_soi2soi.nimmobsum;
@@ -533,6 +581,13 @@ void BgcData::soil_endOfDay(const int & dinm){
 	m_soi2l.orgnlost += d_soi2l.orgnlost;
 	m_a2soi.avlninput += d_a2soi.avlninput;
 	m_soi2l.avlnlost += d_soi2l.avlnlost;
+
+	m_soi2a.totProd_m    += d_soi2a.totProd_m;
+	m_soi2a.totOxid_m    += d_soi2a.totOxid_m;
+	m_soi2a.totFlux2A_m  += d_soi2a.totFlux2A_m;
+	m_soi2a.totPlant_m   += d_soi2a.totPlant_m;
+	m_soi2a.totEbul_m    += d_soi2a.totEbul_m;
+	m_soi2a.totCH4Flux_m += d_soi2a.totCH4Flux_m;
 
 };
 
@@ -668,6 +723,10 @@ void BgcData::soil_endOfMonth(){
 
    	 	y_soi2soi.netnmin[il]+= m_soi2soi.netnmin[il];
    	 	y_soi2soi.nimmob[il] += m_soi2soi.nimmob[il];
+
+  		y_soi2a.Prod_m[il] += m_soi2a.Prod_m[il];
+  		y_soi2a.Oxid_m[il] += m_soi2a.Oxid_m[il];
+
  	}
 	y_soi2soi.netnminsum+= m_soi2soi.netnminsum;
 	y_soi2soi.nimmobsum += m_soi2soi.nimmobsum;
@@ -677,5 +736,13 @@ void BgcData::soil_endOfMonth(){
 	y_soi2l.orgnlost += m_soi2l.orgnlost;
 	y_a2soi.avlninput += m_a2soi.avlninput;
 	y_soi2l.avlnlost += m_soi2l.avlnlost;
+
+	// CH4
+	y_soi2a.totProd_m    += m_soi2a.totProd_m;
+	y_soi2a.totOxid_m    += m_soi2a.totOxid_m;
+	y_soi2a.totFlux2A_m  += m_soi2a.totFlux2A_m;
+	y_soi2a.totPlant_m   += m_soi2a.totPlant_m;
+	y_soi2a.totEbul_m    += m_soi2a.totEbul_m;
+	y_soi2a.totCH4Flux_m += m_soi2a.totCH4Flux_m;
 
 };

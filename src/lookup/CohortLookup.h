@@ -45,7 +45,9 @@ class CohortLookup{
 	    double kdcsompr;   // calibrated soil physically-resistant SOM respiration rate (at 0oC)
 	    double kdcsomcr;   // calibrated soil chemically-resistant SOM respiration rate (at 0oC)
 
-	// canopy dimensions
+	    double kdcratio4me; // calibrated som decomposition ratio of anaerobic:aerobic for methane production
+
+	 // canopy dimensions
 	  	double sla[NUM_PFT];         // specific leaf area
 	  	double klai[NUM_PFT];        // a coefficient to convert LAI to FPC (foliage percentage coverage)
 

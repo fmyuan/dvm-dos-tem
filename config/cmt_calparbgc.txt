@@ -21,6 +21,7 @@ CMT00 // Default TEM community - (max. 10 PFTs over 1 soil column) (BGC) plant c
 0.0108046       // kdcsoma:
 0.0020805       // kdcsompr:
 0.0000108       // kdcsomcr:
+0.50            // kdcratio4me: ratio of anaerobic to aerobic KDC above for methane production (at 50% saturation)
 //===========================================================
 CMT01 // CMT1 TEM community - (max. 10 PFTs over 1 soil column) (BGC) plant calibrated parameters
 //PFT0      PFT1        PFT2         PFT3         PFT4         PFT5         PFT6         PFT7         PFT8         PFT9         // names: comments                  
@@ -44,6 +45,7 @@ CMT01 // CMT1 TEM community - (max. 10 PFTs over 1 soil column) (BGC) plant cali
 0.0108046       // kdcsoma:
 0.0020805       // kdcsompr:
 0.0000108       // kdcsomcr:
+0.50            // kdcratio4me: ratio of anaerobic to aerobic KDC above for methane production (at 50% saturation)
 //===========================================================
 CMT02 // CMT2 TEM community - (max. 10 PFTs over 1 soil column) (BGC) plant calibrated parameters
 //PFT0       PFT1        PFT2         PFT3         PFT4         PFT5         PFT6         PFT7         PFT8         PFT9         // names: comments                  
@@ -67,6 +69,7 @@ CMT02 // CMT2 TEM community - (max. 10 PFTs over 1 soil column) (BGC) plant cali
 0.0108046       // kdcsoma:
 0.0020805       // kdcsompr:
 0.0000108       // kdcsomcr:
+0.50            // kdcratio4me: ratio of anaerobic to aerobic KDC above for methane production (at 50% saturation)
 //===========================================================
 CMT03 // CMT3 TEM community - (max. 10 PFTs over 1 soil column) (BGC) plant calibrated parameters
 //PFT0       PFT1        PFT2         PFT3         PFT4         PFT5         PFT6         PFT7         PFT8         PFT9         // names: comments                  
@@ -90,6 +93,7 @@ CMT03 // CMT3 TEM community - (max. 10 PFTs over 1 soil column) (BGC) plant cali
 0.0108046       // kdcsoma:
 0.0020805       // kdcsompr:
 0.0000108       // kdcsomcr:
+0.50            // kdcratio4me: ratio of anaerobic to aerobic KDC above for methane production (at 50% saturation)
 //===========================================================
 CMT04 // CMT4 TEM community - (max. 10 PFTs over 1 soil column) (BGC) plant calibrated parameters
 //PFT0       PFT1        PFT2         PFT3         PFT4         PFT5         PFT6         PFT7         PFT8         PFT9         // names: comments                  
@@ -113,6 +117,7 @@ CMT04 // CMT4 TEM community - (max. 10 PFTs over 1 soil column) (BGC) plant cali
 0.0108046       // kdcsoma:
 0.0020805       // kdcsompr:
 0.0000108       // kdcsomcr:
+0.50            // kdcratio4me: ratio of anaerobic to aerobic KDC above for methane production (at 50% saturation)
 //===========================================================
 CMT05 // CMT5 TEM community - (max. 10 PFTs over 1 soil column) (BGC) plant calibrated parameters
 //PFT0       PFT1        PFT2         PFT3         PFT4         PFT5         PFT6         PFT7         PFT8         PFT9         // names: comments                  
@@ -136,6 +141,7 @@ CMT05 // CMT5 TEM community - (max. 10 PFTs over 1 soil column) (BGC) plant cali
 0.0108046       // kdcsoma:
 0.0020805       // kdcsompr:
 0.0000108       // kdcsomcr:
+0.50            // kdcratio4me: ratio of anaerobic to aerobic KDC above for methane production (at 50% saturation)
 //===========================================================
 CMT06 // CMT6 TEM community - (max. 10 PFTs over 1 soil column) (BGC) plant calibrated parameters
 //PFT0       PFT1        PFT2         PFT3         PFT4         PFT5         PFT6         PFT7         PFT8         PFT9         // names: comments                  
@@ -159,3 +165,4 @@ CMT06 // CMT6 TEM community - (max. 10 PFTs over 1 soil column) (BGC) plant cali
 0.0108046       // kdcsoma:
 0.0020805       // kdcsompr:
 0.0000108       // kdcsomcr:
+0.50            // kdcratio4me: ratio of anaerobic to aerobic KDC above for methane production (at 50% saturation)
