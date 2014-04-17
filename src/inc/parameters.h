@@ -99,6 +99,9 @@ struct soipar_cal{
     double kdcsompr;   // calibrated soil physically-resistant SOM respiration rate (1/day, at 0oC)
     double kdcsomcr;   // calibrated soil chemically-resistant SOM respiration rate (1/day, at 0oC)
 
+  	// ch4 parameters
+  	double kdcratio4me;  // ratio of anaerobic/aerobic SOM C decomposition rates
+
 };
 
 struct soipar_dim{
@@ -173,9 +176,10 @@ struct soipar_bgc{
   	double kdsomcr[MAX_SOI_LAY];
 
   	// ch4 parameters
-  	double kdch4factor;  // factor of SOM C decomposition rate for methane production
+  	double kdch4factor;  // fraction of anaerobic (over total) SOM C decomposition rate for methane production
   	double rp;           // rate for plant-mediated CH4 emission (unit: 1/hour/LAI)
   	double roxid;        // rate for CH4 oxidation (unit: umol/L/hour)
+  	double rebul;        // rate for CH4 ebullition emission (unit: 1/hour)
 
 };
 

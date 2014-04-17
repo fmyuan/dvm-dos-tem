@@ -50,7 +50,7 @@ void CohortLookup::assignBgcCalpar(string & dircmt){
 
 	string str;
 	string code;
-	int lines = 21;   // total lines of one block of community data/info, except for 2 header lines
+	int lines = 22;   // total lines of one block of community data/info, except for 2 header lines
 
 	getline(fctrcomm, str);     // community separation line ("//====" or something or empty line)
 	getline(fctrcomm, str);     // community code - 'CMTxx' (xx: two digits)
@@ -118,6 +118,8 @@ void CohortLookup::assignBgcCalpar(string & dircmt){
 	getline(fctrcomm, str);
 	fctrcomm >> kdcsomcr;
 	getline(fctrcomm, str);
+	fctrcomm >> kdcratio4me;
+	getline(fctrcomm, str);
 
 	fctrcomm.close();
 
@@ -136,7 +138,7 @@ void CohortLookup::assignVegDimension(string &dircmt){
 
 	string str;
 	string code;
-	int lines = 41;   // total lines of one block of community data/info, except for 2 header lines
+	int lines = 42;   // total lines of one block of community data/info, except for 2 header lines
 
 	getline(fctrpft, str);     // community separation line ("//====" or something or empty line)
 	getline(fctrpft, str);     // community code - 'CMTxx' (xx: two digits)
@@ -544,7 +546,7 @@ void CohortLookup::assignBgc4Ground(string &dircmt){
 
 	string str;
 	string code;
-	int lines = 19;   // total lines of one block of community data/info, except for 2 header lines
+	int lines = 23;   // total lines of one block of community data/info, except for 2 header lines
 
 	getline(fctrcomm, str);     // community separation line ("//====" or something or empty line)
 	getline(fctrcomm, str);     // community code - 'CMTxx' (xx: two digits)

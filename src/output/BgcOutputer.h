@@ -4,7 +4,7 @@
 #ifndef BGCOUTPUTER_H_
 #define BGCOUTPUTER_H_
 #include <iostream>
-#include "netcdfcpp.h"
+#include <netcdfcpp.h>
 
 #include "../inc/timeconst.h"
 #include "../inc/cohortconst.h"
@@ -99,6 +99,7 @@ class BgcOutputer{
 	   	NcVar* somcrV;
 	   	NcVar* orgnV;
 	   	NcVar* avlnV;
+	   	NcVar* ch4V;
 
 	   	NcVar* shlwcV;
 	   	NcVar* deepcV;
@@ -140,6 +141,10 @@ class BgcOutputer{
    		NcVar* burnretaincV;
    		NcVar* burnretainnV;
 
+   		NcVar* totch4fluxV;
+   		NcVar* totch4flux2AV;   // by diffusion
+   		NcVar* totch4flux2PV;   // by plant
+   		NcVar* totch4flux2EV;   // by ebullation
 
 };
 

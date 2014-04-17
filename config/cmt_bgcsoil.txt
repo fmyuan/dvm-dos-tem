@@ -13,12 +13,16 @@ CMT00 // Default TEM Community  - soil microbial activity (BGC) parameters and d
 29.73             // nmincnsoil:
 0.2               // propftos:
 0.0               // fnloss:  fraction N leaching (0 - 1) when drainage occurs
+1.0               // rebul: rate for ebulition of CH4 (unit: 1/hour)
+1.0               // rp: rate for plant-mediated CH4 emission (unit: 1/hour)
+5.0               // roxid: rate for CH4 oxidation (unit: umol/L/hour)
 17                // initdmossc:
 1783              // initshlwc:
 5021              // initdeepc:
 9000              // initminec:
 363               // initsoln:
 0.76              // initavln:
+0.0               // initch4: (umolC/L)
 //===========================================================
 CMT01 // CMT1 TEM Community  - soil microbial activity (BGC) parameters and default initial conditions
 2.0               // rhq10:
@@ -34,12 +38,16 @@ CMT01 // CMT1 TEM Community  - soil microbial activity (BGC) parameters and defa
 29.73             // nmincnsoil:
 0.2               // propftos:
 0.0               // fnloss:  fraction N leaching (0 - 1) when drainage occurs
+1.0               // rebul: rate for ebulition of CH4 (unit: 1/hour)
+1.0               // rp: rate for plant-mediated CH4 emission (unit: 1/hour)
+5.0               // roxid: rate for CH4 oxidation (unit: umol/L/hour)
 178               // initdmossc:
 1783              // initshlwc:
 5021              // initdeepc:
 9000              // initminec:
 363               // initsoln:
 0.76              // initavln:
+0.0               // initch4: (umolC/L)
 //===========================================================
 CMT02 // CMT2 TEM Community  - soil microbial activity (BGC) parameters and default initial conditions
 2.0               // rhq10:
@@ -55,12 +63,16 @@ CMT02 // CMT2 TEM Community  - soil microbial activity (BGC) parameters and defa
 29.73             // nmincnsoil:
 0.2               // propftos:
 0.0               // fnloss:  fraction N leaching (0 - 1) when drainage occurs
+1.0               // rebul: rate for ebulition of CH4 (unit: 1/hour)
+1.0               // rp: rate for plant-mediated CH4 emission (unit: 1/hour)
+5.0               // roxid: rate for CH4 oxidation (unit: umol/L/hour)
 0.0               // initdmossc:
 1783              // initshlwc:
 5021              // initdeepc:
 9000              // initminec:
 363               // initsoln:
 0.76              // initavln:
+0.0               // initch4: (umolC/L)
 //===========================================================
 CMT03 // CMT3 TEM Community  - soil microbial activity (BGC) parameters and default initial conditions
 2.0               // rhq10:
@@ -76,12 +88,16 @@ CMT03 // CMT3 TEM Community  - soil microbial activity (BGC) parameters and defa
 29.73             // nmincnsoil:
 0.2               // propftos:
 0.0               // fnloss:  fraction N leaching (0 - 1) when drainage occurs
+1.0               // rebul: rate for ebulition of CH4 (unit: 1/hour)
+1.0               // rp: rate for plant-mediated CH4 emission (unit: 1/hour)
+5.0               // roxid: rate for CH4 oxidation (unit: umol/L/hour)
 0.0               // initdmossc:
 1783              // initshlwc:
 5021              // initdeepc:
 9000              // initminec:
 363               // initsoln:
 0.76              // initavln:
+0.0               // initch4: (umolC/L)
 //===========================================================
 CMT04 // CMT4 TEM Community  - soil microbial activity (BGC) parameters and default initial conditions
 2.0               // rhq10:
@@ -97,12 +113,16 @@ CMT04 // CMT4 TEM Community  - soil microbial activity (BGC) parameters and defa
 29.73             // nmincnsoil:
 0.2               // propftos:
 0.0               // fnloss:  fraction N leaching (0 - 1) when drainage occurs
+1.0               // rebul: rate for ebulition of CH4 (unit: 1/hour)
+1.0               // rp: rate for plant-mediated CH4 emission (unit: 1/hour)
+5.0               // roxid: rate for CH4 oxidation (unit: umol/L/hour)
 0.0               // initdmossc:
 1783              // initshlwc:
 5021              // initdeepc:
 9000              // initminec:
 363               // initsoln:
 0.76              // initavln:
+0.0               // initch4: (umolC/L)
 //===========================================================
 CMT05 // CMT5 TEM Community  - soil microbial activity (BGC) parameters and default initial conditions
 2.0               // rhq10:
@@ -118,12 +138,16 @@ CMT05 // CMT5 TEM Community  - soil microbial activity (BGC) parameters and defa
 29.73             // nmincnsoil:
 0.2               // propftos:
 0.0               // fnloss:  fraction N leaching (0 - 1) when drainage occurs
+1.0               // rebul: rate for ebulition of CH4 (unit: 1/hour)
+1.0               // rp: rate for plant-mediated CH4 emission (unit: 1/hour)
+5.0               // roxid: rate for CH4 oxidation (unit: umol/L/hour)
 0.0               // initdmossc:
 1783              // initshlwc:
 5021              // initdeepc:
 9000              // initminec:
 363               // initsoln:
 0.76              // initavln:
+0.0               // initch4: (umolC/L)
 //===========================================================
 CMT06 // CMT6 TEM Community  - soil microbial activity (BGC) parameters and default initial conditions
 2.0               // rhq10:
@@ -139,9 +163,13 @@ CMT06 // CMT6 TEM Community  - soil microbial activity (BGC) parameters and defa
 29.73             // nmincnsoil:
 0.2               // propftos:
 0.0               // fnloss:  fraction N leaching (0 - 1) when drainage occurs
+1.0               // rebul: rate for ebulition of CH4 (unit: 1/hour)
+1.0               // rp: rate for plant-mediated CH4 emission (unit: 1/hour)
+5.0               // roxid: rate for CH4 oxidation (unit: umol/L/hour)
 0.0               // initdmossc:
 1783              // initshlwc:
 5021              // initdeepc:
 9000              // initminec:
 363               // initsoln:
 0.76              // initavln:
+0.0               // initch4: (umolC/L)
