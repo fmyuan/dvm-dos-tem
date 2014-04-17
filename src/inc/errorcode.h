@@ -14,7 +14,7 @@
 	const double MISSING_D = -9999.;   //missing value (DOUBLE) used in the code
 
 	#ifndef NULL
-	#define NULL   ((void *) 0)
+	    #define NULL ((void *) 0)
 	#endif
 
 #endif /*ERRORCODE_H_*/
