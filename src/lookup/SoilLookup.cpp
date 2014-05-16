@@ -103,39 +103,44 @@ void SoilLookup::setLookupParam(){
 	
 float SoilLookup::getSolidThermalCond(const float & clay ,const float & sand ){
     float tc = (8.8 * sand +2.92 * clay)/(sand + clay);
-	return tc;
+	return (tc);
 };
     
 float SoilLookup::getSolidVolHeatCapa(const float & clay ,const float & sand ){
-    	float hc = (2.128*sand +2.385*clay)/(sand+clay) * 1.0e6;
-    	return hc;
+    float hc = (2.128*sand +2.385*clay)/(sand+clay) * 1.0e6;
+    return (hc);
 };
 
 float SoilLookup::getSatuHydraulCond(const float & sand){
-    	return   0.0070556 *pow( 10.,(-0.884+0.0153*sand) ) ;// mm/s
+    float kh = 0.0070556 *pow( 10.,(-0.884+0.0153*sand)) ;// mm/s
+    return (kh);
 };
     	
 float SoilLookup::getSatuMatrPotential(const float & sand){
-    	return    -10. * pow( 10.,(1.88-0.0131*sand) );
+    float psi = -10. * pow( 10.,(1.88-0.0131*sand) );
+    return (psi);
 };
 
 float SoilLookup::getPorosity(const float & sand){
-    	return  0.489 - 0.00126*sand;
+    float por = 0.489 - 0.00126*sand;
+    return (por);
 };
 
 float SoilLookup::getBSW(const float & clay){
-    	return  2.91 + 0.159*clay;
+    float bsw = 2.91 + 0.159*clay;
+    return (bsw);
 };
     
 float SoilLookup::getBulkden(const float & poro){
-        return 2700 *(1-poro);	
+	float bk = 2700 *(1-poro);
+	return (bk);
 }
 
 float SoilLookup::getDryThermCond(const float & bulkden){
    float kdry =0.;
   
    kdry = (0.135*bulkden +64.7)/(2700-0.947*bulkden);
-   return kdry;
+   return (kdry);
 }   
 
 

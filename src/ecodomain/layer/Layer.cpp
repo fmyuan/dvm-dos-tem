@@ -99,7 +99,7 @@ double Layer::getHeatCapacity(){ // volumetric heat capacity
 		    hcap = getFrzVolHeatCapa();
     	}
 
-    	return hcap;
+    	return (hcap);
 };
     
 double Layer::getThermalConductivity(){
@@ -116,14 +116,14 @@ double Layer::getThermalConductivity(){
 		    tc = getFrzThermCond();
 		}
 				
-		return tc;		
+		return (tc);
 
 };
 
 double Layer::getVolWater(){
  	double vice = getVolIce();
  	double vliq = getVolLiq();
- 	return fmin((double)poro,(double)vice+vliq);
+ 	return (fmin((double)poro,(double)vice+vliq));
 };
  
 double Layer::getEffVolWater(){
@@ -136,23 +136,23 @@ double Layer::getEffVolWater(){
 
  	if(effvol<0) effvol =0.;
 
- 	return effvol;
+ 	return (effvol);
 };
  
 double Layer::getVolIce(){
     double vice = ice/DENICE/dz;
     vice = fmin((double)vice, (double)poro);
-    return vice;
+    return (vice);
 };
  
 double Layer::getVolLiq(){
     double vliq = liq/DENLIQ/dz;
     vliq = fmin((double)vliq,(double)poro);
-    return vliq;
+    return (vliq);
 };
 
 double Layer::getEffVolLiq(){
     double evliq = (liq-minliq)/DENLIQ/dz;
     evliq = fmin((double)evliq,(double)poro);
-    return evliq;
+    return (evliq);
 };

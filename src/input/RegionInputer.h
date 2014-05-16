@@ -9,10 +9,9 @@
 #include <fstream>
 #include <cstdio>
 #include <string>
-#include <cmath>
 using namespace std;
 
-#include "netcdfcpp.h"
+#include <netcdfcpp.h>
 
 #include "../data/RegionData.h"
 #include "../runmodule/ModelData.h"

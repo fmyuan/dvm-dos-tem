@@ -330,7 +330,7 @@ void Atmosphere::precsplt(const float & tair,const float & prec, float & snfl, f
 float Atmosphere::getDensity(const float & ta){
  	float rhoa ; // atmosphere density 
  	rhoa =1.292 - (0.00428 *ta);	
- 	return rhoa;	
+ 	return (rhoa);
 };
 
 float Atmosphere::getSatVP(const float & tair){
@@ -350,7 +350,7 @@ float Atmosphere::getSatVP(const float & tair){
  	}
  	
  	
- 	return svp;
+ 	return (svp);
 };
  
 float Atmosphere::getDerSVP( const float & tair){//Pa/degC
@@ -364,13 +364,13 @@ float Atmosphere::getDerSVP( const float & tair){//Pa/degC
    svp2 = getSatVP(t2);
    
    beta = (svp1-svp2)/(t1-t2);
-   return beta;	
+   return (beta);
 };	
  
 float Atmosphere::getDerSVP( const float & tair, const float & svp){//not used
    float beta ;
    beta = 4099. * svp /pow((tair +237.3),2.);
-   return beta;	
+   return (beta);
 };	
  
 float Atmosphere::getAirDensity(float const & ta){
@@ -378,7 +378,7 @@ float Atmosphere::getAirDensity(float const & ta){
 	// output air density , rhoa (kg/m3)
 	float rhoa;
 	rhoa = 1.292 - (0.00428 * ta);
-	return rhoa;
+	return (rhoa);
 }; 
  
 float Atmosphere::getAbsHumDeficit(const float & svp, const float &vp, const float & ta){
@@ -395,13 +395,13 @@ float Atmosphere::getAbsHumDeficit(const float & svp, const float &vp, const flo
   	}
   	
   	ashd = fabs((Mw/R) * ((svp * 1000./(273.2 + dewpnt)) - (vp *1000/(273.2 + ta))));
-  	return ashd;
+  	return (ashd);
 };
 
 float Atmosphere::getVPD (const float & svp, const float vp){
 	float vpd =svp -vp;
 	if (vpd<0) {vpd =0;}
-  	return vpd; // unit Pa	
+  	return (vpd); // unit Pa
 };
 
 float Atmosphere::getGIRR(const float &lat, const int& dinm){
@@ -444,7 +444,7 @@ float Atmosphere::getGIRR(const float &lat, const int& dinm){
   	gross /= (float) dinm;
   	gross *= 0.484; // convert from cal/cm2day to W/m2
 
-  	return gross;
+  	return (gross);
 
 };
 
@@ -492,7 +492,7 @@ float Atmosphere::getNIRR( const float& clds, const float& girr ){
   		nirr = MISSING_D;
   	}
 
-  	return nirr;
+  	return (nirr);
 
 };
 
@@ -510,7 +510,7 @@ float Atmosphere::getCLDS( const float & girr, const float& nirr ){
 
   	if ( clouds > 100.0 ) { clouds = 100.0; }
 
-  	return clouds;
+  	return (clouds);
 
 };
 
@@ -524,7 +524,7 @@ float Atmosphere::getPAR( const float& clds, const float& nirr ){
   		par = MISSING_D;
   	}
 
-  	return par;
+  	return (par);
 };
 
 void Atmosphere::setCohortData(CohortData* cdp){

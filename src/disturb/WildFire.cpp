@@ -56,7 +56,7 @@ void WildFire::initializeState5restart(RestartData *resin){
 	
 };
 
-//Yuan: modifying the following method, return the first fire year, if any
+//Yuan: modifying the following method, return (the first fire year, if any
 void WildFire::prepareDrivingData(){
     //initialize with -1
 	for(int in =0; in<MAX_FIR_OCRNUM; in++){
@@ -176,7 +176,7 @@ int WildFire::getOccur(const int &yrind, const bool & friderived){
 		}
 	}
 
-	return error;
+	return (error);
 
 };
     
@@ -384,7 +384,7 @@ void WildFire::burn(){
 
 /////////////////////////////////////////////////////////////////////////////////
 
-    // save the fire emission and return data into 'fd'
+    // save the fire emission and return (data into 'fd'
 	fd->fire_v2a.orgc =  comb_vegc - reta_vegc;
 	fd->fire_v2a.orgn =  comb_vegn - reta_vegn;
 
@@ -526,7 +526,7 @@ double WildFire::getBurnOrgSoilthick(){
 
   	fd->fire_soid.burnthick = bthick;
 
-    return bthick;
+    return (bthick);
 };
 
 void WildFire::setCohortLookup(CohortLookup* chtlup){

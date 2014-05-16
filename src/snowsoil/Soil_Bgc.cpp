@@ -29,7 +29,7 @@ Soil_Bgc::Soil_Bgc(){
 };
 
 Soil_Bgc::~Soil_Bgc(){
-	
+
 };
 
 void Soil_Bgc::assignCarbonBd2Layer(){
@@ -91,7 +91,7 @@ void Soil_Bgc::prepareIntegration(const bool &mdnfeedback, const bool &mdavlnflg
 	 nfeed   = mdnfeedback;
 	 avlnflg = mdavlnflg;
 	 baseline= mdbaseline;
-     
+
 	 // moss death rate if any (from Vegetation_bgc.cpp)
 	 mossdeathc    = bd->d_v2soi.mossdeathc;
 	 mossdeathn    = bd->d_v2soi.mossdeathn;
@@ -157,7 +157,7 @@ void Soil_Bgc::prepareIntegration(const bool &mdnfeedback, const bool &mdavlnflg
     			 }
     		 }
     	 }
-  
+
     	 if(cd->yrsdist<cd->gd->fri){
     		 bd->d_a2soi.orgninput = fd->fire_a2soi.orgn/12.;
     	 }
@@ -179,7 +179,7 @@ void Soil_Bgc::afterIntegration(){
 };
 
 void Soil_Bgc::initializeState(){
-          
+
   //set initiate state variable
    double dmossc= chtlu->initdmossc;
    double shlwc = chtlu->initshlwc;
@@ -204,16 +204,16 @@ void Soil_Bgc::initializeState(){
 		   bd->d_sois.avln[il] = 0.;
 		   bd->d_sois.orgn[il] = 0.;
 	   }
-	   bd->d_sois.ch4[il] = chtlu->initch4;
+	   bd->d_sois.ch4[il] = chtlu->initch4[il];
 
    }
-   
+
 };
 
 void Soil_Bgc::initializeState5restart(RestartData* resin){
-	
+
 	for (int il =0; il<MAX_SOI_LAY; il++) {
-		
+
 		bd->d_sois.rawc[il] = resin->rawc[il];
 		bd->d_sois.soma[il] = resin->soma[il];
 		bd->d_sois.sompr[il]= resin->sompr[il];
@@ -231,7 +231,7 @@ void Soil_Bgc::initializeState5restart(RestartData* resin){
     			bd->prvltrfcnque[il].push_back(tmpcn);
     		}
     	}
-			
+
 	}
 
 	bd->d_sois.wdebrisc= resin->wdebrisc;
@@ -255,7 +255,7 @@ void Soil_Bgc::initializeParameter(){
   	bgcpar.moistmin = chtlu->moistmin;
   	bgcpar.moistmax = chtlu->moistmax;
   	bgcpar.moistopt = chtlu->moistopt;
-  
+
     bgcpar.fsoma  = chtlu->fsoma;
     bgcpar.fsompr = chtlu->fsompr;
     bgcpar.fsomcr = chtlu->fsomcr;
@@ -273,7 +273,7 @@ void Soil_Bgc::initializeParameter(){
   	bgcpar.nmincnsoil = chtlu->nmincnsoil;
 
   	bgcpar.kn2 = chtlu->kn2;
-  
+
     bgcpar.propftos     = chtlu->propftos;
     decay = 0.26299 + (1.14757*bgcpar.propftos)
                     - (0.42956*pow( (double) bgcpar.propftos,2.0 ));
@@ -289,14 +289,14 @@ void Soil_Bgc::initializeParameter(){
 };
 
 void Soil_Bgc::initSoilCarbon(double & initshlwc, double & initdeepc, double & initminec){
- 
+
 	for(int il =0; il <MAX_SOI_LAY ; il++){
  	   bd->d_sois.rawc[il]  = 0.;
  	   bd->d_sois.soma[il]  = 0.;
  	   bd->d_sois.sompr[il] = 0.;
  	   bd->d_sois.somcr[il] = 0.;
  	}
-	
+
 	initOslayerCarbon(initshlwc, initdeepc);
 
 	if (initminec<0.10) initminec = 0.10;
@@ -316,7 +316,7 @@ void Soil_Bgc::initOslayerCarbon(double & shlwc, double & deepc){
 
 	double cumcarbonshlw = 0.;
 	double cumcarbondeep = 0.;
-	
+
 	ground->moss.dmossc = 0.;
 
 	while(currl!=NULL){
@@ -365,13 +365,13 @@ void Soil_Bgc::initOslayerCarbon(double & shlwc, double & deepc){
  				currl->sompr = 0.;
  				currl->somcr = 0.;
 			}
- 				 	
+
  			cumcarbontop = cumcarbonbot;
  			dbmtop = dbmbot;
 
- 	  		
+
  	  	}else{
- 	  	  	break;	
+ 	  	  	break;
  	  	}
 
  		currl =currl->nextl;
@@ -407,7 +407,7 @@ void Soil_Bgc::initOslayerCarbon(double & shlwc, double & deepc){
  	}
 
 };
-	
+
 void Soil_Bgc::initMslayerCarbon(double & minec){
  	double dbm = 0.;
  	double prevcumcarbon = 0.;
@@ -416,7 +416,7 @@ void Soil_Bgc::initMslayerCarbon(double & minec){
  	double cb = -ground->soildimpar.coefmineb;
 
  	Layer* currl = ground->fstminel;
-	
+
  	double totsomc = 0.0;
 	while(currl!=NULL){
  	  	if(currl->isSoil){
@@ -437,9 +437,9 @@ void Soil_Bgc::initMslayerCarbon(double & minec){
 			totsomc += currl->rawc+currl->soma+currl->sompr+currl->sompr;
 
 			prevcumcarbon = cumcarbon;
- 	  		
+
  	  	}else{
- 	  	  	break;	
+ 	  	  	break;
  	  	}
  		currl =currl->nextl;
  	}
@@ -465,7 +465,7 @@ void Soil_Bgc::initMslayerCarbon(double & minec){
 
 // before delta and afterdelta are considered in Integrator
 void Soil_Bgc::deltac(){
-	
+
     double kmoss = 0.;     //for dead moss materials (in model, dmossc)
     double krawc = 0.;     //for littering materials (in model, rawc)
     double ksoma = 0.;     //for active SOM (in model, soma)
@@ -474,9 +474,9 @@ void Soil_Bgc::deltac(){
 
  	for (int il =0; il<cd->d_soil.numsl; il++){
 		bd->d_soid.rhmoist[il] = getRhmoist(ed->d_soid.sws[il],  //Yuan: vwc normalized by total pore - this will allow respiration (methane/oxidation) implicitly
-	 		   bgcpar.moistmin, bgcpar.moistmax, bgcpar.moistopt);	   
+	 		   bgcpar.moistmin, bgcpar.moistmax, bgcpar.moistopt);
 		bd->d_soid.rhq10[il] = getRhq10(ed->d_sois.ts[il]);
-	 
+
 		krawc  = bgcpar.kdrawc[il]*(1.0-bgcpar.kdch4factor);
 		ksoma  = bgcpar.kdsoma[il]*(1.0-bgcpar.kdch4factor);
 	   	ksompr = bgcpar.kdsompr[il]*(1.0-bgcpar.kdch4factor);
@@ -488,14 +488,14 @@ void Soil_Bgc::deltac(){
 		} else {
 			del_soi2a.rhrawc[il] = 0.;
 		}
-		
+
 		if(tmp_sois.soma[il]>0){
 			del_soi2a.rhsoma[il] = ksoma*tmp_sois.soma[il]
 			                    * bd->d_soid.rhmoist[il] * bd->d_soid.rhq10[il];
 		} else {
 			del_soi2a.rhsoma[il] = 0.;
 		}
-  
+
 		if(tmp_sois.sompr[il]>0){
 			del_soi2a.rhsompr[il] = ksompr*tmp_sois.sompr[il]
 			                    * bd->d_soid.rhmoist[il] * bd->d_soid.rhq10[il];
@@ -526,7 +526,7 @@ void Soil_Bgc::deltac(){
 	  	del_soi2a.rhmossc = kmoss * tmp_sois.dmossc*rhmoist*rhq10;
 
     }
-   
+
    // for wood debris at ground surface
     del_soi2a.rhwdeb = 0.;
    	if(tmp_sois.wdebrisc>0){
@@ -543,9 +543,9 @@ void Soil_Bgc::deltac(){
 	  		}
 	  	}
 	  	del_soi2a.rhwdeb =   wdkd* tmp_sois.wdebrisc * rhmoist_wd * rhq10_wd;
-    
+
     }
-	  
+
 };
 
 // soil N budget
@@ -577,7 +577,7 @@ void Soil_Bgc::deltan(){
 
 	   		totnetnmin += del_soi2soi.netnmin[i];
 		}
-					
+
 		//d_soi2v.nuptake IS calculated in Vegetation_Bgc.cpp and integrated in 'Cohort.cpp'
 		totnextract = 0.;
 		for (int il=0; il<MAX_SOI_LAY; il++) {
@@ -600,7 +600,7 @@ void Soil_Bgc::deltan(){
 				del_soi2l.avlnlost = totdzavln - totnextract
                             + totnetnmin+ bd->d_a2soi.avlninput;
 			}
-    
+
 			if (del_soi2l.avlnlost<0) {
 				del_soi2l.avlnlost = 0.0;
 				double nminadj = del_soi2l.avlnlost + totnextract
@@ -610,7 +610,7 @@ void Soil_Bgc::deltan(){
 					del_soi2soi.netnmin[i] *=nminadj/totnetnmin;
 				}
 			}
-  	
+
 		} else { //N budget estimation of inorganic N loss
 			del_soi2l.avlnlost = bd->d_a2soi.avlninput - totnextract
                                  +totnetnmin;
@@ -635,7 +635,7 @@ void Soil_Bgc::deltan(){
 
 		}
 	}
-  
+
 };
 
 void Soil_Bgc::deltastate(){
@@ -1107,7 +1107,7 @@ void Soil_Bgc::deltaCH4Flux(const int &hours) {
 
 };
 
-double Soil_Bgc::getRhmoist(const double &vsm, const double &moistmin, 
+double Soil_Bgc::getRhmoist(const double &vsm, const double &moistmin,
 	                        const double &moistmax, const double &moistopt){
 
   	double rhmoist;
@@ -1118,15 +1118,15 @@ double Soil_Bgc::getRhmoist(const double &vsm, const double &moistmin,
 
 	return (rhmoist);
 };
-	
+
 double Soil_Bgc::getRhq10(const  double & tsoil){
 	double rhq10;
-    rhq10 =  pow( (double)bgcpar.rhq10, tsoil/10.0);  
+    rhq10 =  pow( (double)bgcpar.rhq10, tsoil/10.0);
  	return (rhq10);
 };
 
-double Soil_Bgc::getNimmob(const double & soilh2o, const double & soilorgc, 
-                           const double & soilorgn, const double & availn, 
+double Soil_Bgc::getNimmob(const double & soilh2o, const double & soilorgc,
+                           const double & soilorgn, const double & availn,
                            const double & ksoil, const double kn2){
 
 	 double nimmob     = 0.0;
@@ -1143,7 +1143,7 @@ double Soil_Bgc::getNimmob(const double & soilh2o, const double & soilorgc,
 	 return (nimmob);
 };
 
-double Soil_Bgc::getNetmin(const double & nimmob, const double & soilorgc, 
+double Soil_Bgc::getNetmin(const double & nimmob, const double & soilorgc,
                            const double & soilorgn, const double & rh, const double & tcnsoil,
 					       const double & decay, const double & nup ) {
 
@@ -1151,7 +1151,7 @@ double Soil_Bgc::getNetmin(const double & nimmob, const double & soilorgc,
 
   	if ( soilorgc > 0.0 && soilorgn > 0.0 ) {
     	nmin   = ((soilorgn / soilorgc) - (nup * nimmob * decay)) * rh;
-     
+
     	if ( nmin > 0.0 ){
     	 	nmin *= ((soilorgn/soilorgc) * tcnsoil);
     	 	if (nmin>0.99*soilorgn) {
@@ -1160,11 +1160,11 @@ double Soil_Bgc::getNetmin(const double & nimmob, const double & soilorgc,
      	} else {
     	 	nmin *= ((soilorgc/soilorgn) / tcnsoil);
      	}
-  	} 
-  
+  	}
+
   	return (nmin);
 
-}; 
+};
 
 void Soil_Bgc::updateKdyrly4all(){
 
@@ -1214,7 +1214,7 @@ double Soil_Bgc::getKdyrly(double & yrltrcn, const double lcclnc, const double &
 	double kd = kdc;
 
    	kd = kdc * pow( (yrltrcn),-0.784 ) / pow( lcclnc,-0.784 );
- 	
+
  	return (kd);
 };
 

@@ -637,7 +637,7 @@ double  Vegetation_Bgc::getGPP(const double &co2, const double & par,
   	gpp *= ftemp;
   	gpp *= thawpcnt;
   	if(gpp<0)gpp=0.;
-  	return gpp;
+  	return (gpp;
 
 };
 
@@ -653,7 +653,7 @@ double  Vegetation_Bgc::getRm(const double & vegc, const double & raq10,
   	if (rm<0.0) rm= 0.0;
 	if (rm>0.10*vegc) rm= 0.10*vegc;  //maintenance resp. cannot be over 10% of veg.C
 
- 	return rm;
+ 	return (rm;
 
 };
 
@@ -670,7 +670,7 @@ double Vegetation_Bgc::getGV(const double & eet,const double & pet ){
   
   	if(gv>1) gv =1;
 
-  	return gv;	
+  	return (gv;	
 };
 
 double Vegetation_Bgc::getTempFactor4GPP(const double & tair, const double &tgppopt){
@@ -697,7 +697,7 @@ double Vegetation_Bgc::getTempFactor4GPP(const double & tair, const double &tgpp
     	}
   	}
 
-  	return ftemp;
+  	return (ftemp;
 };
 
 // the maintainence respiration constant
@@ -708,7 +708,7 @@ double Vegetation_Bgc::getKr(const double & vegc, const int & ipart){
   	double krb = calpar.krb[ipart];
   
   	kr = exp((kra*vegc)+krb);	
-  	return kr;
+  	return (kr;
 };
 
 // the maintainence respiration temperature factor
@@ -727,7 +727,7 @@ double Vegetation_Bgc::getRaq10(const double & tair){
   	//	cout <<"raq10 is nan\n";
  	// 	exit(-1);
  	// }
-  	return raq10;
+  	return (raq10;
 };
 
 // Plant new production C/N ratios (bgcpar.cneven) adjusting at end of a year
@@ -824,7 +824,7 @@ double Vegetation_Bgc::getNuptake(const double & foliage, const double & raq10,
 		}
 	}
 
-  	return nuptake;
+  	return (nuptake;
 
 };
 

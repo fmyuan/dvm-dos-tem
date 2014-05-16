@@ -70,16 +70,16 @@ void Timer::advanceOneMonth(){
 int Timer::getCalendarYear(){
 
 	if(!eqend){
-	  	return stageyrind;
+	  	return (stageyrind);
 	} else if (!spend) {
-		return stageyrind+spbegyr;
+		return (stageyrind+spbegyr);
 	} else if (!trend) {
-		return stageyrind+trbegyr;
+		return (stageyrind+trbegyr);
 	} else if (!scend) {
-		return stageyrind+scbegyr;
+		return (stageyrind+scbegyr);
 	}
 
-	return 0;
+	return (0);
 };
 
 int Timer::getOutputYearIndex(){
@@ -91,32 +91,32 @@ int Timer::getOutputYearIndex(){
 	} else {
 		outyrind = yearind;
 	}
-  	return outyrind;
+  	return (outyrind);
 };
 
 int Timer::getCurrentYearIndex(){
-   	return yearind;
+   	return (yearind);
 };
 
 int Timer::getDOYIndex(const int &mind, const int &did){
   // here the mon is month index, starting from 0 - 11 for Jan. - Dec.
   // id is day index
   	int doy = DOYINDFST[mind]+ did;
- 	return doy;
+ 	return (doy);
 };
  
 int Timer::getDaysInMonth(int & monind){
-   	return DINM[monind];
+   	return (DINM[monind]);
 };
  
 int Timer::getCurrentMonthIndex(){
- 	return monind;
+ 	return (monind);
 };
  
 int Timer::getNextMonthIndex(){
  	int next = monind+1;
  	if(next ==-1) next =11;
  	if(next ==12) next =0;
- 	return next;
+ 	return (next);
 };
  

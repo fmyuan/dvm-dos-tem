@@ -340,7 +340,7 @@ double Vegetation::getUnnormleaf(const int& ipft, double &prveetmx, const double
     	unnormleaf = 0.1 * vegdimpar.minleaf[ipft];
   	}
 
-  	return unnormleaf;
+  	return (unnormleaf);
 };
 
 //fleaf is normalized EET and previous EET determined phenology index 0~1
@@ -360,7 +360,7 @@ double Vegetation::getFleaf(const int &ipft, const double & unnormleaf, const do
    		fleaf = 1.0;
    	}
 
-  	return fleaf;
+  	return (fleaf);
 };
 
 // function for biomass C adjusted foliage growth index (0 - 1.0)
@@ -394,7 +394,7 @@ double Vegetation::getFfoliage(const int &ipft, const bool & ifwoody, const bool
  		ffoliage = cd->m_vegd.foliagemx[ipft];
   	}
 
-  	return ffoliage;
+  	return (ffoliage);
 };
 
 // plant max. LAI function
@@ -408,7 +408,7 @@ double Vegetation::getYearlyMaxLAI(const int &ipft){
 	}
 	laimax *= cd->m_vegd.ffoliage[ipft];
 
-  	return laimax;
+  	return (laimax);
 };
 
 

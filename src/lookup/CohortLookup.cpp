@@ -9,7 +9,7 @@
 */
 string read_cmt_code(string s){
 	int pos = s.find("CMT");
-	return s.substr(pos, 5);
+	return (s.substr(pos, 5));
 }
 
 
