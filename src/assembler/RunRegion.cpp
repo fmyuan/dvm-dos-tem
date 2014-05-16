@@ -17,7 +17,7 @@ RunRegion::~RunRegion(){
 };
 
 int RunRegion::reinit(const int &recid){
-	if (recid<0) return -1;
+	if (recid<0) return (-1);
 
 	region.rd.act_co2yr = rinputer.act_co2yr;
 	rinputer.getCO2(&region.rd);
@@ -26,7 +26,7 @@ int RunRegion::reinit(const int &recid){
 
 	region.getinitco2();
 
-	return 0;
+	return (0);
 };
 
 

@@ -48,7 +48,7 @@ double MineralLayer::getDryThermCond(const double & bulkden){
    double kdry =0.;
   
    kdry = (0.135*bulkden +64.7)/(2700-0.947*bulkden);
-   return kdry;
+   return (kdry);
 }  
 
 double MineralLayer::getDryThermCond(const double & tcsolid, const double & bulkden, const double & partden){
@@ -57,6 +57,6 @@ double MineralLayer::getDryThermCond(const double & tcsolid, const double & bulk
    double par_a = 0.053;
    double tcair = TCAIR;
    kdry = ((par_a* tcsolid - tcair) *bulkden + tcair*partden)/(partden - (1-par_a)*bulkden)	;
-   return kdry;
+   return (kdry);
 }     
 

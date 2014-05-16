@@ -289,7 +289,7 @@ int RestartOutputer::errorChecking(){
 	if (isnan(resod->burnedn) || isinf(resod->burnedn)) errcode = -1;
 	if (isnan(resod->lai[0]) || isinf(resod->lai[0])) errcode = -1;
 */
-	return errcode;
+	return (errcode);
 }
 
 void RestartOutputer::setRestartOutData(RestartData * resodp){

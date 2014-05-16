@@ -288,7 +288,7 @@ double Vegetation_Env::getPenMonET(const double & ta, const double& vpd, const d
 		double slope = (pvs1-pvs2)/(t1-t2);	
 		/*evapotranspiration*/
 		et = (slope*irad+ rho*CP *vpd/rhr)/((pa * CP *rv)/(lhvap*EPS *rhr)+slope);
-		return et/lhvap;		
+		return (et/lhvap;		
 };
 
 double Vegetation_Env::getCanopySubl(const double & rac, const double & sinter, const double & lai ){
@@ -314,7 +314,7 @@ double Vegetation_Env::getCanopySubl(const double & rac, const double & sinter, 
     }else{
       sub = psub;
     }
-    return sub;
+    return (sub;
 };
 
 double Vegetation_Env::getLeafStomaCond(const double & ta, const double &  ppfdabsorb,
@@ -360,7 +360,7 @@ double Vegetation_Env::getLeafStomaCond(const double & ta, const double &  ppfda
 	m_tot = m_ppfd * m_vpd * m_co2* m_tmin*m_psi;	
 	gl =  m_tot * glmax;
 	
-	return gl;
+	return (gl;
 };
 
 double Vegetation_Env::getRainInterception(const double & rain, const double & lai){
@@ -380,7 +380,7 @@ double Vegetation_Env::getRainInterception(const double & rain, const double & l
    	 rinter= max_int;
    }              
 
-   return rinter; 
+   return (rinter; 
   	
 };
 
@@ -398,7 +398,7 @@ double Vegetation_Env::getSnowInterception(const double & snow, const double & l
        	sinter = psinter;
     }
 
-    return sinter;
+    return (sinter;
   	
 };
 

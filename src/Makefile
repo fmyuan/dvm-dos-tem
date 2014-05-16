@@ -1,10 +1,10 @@
 # dvm-dos-tem Makefile 
 
-GCC_PATH=/usr/local/Cellar/gcc48/4.8.0
-CC=$(GCC_PATH)/bin/g++-4.8
+GCC_PATH=/usr/local/gcc-4.8.1
+CC=$(GCC_PATH)/bin/g++
 CFLAGS=-c -Wall -ansi -O0 -g -fPIC -fmessage-length=0 -fpermissive
-INCDIR=-I/usr/local/netcdf-4.1.3-gcc48/include
-LIBDIR=-L/usr/local/netcdf-4.1.3-gcc48/lib
+INCDIR=-I/usr/local/netcdf-4.1.3-openmpi/include
+LIBDIR=-L/usr/local/netcdf-4.1.3-openmpi/lib
 LIBS=-lnetcdf_c++ -lnetcdf
 
 LIBTEM = libTEM.dylib

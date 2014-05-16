@@ -46,7 +46,7 @@ int RegionInputer::initCO2file(string &dir){
  	}
  	int yrs = yrD->size();
 
- 	return yrs;
+ 	return (yrs);
 }
 
 void RegionInputer::getCO2(RegionData *rd){

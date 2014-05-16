@@ -680,7 +680,7 @@ int TemperatureUpdator::updateOneTimeStep(const int &startind, const int & endin
 			tld[i] = tit[i];
 		}
 
-		return 0; //status;
+		return (0); //status;
 	} else if (is == -1) { // the difference between iteration is too big, iterate again
 		for (int i = startind; i <= endind; i++) {
 			tii[i] = tis[i]; //syiawi, previous tii[i] = tit[i]; bug
@@ -688,7 +688,7 @@ int TemperatureUpdator::updateOneTimeStep(const int &startind, const int & endin
 		status = is;
 	}
 
-	return status;
+	return (status;
 }
 
 // the main calculation will be done here
@@ -702,12 +702,12 @@ int TemperatureUpdator::updateOneIteration(const int &startind, const int & endi
 
 	for (int il = startind; il <= endind; il++) {
 		if (fabs(tii[il] - tit[il]) > ttole) {
-			return -1;
+			return (-1);
 		}
 
 	}
 
-	return 0;
+	return (0);
 }
 
 void TemperatureUpdator::setGround(Ground* groundp){

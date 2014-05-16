@@ -664,7 +664,7 @@ bool Ground::constructSnowLayers(const double & dsmass, const double & tdrv){
 
 			 insertFront(snwl);
 
-		 	 return  true;
+		 	 return (true);
 		 }else{ // snow layer does not exist
 		 	 double tsno =toplayer->tem;
 		 	 if(tsno<=0){
@@ -679,7 +679,7 @@ bool Ground::constructSnowLayers(const double & dsmass, const double & tdrv){
 		 	   snwl->tem = tdrv;
 
 		 	   insertFront(snwl);
-	           return true;
+	           return (true);
 		 	 }
 
 		 }
@@ -707,7 +707,7 @@ bool Ground::constructSnowLayers(const double & dsmass, const double & tdrv){
 		}
 	 }
 
-	 return layerchanged;
+	 return (layerchanged);
 
 };
 
@@ -777,7 +777,7 @@ bool Ground::divideSnowLayers(){
 		currl= currl->nextl;
     }
 
-	return layerchanged;
+	return (layerchanged);
 };
 
 bool Ground::combineSnowLayers(){
@@ -856,7 +856,7 @@ bool Ground::combineSnowLayers(){
 		if(currl->isSoil)break;
     }
 
-	return layerchanged;
+	return (layerchanged);
 };
 
 void Ground::updateSnowLayerPropertiesDaily(){
@@ -1484,7 +1484,7 @@ double Ground::adjustSoilAfterburn(){
 	redivideSoilLayers();
 
   	// for checking the adjusted burned thickness
-	return bdepthadj;
+	return (bdepthadj);
 };
 
 //if OS thickness changes, the following needs to be called

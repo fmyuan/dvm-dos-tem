@@ -51,21 +51,12 @@ void SnowLayer::updateThick(){
 
 // get frozen layer thermal conductivity, according to Jordan 1991
 double SnowLayer::getFrzThermCond(){
-	  	//if (ctype==0){// tundra
-	      return getThermCond5Jordan();
-	  	 
-	  	//}else{
-	  //return getThermCond5Sturm();
-	  	//}
+   return (getThermCond5Jordan());
 };
 
 // get unfrozen layer thermal conductivity
 double SnowLayer::getUnfThermCond(){
-	   //if(ctype==0){
-	   return getThermCond5Jordan();
-	   //}else{
-	   //return getThermCond5Sturm();
-	   //}
+   return (getThermCond5Jordan());
 };
 	  
 double SnowLayer::getThermCond5Sturm(){
@@ -78,7 +69,7 @@ double SnowLayer::getThermCond5Sturm(){
         tc =0.023 +0.234 *rhogcm;
     }
 
-    return tc;
+    return (tc);
 };
 	  
 //in TROleson142004a
@@ -88,22 +79,22 @@ double SnowLayer::getThermCond5Jordan(){
     tc = 2.9*1.e-6 * rho*rho;
     if(tc<0.04) tc =0.04;
 
-    return tc;
+    return (tc);
 }
 	 
 double SnowLayer::getFrzVolHeatCapa(){
 	 
     double vhc = SHCICE * ice/dz;
- 	return vhc;
+ 	return (vhc);
 };
 
 double SnowLayer::getUnfVolHeatCapa(){
 	double vhc = SHCICE * ice/dz;
-	return vhc;
+	return (vhc);
 };
 
 double SnowLayer::getMixVolHeatCapa(){
     double vhc = SHCICE * ice/dz;
- 	return vhc;
+ 	return (vhc);
 };
 	 

@@ -47,10 +47,10 @@ int Grid::reinit(){
   	gd.pfsize[1] = 0.80;
   
   	if(gd.topsoil <0 || gd.botsoil <0){
-  	    return -2;
+  	    return (-2);
   	}
   
-  	return 0;
+  	return (0);
 
 }
 

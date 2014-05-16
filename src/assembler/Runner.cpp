@@ -617,13 +617,13 @@ int Runner::runSpatially(const int icalyr, const int im, const int jj) {
 			yrending= nfri*runcht.cht.gd->fri-2;  //n*FRI-2: ending at 2 years prior to fire year
 			if (icalyr>yrending) {
 				if (jj==(int)runchtlist.size()-1) {
-					return 1;      // this will break the 'icalyr' loop in runmode3()
+					return (1);      // this will break the 'icalyr' loop in runmode3()
 				} else {
 					if (md.initmode>3){
 						mlyres.push_back(mlyres.at(0));
 						mlyres.pop_front();       // these two will move the skipped cohort 'restart' to the back of 'deque'
 					}
-					return 0;      // this will skip the following statements and jump to next cohort (if not the last one)
+					return (0);      // this will skip the following statements and jump to next cohort (if not the last one)
 				}
 			}
 		}
@@ -662,7 +662,7 @@ int Runner::runSpatially(const int icalyr, const int im, const int jj) {
 
 		runcht.cohortcount++;
 
-		return 0;
+		return (0);
 };
 
 void Runner::createCohortList4Run(){

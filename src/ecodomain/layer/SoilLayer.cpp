@@ -15,18 +15,18 @@ SoilLayer::~SoilLayer(){
 
 double SoilLayer::getFrzVolHeatCapa(){
 	 double vhc = vhcsolid * (1-poro) + (liq+ice)/dz *SHCICE;
-	 return vhc;
+	 return (vhc);
 };
 
 double SoilLayer::getUnfVolHeatCapa(){
 	 double vhc= vhcsolid * (1-poro) + (liq+ice)/dz *SHCLIQ;
-	 return vhc;
+	 return (vhc);
 };
 	   
 //Yuan: unfrozen/frozen put together
 double SoilLayer::getMixVolHeatCapa(){
 	 double vhc = vhcsolid * (1-poro) + liq/dz *SHCLIQ+ice/dz *SHCICE;
-	 return vhc;
+	 return (vhc);
 };
 	  
 // get frozen layer thermal conductivity
@@ -43,7 +43,7 @@ double SoilLayer::getFrzThermCond(){
 	  	 tc = ke *tcsatfrz + (1-ke)*tcdry;
 	  }
 	  
-	  return tc;
+	  return (tc);
 };
 	  
 // get unfrozen layer thermal conductivity
@@ -65,7 +65,7 @@ double SoilLayer::getUnfThermCond(){
 	  	tc = fmax(tc, tcmin);
   	}
 
-  	return tc;
+  	return (tc);
 };
 
 double SoilLayer::getMatricPotential(){
@@ -87,7 +87,7 @@ double SoilLayer::getMatricPotential(){
 
 	}
 
-	return psi;
+	return (psi);
 };
 	  
 // get albedo of visible radition
@@ -99,7 +99,7 @@ double SoilLayer::getAlbedoVis(){
        	delta =fmax(0., delta);
        	vis = albsatvis + delta;
        	vis = min(vis, (double)albdryvis);
-       	return vis;
+       	return (vis);
 };
      
 // get albedo of nir radition
@@ -110,7 +110,7 @@ double SoilLayer::getAlbedoNir(){
        	delta =fmax(0., delta);
        	nir = albsatnir + delta;
        	nir = fmin(nir, (double)albdrynir);
-       	return nir;
+       	return (nir);
 };
      
 // derive properties from the assigned property

@@ -20,10 +20,10 @@ int GridInputer::init(){
     }else{
 	  std::string msg ="GridInputer::init - ModelData is NULL";
 	  cout<<msg+"\n";
-	  return -1;
+	  return (-1);
     }
 	
-	return 0;
+	return (0);
 }
 
 int GridInputer::initGrid(string& dir){
@@ -48,7 +48,7 @@ int GridInputer::initGrid(string& dir){
 
  	int act_gridno = grdD->size();  //actual grid number
 
- 	return act_gridno;
+ 	return (act_gridno);
 
 }
 
@@ -74,7 +74,7 @@ int GridInputer::initSoilTexture(string& dir){
 
  	int act_soilidno = soilD->size();  //actual soil dataset number
 
- 	return act_soilidno;
+ 	return (act_soilidno);
 
 }
 
@@ -99,7 +99,7 @@ int GridInputer::initDrainType(string& dir){
 
  	int act_drainno = drainD->size();  //actual drainage type datset number
 
- 	return act_drainno;
+ 	return (act_drainno);
 
 }
 
@@ -139,7 +139,7 @@ int GridInputer::initFireStatistics(string & dir){
 
  	int act_gfireno = gfireD->size();  //actual grid fire dataset number
 
- 	return act_gfireno;
+ 	return (act_gfireno);
 
 }
 
@@ -154,7 +154,7 @@ int GridInputer::getGridids(int & grdid, int &grddrgid, int &grdsoilid,
 	if(grdidV==NULL){
 		string msg="Cannot get GRIDID in 'grid.nc'! ";
  		cout<<msg+"\n";
- 		return -1;
+ 		return (-1);
 	}
 	grdidV->set_cur(recno);
 	grdidV->get(&grdid, 1);
@@ -163,7 +163,7 @@ int GridInputer::getGridids(int & grdid, int &grddrgid, int &grdsoilid,
 	if(drgidV==NULL){
 		string msg="Cannot get DRAINAGEID in 'grid.nc'! ";
  		cout<<msg+"\n";
- 		return -1;
+ 		return (-1);
 	}
 	drgidV->set_cur(recno);
 	drgidV->get(&grddrgid, 1);
@@ -172,7 +172,7 @@ int GridInputer::getGridids(int & grdid, int &grddrgid, int &grdsoilid,
 	if(soilidV==NULL){
 		string msg="Cannot get SOILID in 'grid.nc'! ";
  		cout<<msg+"\n";
- 		return -1;
+ 		return (-1);
 	}
 	soilidV->set_cur(recno);
 	soilidV->get(&grdsoilid, 1);
@@ -181,12 +181,12 @@ int GridInputer::getGridids(int & grdid, int &grddrgid, int &grdsoilid,
 	if(gfireidV==NULL){
 		string msg="Cannot get GFIREID in 'grid.nc'! ";
  		cout<<msg+"\n";
- 		return -1;
+ 		return (-1);
 	}
 	gfireidV->set_cur(recno);
 	gfireidV->get(&grdfireid, 1);
 
-	return 0;
+	return (0);
 }
 
 int GridInputer::getDrainId(int & drainid, const int & recno){
@@ -199,13 +199,13 @@ int GridInputer::getDrainId(int & drainid, const int & recno){
 	if(drainidV==NULL){
 		string msg="Cannot get DRAINAGEID in 'drainage.nc'! ";
  		cout<<msg+"\n";
- 		return -1;
+ 		return (-1);
 	}
 
 	drainidV->set_cur(recno);
 	drainidV->get(&drainid, 1);
 
-	return 0;
+	return (0);
 }
 
 int GridInputer::getSoilId(int & soilid, const int & recno){
@@ -217,13 +217,13 @@ int GridInputer::getSoilId(int & soilid, const int & recno){
 	if(soilidV==NULL){
 		string msg="Cannot get SOILID in 'soiltexture.nc'! ";
  		cout<<msg+"\n";
- 		return -1;
+ 		return (-1);
 	}
 
 	soilidV->set_cur(recno);
 	soilidV->get(&soilid, 1);
 
-	return 0;
+	return (0);
 }
 
 int GridInputer::getGfireId(int &gfireid, const int & recno){
@@ -235,13 +235,13 @@ int GridInputer::getGfireId(int &gfireid, const int & recno){
 	if(gfireidV==NULL){
 		string msg="Cannot get GFIREID in 'firestatistics.nc'! ";
  		cout<<msg+"\n";
- 		return -1;
+ 		return (-1);
 	}
 
 	gfireidV->set_cur(recno);
 	gfireidV->get(&gfireid, 1);
 
-	return 0;
+	return (0);
 }
 
 //recid - the order (from ZERO) in the .nc file, gridid - the grid id user-defined in the dataset

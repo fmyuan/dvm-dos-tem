@@ -300,7 +300,7 @@ int Richards::updateOnethTimeStep(const double &fbaseflow){
     		
     }
 	
-    return status;
+    return (status);
 	  
 }; 
   
@@ -469,18 +469,18 @@ int Richards::updateOneIteration(const double &fbaseflow){
     for(int il=indx0al; il<indx0al+numal; il++){
 /* // the '-1' and '-2' status appear causing yearly unstablitity - so removed
     	if(liqit[il]<0.0){
-     		return -1;    // apparently slow down the iteration very much during drying
+     		return (-1);    // apparently slow down the iteration very much during drying
     	}
     	if(liqit[il]>effmaxliq[il]){
-    		return -2;    // apparently slow down the iteration very much during wetting
+    		return (-2);    // apparently slow down the iteration very much during wetting
     	}
 //*/
     	if(fabs((liqit[il]-liqii[il])/effmaxliq[il])>LIQTOLE){
-    		return -3;
+    		return (-3);
     	}
    }
      
-   return 0;
+   return (0);
 	
 };
 

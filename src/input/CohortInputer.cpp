@@ -21,7 +21,7 @@ int CohortInputer::init(){
     error = initVegFile();
 	error = initFireFile();
 
-	return error;
+	return (error);
 };
 
 int CohortInputer::initChtidFile(){
@@ -32,18 +32,18 @@ int CohortInputer::initChtidFile(){
  	if(!chtidFile.is_valid()){
  		string msg = chtidfname+" is not valid";
  		cout<<msg+"\n";
- 		return -1;
+ 		return (-1);
  	}
  	
  	NcDim* chtD = chtidFile.get_dim("CHTID");
  	if(!chtD->is_valid()){
  		string msg = "CHTD Dimension is no Valid in ChtidFile";
  		cout<<msg+"\n";
- 		return -1;
+ 		return (-1);
  	}
  	md->act_chtno = chtD->size();
  	
- 	return 0;
+ 	return (0);
 };
 
 int CohortInputer::initChtinitFile(){
@@ -56,22 +56,22 @@ int CohortInputer::initChtinitFile(){
 		if(!chtinitFile.is_valid()){
 			string msg = chtinitfname+" is not valid";
 			cout<<msg+"\n";
-			return -1;
+			return (-1);
 		}
 
 		NcDim* chtD = chtinitFile.get_dim("CHTID");
 		if(!chtD->is_valid()){
 			string msg = "CHTD Dimension is no Valid in file:" + chtinitfname;
 			cout<<msg+"\n";
-			return -1;
+			return (-1);
 		}
 		md->act_initchtno = chtD->size();
 
-		return 0;
+		return (0);
 
 	}
 
- 	return -1;
+ 	return (-1);
 };
 
 int CohortInputer::initClmFile(){
@@ -84,14 +84,14 @@ int CohortInputer::initClmFile(){
  	if(!clmncFile.is_valid()){
  		string msg = clmfname+" is not valid";
  		cout<<msg+"\n";
- 		return -1;
+ 		return (-1);
  	}
 
  	NcDim* clmD = clmncFile.get_dim("CLMID");
  	if(!clmD->is_valid()){
  		string msg = "CLMID Dimension is not valid in 'climate.nc' !";
  		cout<<msg+"\n";
- 		return -1;
+ 		return (-1);
  	}
  	md->act_clmno = clmD->size();  //actual atm data record number
 
@@ -99,7 +99,7 @@ int CohortInputer::initClmFile(){
  	if(clmyrV==NULL){
  	    string msg = "Cannot get YEAR in 'climate.nc' file! ";
 		cout<<msg+"\n";
-		return -1;
+		return (-1);
  	} else {
  		int yrno = 0;
  		int yr = -1;
@@ -129,12 +129,12 @@ int CohortInputer::initClmFile(){
  	 	} else {
  	 	    string msg = "Cannot get MONTH or DOY dimension in 'climate.nc' file! ";
  			cout<<msg+"\n";
- 			return -1;
+ 			return (-1);
 
  	 	}
  	}
 
- 	return 0;
+ 	return (0);
 }
 
 int CohortInputer::initVegFile(){
@@ -145,14 +145,14 @@ int CohortInputer::initVegFile(){
  	if(!vegncFile.is_valid()){
  		string msg = vegfname+" is not valid";
  		cout<<msg+"\n";
- 		return -1;
+ 		return (-1);
  	}
 
  	NcDim* vegD = vegncFile.get_dim("VEGID");
  	if(!vegD->is_valid()){
  		string msg = "VEGID Dimension is not valid in 'Vegtation.nc'!";
  		cout<<msg+"\n";
- 		return -1;
+ 		return (-1);
  	}
  	md->act_vegno = vegD->size();  //actual vegetation data record number
 
@@ -160,12 +160,12 @@ int CohortInputer::initVegFile(){
  	if(!vegsetD->is_valid()){
  		string msg = "VEGSET Dimension is not valid in 'Vegtation.nc'!";
  		cout<<msg+"\n";
- 		return -1;
+ 		return (-1);
  	}
 
  	md->act_vegset = vegsetD->size();  //actual vegetation data sets
 
- 	return 0;
+ 	return (0);
 
 };
 
@@ -177,14 +177,14 @@ int CohortInputer::initFireFile(){
  	if(!firencFile.is_valid()){
  		string msg = firefname+" is not valid";
  		cout<<msg+"\n";
- 		return -1;
+ 		return (-1);
  	}
 
  	NcDim* fireD = firencFile.get_dim("FIREID");
  	if(!fireD->is_valid()){
  		string msg = "FIREID Dimension is not valid in 'fire.nc'!";
  		cout<<msg+"\n";
- 		return -1;
+ 		return (-1);
  	}
  	md->act_fireno = fireD->size();  //actual fire data record number
 
@@ -192,12 +192,12 @@ int CohortInputer::initFireFile(){
  	if(!fireyrD->is_valid()){
  		string msg = "FIRESET Dimension is not valid in 'fire.nc'! ";
  		cout<<msg+"\n";
- 		return -1;
+ 		return (-1);
  	}
 
  	md->act_fireset=fireyrD->size();  //actual fire year-set number
 
- 	return 0;
+ 	return (0);
 };
 
 // the following is for a input file containing data ids for each cohort
@@ -210,7 +210,7 @@ int CohortInputer::getChtDataids(int &chtid, int & initchtid, int & grdid,
  	if(chtidV==NULL){
  	   string msg = "Cannot get CHTID in 'cohortid.nc' file! ";
 		cout<<msg+"\n";
-		return -1;
+		return (-1);
  	}
 	chtidV->set_cur(recno);
 	chtidV->get(&chtid, 1);
@@ -219,7 +219,7 @@ int CohortInputer::getChtDataids(int &chtid, int & initchtid, int & grdid,
  	if(initchtidV==NULL){
  	   string msg = "Cannot get INITCHTID in 'cohortid.nc' file! ";
 		cout<<msg+"\n";
-		return -1;
+		return (-1);
  	}
 	initchtidV->set_cur(recno);
 	initchtidV->get(&initchtid, 1);
@@ -228,7 +228,7 @@ int CohortInputer::getChtDataids(int &chtid, int & initchtid, int & grdid,
  	if(grdidV==NULL){
  	   string msg = "Cannot get GRIDID in 'cohortid.nc' file! ";
 		cout<<msg+"\n";
-		return -1;
+		return (-1);
  	}
 	grdidV->set_cur(recno);
 	grdidV->get(&grdid, 1);
@@ -237,7 +237,7 @@ int CohortInputer::getChtDataids(int &chtid, int & initchtid, int & grdid,
  	if(clmidV==NULL){
  	   string msg = "Cannot get CLMID in 'cohortid.nc' file! ";
 		cout<<msg+"\n";
-		return -1;
+		return (-1);
  	}
 	clmidV->set_cur(recno);
 	clmidV->get(&clmid, 1);
@@ -246,7 +246,7 @@ int CohortInputer::getChtDataids(int &chtid, int & initchtid, int & grdid,
  	if(vegidV==NULL){
  	   string msg = "Cannot get VEGID in 'cohortid.nc' file! ";
 		cout<<msg+"\n";
-		return -1;
+		return (-1);
  	}
 	vegidV->set_cur(recno);
 	vegidV->get(&vegid, 1);
@@ -255,12 +255,12 @@ int CohortInputer::getChtDataids(int &chtid, int & initchtid, int & grdid,
  	if(fireidV==NULL){
  	   string msg = "Cannot get FIREID in 'cohortid.nc' file! ";
 		cout<<msg+"\n";
-		return -1;
+		return (-1);
  	}
 	fireidV->set_cur(recno);
 	fireidV->get(&fireid, 1);
 
-	return 0;
+	return (0);
 
 };
 
@@ -273,12 +273,12 @@ int CohortInputer::getInitchtId(int &initchtid, const int &recno){
  	if(initchtidV==NULL){
  	   string msg = "Cannot get CHTID in the initial file! ";
 		cout<<msg+"\n";
-		return -1;
+		return (-1);
  	}
 	initchtidV->set_cur(recno);
 	initchtidV->get(&initchtid, 1);
 
-	return 0;
+	return (0);
 };
 
 int CohortInputer::getClmId(int &clmid, const int &recno){
@@ -289,12 +289,12 @@ int CohortInputer::getClmId(int &clmid, const int &recno){
  	if(clmidV==NULL){
  	   string msg = "Cannot get CLMID in 'climate.nc' file! ";
 		cout<<msg+"\n";
-		return -1;
+		return (-1);
  	}
 	clmidV->set_cur(recno);
 	clmidV->get(&clmid, 1);
 
-	return 0;
+	return (0);
 };
 
 int CohortInputer::getVegId(int &vegid, const int &recno){
@@ -305,13 +305,13 @@ int CohortInputer::getVegId(int &vegid, const int &recno){
  	if(vegidV==NULL){
  	   string msg = "Cannot get VEGID in 'vegetation.nc' file! ";
 		cout<<msg+"\n";
-		return -1;
+		return (-1);
  	}
 
 	vegidV->set_cur(recno);
 	vegidV->get(&vegid, 1);
 
-	return 0;
+	return (0);
 };
 
 int CohortInputer::getFireId(int &fireid, const int &recno){
@@ -322,13 +322,13 @@ int CohortInputer::getFireId(int &fireid, const int &recno){
  	if(fireidV==NULL){
  	   string msg = "Cannot get FIREID in 'fire.nc' file! ";
 		cout<<msg+"\n";
-		return -1;
+		return (-1);
  	}
 
 	fireidV->set_cur(recno);
 	fireidV->get(&fireid, 1);
 
-	return 0;
+	return (0);
 };
 
 // read-in clm data for 'yrs' years and ONE record only

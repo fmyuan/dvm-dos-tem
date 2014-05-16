@@ -648,18 +648,18 @@ int Integrator::checkPools(){
 	/////
    	if (vegbgc) {
    		for (int i=0; i<NUM_PFT_PART; i++) {
-   			if(ydum[I_VEGC+i]<0) return I_VEGC+i;
+   			if(ydum[I_VEGC+i]<0) return (I_VEGC+i);
 
    			if (veg->nfeed) {
-   				if(ydum[I_STRN+i]<0) return I_STRN+i;
+   				if(ydum[I_STRN+i]<0) return (I_STRN+i);
    			}
    		}
 
-   		if(ydum[I_DEADC]<0)	return I_DEADC;
+   		if(ydum[I_DEADC]<0)	return (I_DEADC);
 
 		if (veg->nfeed) {
-			if(ydum[I_LABN]<0) return I_LABN;
-			if(ydum[I_DEADN]<0) return I_DEADN;
+			if(ydum[I_LABN]<0) return (I_LABN);
+			if(ydum[I_DEADN]<0) return (I_DEADN);
    		}
 
    	}
@@ -669,52 +669,52 @@ int Integrator::checkPools(){
 
    		for (int il=0; il<numsl; il++){
    			if(ydum[I_L_RAWC+il]<0) {
-   				return I_L_RAWC+il;
+   				return (I_L_RAWC+il);
    			}
 
    			if(ydum[I_L_SOMA+il]<0) {
-   				return I_L_SOMA+il;
+   				return (I_L_SOMA+il);
    			}
 
    			if(ydum[I_L_SOMPR+il]<0) {
-   				return I_L_SOMPR+il;
+   				return (I_L_SOMPR+il);
    			}
 
    			if(ydum[I_L_SOMCR+il]<0) {
-   				return I_L_SOMCR+il;
+   				return (I_L_SOMCR+il);
    			}
 
    			if (ssl->nfeed) {
    				if(ydum[I_L_AVLN+il]<0) {
-   					return I_L_AVLN+il;
+   					return (I_L_AVLN+il);
    				}
 
    				if(ydum[I_L_ORGN+il]<0) {
-   					return I_L_ORGN+il;
+   					return (I_L_ORGN+il);
    				}
    			}
 
    		}
 
    		if(ydum[I_WDEBRISC]<0.) {
-			return I_WDEBRISC;
+			return (I_WDEBRISC);
 		}
 
    		if(ydum[I_WDEBRISN]<0.) {
-			return I_WDEBRISN;
+			return (I_WDEBRISN);
 		}
 
    		if(ydum[I_DMOSSC]<0.) {
-			return I_DMOSSC;
+			return (I_DMOSSC);
 		}
 
    		if(ydum[I_DMOSSN]<0.) {
-			return I_DMOSSN;
+			return (I_DMOSSN);
 		}
 
    	}
 
-   	return negativepool;
+   	return (negativepool);
 };
 
 int Integrator::boundcon( float ptstate[], float err[], float& ptol ) {
@@ -731,65 +731,65 @@ int Integrator::boundcon( float ptstate[], float err[], float& ptol ) {
 
  //  			if (err[I_VEGC+i] > fabs( ptol * ptstate[I_VEGC+i] ) ){ // this may have issues if the err is very small while ptstate is 0
    	   		same = err[I_VEGC+i] - fabs(ptol * ptstate[I_VEGC+i]);
-   			if (same>zero) return test = vegvarkey(I_VEGC)+1+i;
+   			if (same>zero) return (test = vegvarkey(I_VEGC)+1+i);
 
    		    same = err[I_INGPP+i] - fabs(ptol * ptstate[I_INGPP+i]);
-   		    if (same>zero) return test = vegvarkey(I_INGPP)+1+i;
+   		    if (same>zero) return (test = vegvarkey(I_INGPP)+1+i);
 
    		    same = err[I_INNPP+i] - fabs(ptol * ptstate[I_INNPP+i]);
-   		    if (same>zero) return test = vegvarkey(I_INNPP)+1+i;
+   		    if (same>zero) return (test = vegvarkey(I_INNPP)+1+i);
 
    		    same = err[I_GPP+i] - fabs(ptol * ptstate[I_GPP+i]);
-   		    if (same>zero) return test = vegvarkey(I_GPP)+1+i;
+   		    if (same>zero) return (test = vegvarkey(I_GPP)+1+i);
 
    		    same = err[I_NPP+i] - fabs(ptol * ptstate[I_NPP+i]);
-   		    if (same>zero) return test = vegvarkey(I_NPP)+1+i;
+   		    if (same>zero) return (test = vegvarkey(I_NPP)+1+i);
 
    		    same = err[I_RM+i] - fabs(ptol * ptstate[I_RM+i]);
-   		    if (same>zero) return test = vegvarkey(I_RM)+1+i;
+   		    if (same>zero) return (test = vegvarkey(I_RM)+1+i);
 
    		    same = err[I_RG+i] - fabs(ptol * ptstate[I_RG+i]);
-   		    if (same>zero) return test = vegvarkey(I_RG)+1+i;
+   		    if (same>zero) return (test = vegvarkey(I_RG)+1+i);
 
    		    same = err[I_LTRC+i] - fabs(ptol * ptstate[I_LTRC+i]);
-   		    if (same>zero) return test = vegvarkey(I_LTRC)+1+i;
+   		    if (same>zero) return (test = vegvarkey(I_LTRC)+1+i);
 
    		}
 
    		same = err[I_DEADC] - fabs( ptol * ptstate[I_DEADC]);
-   		if (same>zero) return test = vegvarkey(I_DEADC)+1;
+   		if (same>zero) return (test = vegvarkey(I_DEADC)+1);
 
    		//Veg N
    		if (veg->nfeed) {
    			for (int i=0; i<NUM_PFT_PART; i++) {
    				same = err[I_STRN+i] - fabs( ptol * ptstate[I_STRN+i]);
-   				if (same>zero) return test = vegvarkey(I_STRN)+1+i;
+   				if (same>zero) return (test = vegvarkey(I_STRN)+1+i);
 
    				same = err[I_SNUP+i] - fabs( ptol * ptstate[I_SNUP+i]);
-   				if (same>zero) return test = vegvarkey(I_SNUP)+1+i;
+   				if (same>zero) return (test = vegvarkey(I_SNUP)+1+i);
 
    				same = err[I_NMBOL+i] - fabs( ptol * ptstate[I_NMBOL+i]);
-   				if (same>zero) return test = vegvarkey(I_NMBOL)+1+i;
+   				if (same>zero) return (test = vegvarkey(I_NMBOL)+1+i);
 
    				same = err[I_NRSRB+i] - fabs( ptol * ptstate[I_NRSRB+i]);
-   				if (same>zero) return test = vegvarkey(I_NRSRB)+1+i;
+   				if (same>zero) return (test = vegvarkey(I_NRSRB)+1+i);
 
    				same = err[I_LTRN+i] - fabs( ptol * ptstate[I_LTRN+i]);
-   				if (same>zero) return test = vegvarkey(I_LTRN)+1+i;
+   				if (same>zero) return (test = vegvarkey(I_LTRN)+1+i);
 
    			}
 
    			same = err[I_LABN] - fabs( ptol * ptstate[I_LABN]);
-   			if (same>zero) return test = vegvarkey(I_LABN)+1;
+   			if (same>zero) return (test = vegvarkey(I_LABN)+1);
 
    			same = err[I_DEADN] - fabs( ptol * ptstate[I_DEADN]);
-   			if (same>zero) return test = vegvarkey(I_DEADN)+1;
+   			if (same>zero) return (test = vegvarkey(I_DEADN)+1);
 
    			same = err[I_INNUP] - fabs( ptol * ptstate[I_INNUP]);
-   			if (same>zero) return test = vegvarkey( I_INNUP )+1;
+   			if (same>zero) return (test = vegvarkey(I_INNUP)+1);
 
    			same = err[I_LNUP] - fabs(ptol * ptstate[I_LNUP]);
-  			if (same>zero) return test = vegvarkey( I_LNUP )+1;
+  			if (same>zero) return (test = vegvarkey(I_LNUP)+1);
 
    		}
    	} // end of veg_bgc checking
@@ -801,66 +801,66 @@ int Integrator::boundcon( float ptstate[], float err[], float& ptol ) {
    		for(int il =0; il<numsl; il++){
 
    			same = err[I_L_RAWC+il] - fabs( ptol * ptstate[I_L_RAWC+il]);
-   			if (same>zero) return test = soivarkey( I_L_RAWC)+1 +il;
+   			if (same>zero) return (test = soivarkey( I_L_RAWC)+1 +il);
 
    			same = err[I_L_SOMA+il] - fabs( ptol * ptstate[I_L_SOMA+il]);
-   			if (same>zero) return test = soivarkey(I_L_SOMA)+1 +il;
+   			if (same>zero) return (test = soivarkey(I_L_SOMA)+1 +il);
 
    			same = err[I_L_SOMPR+il] - fabs( ptol * ptstate[I_L_SOMPR+il]);
-   			if (same>zero) return test = soivarkey(I_L_SOMPR) +1 + il;
+   			if (same>zero) return (test = soivarkey(I_L_SOMPR) +1 + il);
 
    			same = err[I_L_SOMCR+il] - fabs( ptol * ptstate[I_L_SOMCR+il]);
-   			if (same>zero) return test = soivarkey(I_L_SOMCR)+1 + il;
+   			if (same>zero) return (test = soivarkey(I_L_SOMCR)+1 + il);
 
    		    //
    			same = err[I_L_RH_RAW+il] - fabs( ptol * ptstate[I_L_RH_RAW+il]);
-   		    if (same>zero) return test = soivarkey(I_L_RH_RAW)+1+il;
+   		    if (same>zero) return (test = soivarkey(I_L_RH_RAW)+1+il);
 
    			same = err[I_L_RH_SOMA+il] - fabs( ptol * ptstate[I_L_RH_SOMA+il]);
-   		    if (same>zero) return test = soivarkey( I_L_RH_SOMA)+1+il;
+   		    if (same>zero) return (test = soivarkey( I_L_RH_SOMA)+1+il);
 
    		    same = err[I_L_RH_SOMPR+il] - fabs( ptol * ptstate[I_L_RH_SOMPR+il]);
-   		    if (same>zero) return test = soivarkey( I_L_RH_SOMPR)+1+il;
+   		    if (same>zero) return (test = soivarkey( I_L_RH_SOMPR)+1+il);
 
    		    same = err[I_L_RH_SOMCR+il] - fabs( ptol * ptstate[I_L_RH_SOMCR+il]);
-   		    if (same>zero) return test = soivarkey( I_L_RH_SOMCR)+1+il;
+   		    if (same>zero) return (test = soivarkey( I_L_RH_SOMCR)+1+il);
 
    		}
 
    		same = err[I_WDEBRISC] - fabs( ptol * ptstate[I_WDEBRISC]);
-		if (same>zero) return test = soivarkey(I_WDEBRISC)+1;
+		if (same>zero) return (test = soivarkey(I_WDEBRISC)+1);
 
    		same = err[I_WDEBRISN] - fabs( ptol * ptstate[I_WDEBRISN]);
-		if (same>zero) return test = soivarkey(I_WDEBRISN)+1;
+		if (same>zero) return (test = soivarkey(I_WDEBRISN)+1);
 
    		same = err[I_DMOSSC] - fabs( ptol * ptstate[I_DMOSSC]);
-		if (same>zero) return test = soivarkey(I_DMOSSN)+1;
+		if (same>zero) return (test = soivarkey(I_DMOSSN)+1);
 
    		same = err[I_DMOSSN] - fabs( ptol * ptstate[I_DMOSSN]);
-		if (same>zero) return test = soivarkey(I_DMOSSN)+1;
+		if (same>zero) return (test = soivarkey(I_DMOSSN)+1);
 
 		same = err[I_RH_WD] - fabs( ptol * ptstate[I_RH_WD]);
-		if (same>zero) return test = soivarkey(I_RH_WD)+1;
+		if (same>zero) return (test = soivarkey(I_RH_WD)+1);
 
 		same = err[I_RH_DMOSS] - fabs( ptol * ptstate[I_RH_DMOSS]);
-		if (same>zero) return test = soivarkey(I_RH_DMOSS)+1;
+		if (same>zero) return (test = soivarkey(I_RH_DMOSS)+1);
 
    		// soil N
    		if (ssl->nfeed) {
    			for(int il =0; il<numsl; il++){
    				same = err[I_L_ORGN+il] - fabs(ptol * ptstate[I_L_ORGN+il]);
-   				if (same>zero) return test = soivarkey(I_L_ORGN)+1+il;
+   				if (same>zero) return (test = soivarkey(I_L_ORGN)+1+il);
 
    				same = err[I_L_AVLN+il] - fabs(ptol * ptstate[I_L_AVLN+il]);
-   				if (same>zero) return test = soivarkey(I_L_AVLN)+1+il;
+   				if (same>zero) return (test = soivarkey(I_L_AVLN)+1+il);
 
    				//
    				same = err[I_L_NIMMOB+il] - fabs( ptol * ptstate[I_L_NIMMOB+il]);
-   				if (same>zero) return test = soivarkey(I_L_NIMMOB)+1+il;
+   				if (same>zero) return (test = soivarkey(I_L_NIMMOB)+1+il);
 
    				same = err[I_L_NMIN+il] - fabs( ptol * ptstate[I_L_NMIN+il]);
    				if (same>zero) {
-   					return test = soivarkey(I_L_NMIN)+1+il;
+   					return (test = soivarkey(I_L_NMIN)+1+il);
    				}
 
    			}
@@ -868,7 +868,7 @@ int Integrator::boundcon( float ptstate[], float err[], float& ptol ) {
 
    	} // end of soil_bgc checking
 
-    return test;
+    return (test);
 
 };
                             

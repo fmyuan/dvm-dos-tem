@@ -136,7 +136,7 @@ double Snow_Env::getAlbedoVis(const double & tem){
     	vis = fmax(snowenvpar.albmin, vis);
     }
 
-    return vis;
+    return (vis);
 };
 
 // get albedo of invisible radition
@@ -144,7 +144,7 @@ double Snow_Env::getAlbedoNir(const double & tem){
     double nir;
     nir = getAlbedoVis(tem);
 
-    return nir;
+    return (nir);
 };
 
 // modified - called after 'Stefan.cpp:: processFrontSnowLayers()'
@@ -182,7 +182,7 @@ double  Snow_Env::meltSnowLayersAfterT(Layer* toplayer){
 
 	}
 
-	return melt;    //Note: 1kgH2O/m2 = 1 mm H2O
+	return (melt);    //Note: 1kgH2O/m2 = 1 mm H2O
 };
 
 // assign double-linked snow horizon data to 'ed'
@@ -315,7 +315,7 @@ double Snow_Env::getSublimation(double const & rn, double const & swe, double co
 		sub = 0.;
 	}
  
-	return sub;
+	return (sub);
 };
 
 void Snow_Env::checkSnowLayersT(Layer* toplayer){

@@ -53,7 +53,7 @@ int RunCohort::allchtids(){
 	if (md->initmode>1) { // 'runeq' stage doesn't require initial file
 		for (int i=0; i<md->act_initchtno; i++) {
 			error = cinputer.getInitchtId(id, i);
-			if (error!=0) return error;
+			if (error!=0) return (error);
 			initids.push_back(id);
 		}
 	}
@@ -61,25 +61,25 @@ int RunCohort::allchtids(){
 	// from 'climate.nc'
 	for (int i=0; i<md->act_clmno; i++) {
 		error = cinputer.getClmId(id, i);
-		if (error!=0) return error;
+		if (error!=0) return (error);
 		clmids.push_back(id);
 	}
 
 	// from 'vegetation.nc'
 	for (int i=0; i<md->act_vegno; i++) {
 		error = cinputer.getVegId(id, i);
-		if (error!=0) return error;
+		if (error!=0) return (error);
 		vegids.push_back(id);
 	}
 
 	// from 'fire.nc'
 	for (int i=0; i<md->act_fireno; i++) {
 		error = cinputer.getFireId(id, i);
-		if (error!=0) return error;
+		if (error!=0) return (error);
 		fireids.push_back(id);
 	}
 
-	return error;
+	return (error);
 };
 
 // general initialization
@@ -199,7 +199,7 @@ int RunCohort::reinit(){
 		 //note: the cohort order in sitein.nc must be exactly same as cohort in cohortid.nc
 /*		 int err=0;
 		 err=sinputer->getSiteinData(cht.md->chtinputdir,&cht.sitein, cid);
-		 if (err!=0) return -1;
+		 if (err!=0) return (-1);
 */
 	 } else if (md->initmode == 3) {
 

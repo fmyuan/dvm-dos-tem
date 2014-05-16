@@ -204,7 +204,7 @@ void Soil_Bgc::initializeState(){
 		   bd->d_sois.avln[il] = 0.;
 		   bd->d_sois.orgn[il] = 0.;
 	   }
-	   bd->d_sois.ch4[il] = chtlu->initch4[il]
+	   bd->d_sois.ch4[il] = chtlu->initch4[il];
 
    }
    

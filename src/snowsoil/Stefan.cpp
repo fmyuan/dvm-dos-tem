@@ -523,7 +523,7 @@ double Stefan::getDegSecNeeded(const double & dz,
  	 double lhfv = 3.34e8;
  	 needed = lhfv * effvolwat * (sumresabv +0.5 * dz/tk);
  	 
- 	 return needed;
+ 	 return (needed;
 };
  
 //calculate partial depth based on extra degree seconds
@@ -541,7 +541,7 @@ double Stefan::getPartialDepth(const double & volwat, const double & tk,
  	double second2 = 2 * tk * dse/(lhfv * effvolwat);
  	partd = -1 * firstp  + sqrt(second1 + second2);
  	
- 	return partd;
+ 	return (partd;
 };
 
 //determine the layer, where the bottom driving position locates and 'tdrvbot' for driving force
@@ -552,7 +552,7 @@ double Stefan::prepareBottomDriving(){
 
 	 Layer *lstfrontl = ground->lstfntl;
 	 if(lstfrontl==NULL){
-		 return MISSING_D;
+		 return (MISSING_D;
 	 }
 	 double dzthreshold = 0.05;  // unit: meters. This's the depth below front where soil T is interpolated for 'tdrvbot'
 	                             // AND, the layer where this depth locates is regarded as 'botdrvl' layer
@@ -599,12 +599,12 @@ double Stefan::prepareBottomDriving(){
 				 tdrvbot = drvtemp;
 			 }
 		 } else {
-			 return MISSING_D;
+			 return (MISSING_D;
 		 }
 
 	 }
 
-	 return tdrvbot;
+	 return (tdrvbot;
 
 }
 
