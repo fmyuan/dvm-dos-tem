@@ -43,6 +43,7 @@
 
 	maxliq  = MISSING_D;
 	maxice  = MISSING_D;
+	minliq  = MISSING_D;
 
 	psisat= MISSING_D;
 	hksat = MISSING_D;

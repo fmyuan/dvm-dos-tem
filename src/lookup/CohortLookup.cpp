@@ -14,7 +14,19 @@ string read_cmt_code(string s){
 
 
 CohortLookup::CohortLookup(){
+	dir = "";
 	cmtcode = "CMT00";     // the default community code (5 alphnumerics)
+
+    micbnup = MISSING_D;
+
+    kdcmoss = MISSING_D;
+    kdcrawc = MISSING_D;
+    kdcsoma = MISSING_D;
+    kdcsompr = MISSING_D;
+    kdcsomcr = MISSING_D;
+
+    kdcratio4me = MISSING_D;
+
 };
 
 CohortLookup::~CohortLookup(){

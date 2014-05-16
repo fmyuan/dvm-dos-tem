@@ -32,9 +32,9 @@ Ground::Ground(){
    lstfntl  = NULL;
 
    drainl = NULL;
-   draindepth = -9999;
+   draindepth = MISSING_I;
 
-   ststate = NULL;
+   ststate = MISSING_I;
    chtlu   = NULL;
 
    rocklayercreated=false;

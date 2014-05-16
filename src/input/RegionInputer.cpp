@@ -1,7 +1,8 @@
 #include "RegionInputer.h"
 
 RegionInputer::RegionInputer(){
-	
+	md = NULL;
+	act_co2yr = MISSING_I;
 };
 
 RegionInputer::~RegionInputer(){

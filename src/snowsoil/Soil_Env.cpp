@@ -26,7 +26,10 @@
 #include "Soil_Env.h"
 
 Soil_Env::Soil_Env(){
- 	    
+	ground = NULL;
+	ed     = NULL;
+	cd     = NULL;
+	chtlu  = NULL;
 };
 
 Soil_Env::~Soil_Env(){
@@ -577,7 +580,7 @@ double Soil_Env::getPenMonET(const double & ta, const double& vpd, const double 
 		double slope = (pvs1-pvs2)/(t1-t2);	
 		/*evapotranspiration*/
 		et = (slope*irad+ rho*CP *vpd/rhr)/((pa * CP *rv)/(lhvap*EPS *rhr)+slope);
-		return (et/lhvap;		
+		return (et/lhvap);
 };
 
 double Soil_Env::getEvaporation(const double & dayl, const double &rad){
@@ -589,7 +592,7 @@ double Soil_Env::getEvaporation(const double & dayl, const double &rad){
 	double vpdpa = ed->d_atmd.vpd;
 	double daylsec = dayl*3600;
 	if (daylsec < 0.1) { // 0.1 sec for mathmatical purpose, otherwise 'daytimerad' below will be 'inf'
-		return (0.;
+		return (0.);
 	}
 	double daytimerad = rad*86400/daylsec; //w/m2
 	/* correct conductances for temperature and pressure based on Jones (1992)
@@ -617,7 +620,7 @@ double Soil_Env::getEvaporation(const double & dayl, const double &rad){
 	    evap *=ratio;	
 	}
 
-	return (evap;
+	return (evap);
 };
 
 // modified to set that from the bottom soil layer
@@ -664,7 +667,7 @@ double Soil_Env::getWaterTable(Layer* lstsoill){
 	}
 
 	wtd = ztot - sums;  //the water table is measured from ground surface
-	return (wtd;
+	return (wtd);
 };
 
 //
@@ -712,7 +715,7 @@ double Soil_Env::getRunoff(Layer* toplayer, Layer* drainl, const double & rnth,c
 
 	}
 
-	return (runoff;
+	return (runoff);
 };
  
 /*! calculates the factor which provides controls from soil on transpiration
@@ -964,10 +967,10 @@ double Soil_Env::getInflFrozen(Layer *fstnoinfil, const double &  rnth, const do
 	  }
 
 	  currl=currl->prevl;
-	  if(currl==NULL)break;
+	  if(currl==NULL) break;
 	}
 
-	return (infilf;
+	return (infilf);
 };
 
 double  Soil_Env::updateLayerTemp5Lat(Layer* currl, const double & infil){
@@ -993,7 +996,7 @@ double  Soil_Env::updateLayerTemp5Lat(Layer* currl, const double & infil){
 		}
 	};
 
-	return (extraliq;
+	return (extraliq);
 };
 
 

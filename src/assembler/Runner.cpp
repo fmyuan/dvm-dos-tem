@@ -158,7 +158,7 @@ void Runner::initOutput() {
 			}
 
 			runcht.regnouter.setOutData(&runcht.regnod);
-			runcht.regnouter.init(md.outputdir, stage, maxoutyrs);	 //set netcdf files for output, note NOT output from "eq" run
+			runcht.regnouter.init(md.outputdir, stage, 0, maxoutyrs);	 //set netcdf files for output, note NOT output from "eq" run
 		 }
 
  		// 3)for restart.nc outputs

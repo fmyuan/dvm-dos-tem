@@ -73,7 +73,7 @@ class TemperatureUpdator{
 
          double tleft;  /*! the amount of time left for update (day)*/
          double tmld;  /*!the last determined time, short for time-last-determined*/
-         bool upperTemps5FrontUpdated;/*! whether the time step has been changed for last factional time step */
+         bool upperTemps5FrontUpdated;/*! whether the time step has been changed for last fractional time step */
 
          int itsum;
          int itsumabv;

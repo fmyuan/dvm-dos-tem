@@ -1,7 +1,10 @@
 #include "Snow_Env.h"
 
 Snow_Env::Snow_Env(){
-	
+	ed = NULL;
+	cd = NULL;
+	ground = NULL;
+	chtlu = NULL;
 };
 
 Snow_Env::~Snow_Env(){
@@ -320,11 +323,8 @@ double Snow_Env::getSublimation(double const & rn, double const & swe, double co
 
 void Snow_Env::checkSnowLayersT(Layer* toplayer){
  	Layer* currl = toplayer;
- 	SnowLayer* sl;
-
  	while(currl!=NULL){
     	if (currl->isSnow){
-      		sl = dynamic_cast<SnowLayer*>(currl);
        		if(currl->tem>0){
            		currl->tem =-0.01;
          	}

@@ -20,10 +20,9 @@ void AtmosUtil::updateDailyPrec(float precd[], const int & dinmcurr ,
     RS=0.635;
     R=0.5;
    
-	float TEMP, PREC, DURT, DURS;
+	float TEMP, PREC, DURT;
     PREC = mprec/10.0/2.54; //comvert mm to cm, then to in.
     DURT=RT/R;
-    DURS=RS/R;
 	
 	float B=1.0, T=0.0, S=1.0, RB, DURB;
 	for(int id =0;id<32;id++){

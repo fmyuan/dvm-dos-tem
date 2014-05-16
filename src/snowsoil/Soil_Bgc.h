@@ -25,9 +25,9 @@ class Soil_Bgc{
   	Soil_Bgc();
  	~Soil_Bgc();	
 	
-  	int nfeed;     // soil-plant-air N module switch
-  	int avlnflg;   // open-N cycle switch; otherwise, N budget method used to balance the N I/O from the ecosystem
-  	int baseline;  // open-N cycle switch; otherwise, N budget method used to balance the N I/O from the ecosystem
+  	bool nfeed;      // soil-plant-air N module switch
+  	bool avlnflag;   // open-N cycle switch; otherwise, N budget method used to balance the inorg. N I/O from the ecosystem
+  	bool baseline;   // open-N cycle switch; otherwise, N budget method used to balance the org. N I/O from the ecosystem
 
   	soistate_bgc tmp_sois;   // the previous soistate_bgc
   	soistate_bgc del_sois;   // the change of soistate_bgc
@@ -75,10 +75,7 @@ class Soil_Bgc{
 
   	double rtnextract[MAX_SOI_LAY];  // root N extraction from each soil layer
 
-  	double kdshlw;
- 	double kddeep;
    	double decay;
-  	double nup;
 
 	double totdzliq;     // total drainage zone liq water
 	double totdzavln;    // total drainage zone avln
@@ -114,8 +111,8 @@ class Soil_Bgc{
 
   	void deltaCH4Flux(const int &hours);
   	void tri(int matrix_size, double *A, double *D, double *C, double *B, double *X);
-  	double * MallocM1d(int size);
-  	void FreeM1d(double *s);
+  	double * mallocM1d(int size);
+  	void freeM1d(double *s);
 
 					  					 
 };

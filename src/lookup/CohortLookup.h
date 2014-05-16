@@ -12,6 +12,7 @@ using namespace std;
 #include "../inc/cohortconst.h"
 #include "../inc/timeconst.h"
 #include "../inc/layerconst.h"
+#include "../inc/errorcode.h"
 
 class CohortLookup{
   	  public:

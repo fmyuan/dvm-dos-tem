@@ -17,7 +17,9 @@
 #include "Vegetation.h"
 
 Vegetation::Vegetation(){
-	
+	updateLAI5vegc = false;
+	cd = NULL;
+	chtlu = NULL;
 };
 
 Vegetation::~Vegetation(){

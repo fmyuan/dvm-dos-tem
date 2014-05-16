@@ -4,13 +4,14 @@
 #include "Atmosphere.h"
 
 Atmosphere::Atmosphere(){
-   	// if in the mode of spinup or spintransient
-   	// initialize with spinup condition for prev
-   	// here atmin is NULL , cause a runtime error which is hard to find
 
 	wetdays = 10.; // cru has wetdays output from 1901 to 2002, but not for scenario run
-	// temperarily assume wetdays = 10;
+                   // temporarily assume wetdays = 10;
 
+	cd = NULL;
+	ed = NULL;
+	co2= MISSING_F;
+    yrsumday = MISSING_I;
 };
 
 Atmosphere::~Atmosphere(){

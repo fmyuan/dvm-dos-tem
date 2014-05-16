@@ -15,6 +15,7 @@ RunGrid::RunGrid(){
 	soilrecno  = MISSING_I;
 	gfirerecno = MISSING_I;
 
+	md = NULL;
 };
 
 RunGrid::~RunGrid(){

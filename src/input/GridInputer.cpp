@@ -1,7 +1,7 @@
 #include "GridInputer.h"
 
 GridInputer::GridInputer(){
-	
+	md = NULL;
 };
 
 GridInputer::~GridInputer(){

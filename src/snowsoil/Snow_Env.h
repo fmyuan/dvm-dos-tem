@@ -2,21 +2,16 @@
 #define SNOW_ENV_H_
 
 #include "../inc/errorcode.h"
-
 #include "../data/CohortData.h"
 #include "../data/EnvData.h"
 #include "../data/RestartData.h"
-
 #include "../ecodomain/Ground.h"
-
 #include "../lookup/CohortLookup.h"
 
 class Snow_Env{
 	public:
 		Snow_Env();
 		~Snow_Env();
-
-	    double wind;     /*! the wind speed class (0, 1)? of a vegetation type*/
 
 	    // parameters for snow physics
 	    snwpar_env snowenvpar;

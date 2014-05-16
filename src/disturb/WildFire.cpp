@@ -19,6 +19,23 @@
 
 WildFire::WildFire(){
 
+	firstfireyr = MISSING_I;
+	oneyear     = MISSING_I;
+ 	onemonth    = MISSING_I;
+ 	oneseverity = MISSING_I;
+ 	oneseason   = MISSING_I;
+	onesize     = MISSING_I;
+
+	r_live_cn = MISSING_D;
+ 	r_dead2ag_cn = MISSING_D;
+ 	r_burn2ag_cn = MISSING_D;
+
+ 	bdall = NULL;
+ 	edall = NULL;
+ 	cd    = NULL;
+ 	fd    = NULL;
+ 	chtlu = NULL;
+
 };
 
 WildFire::~WildFire(){

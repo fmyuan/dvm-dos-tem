@@ -15,6 +15,19 @@ RunCohort::RunCohort(){
     ystepcnt = 0;
 
 	cohortcount = 0;   // counter for cohort have been run
+
+ 	//
+	initrecno = MISSING_I;
+ 	clmrecno  = MISSING_I;
+ 	vegrecno  = MISSING_I;
+ 	firerecno = MISSING_I;
+
+ 	used_atmyr = MISSING_I;
+    yrstart    = MISSING_I;
+    yrend      = MISSING_I;
+
+    md = NULL;
+
 }
 
 RunCohort::~RunCohort(){

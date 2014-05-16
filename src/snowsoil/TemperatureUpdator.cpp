@@ -18,6 +18,20 @@ TemperatureUpdator::TemperatureUpdator() {
 	debugging = false;  // switch for error message print out
 	zerodegc = 0.001;  // a constant to represent temperature near zero in degree C
 
+    itsumall = 0;
+    itsum    = 0;
+    itsumabv = 0;
+    itsumblw = 0;
+
+    tschanged = false;
+    timestep = MISSING_I;
+    tstep = MISSING_D;
+    tleft = MISSING_D;
+    tmld  = MISSING_D;
+    upperTemps5FrontUpdated = false;
+
+    ground = NULL;
+
 }
 
 TemperatureUpdator::~TemperatureUpdator() {
@@ -688,7 +702,7 @@ int TemperatureUpdator::updateOneTimeStep(const int &startind, const int & endin
 		status = is;
 	}
 
-	return (status;
+	return (status);
 }
 
 // the main calculation will be done here

@@ -15,6 +15,7 @@ using namespace std;
 
 #include "../data/RegionData.h"
 #include "../runmodule/ModelData.h"
+#include "../inc/errorcode.h"
 
 class RegionInputer{
 	public:

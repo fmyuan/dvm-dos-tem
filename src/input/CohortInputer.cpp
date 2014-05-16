@@ -1,7 +1,7 @@
 #include "CohortInputer.h"
 
 CohortInputer::CohortInputer(){
-
+	md = NULL;
 };
 
 CohortInputer::~CohortInputer(){
