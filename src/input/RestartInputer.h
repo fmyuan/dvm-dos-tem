@@ -127,6 +127,7 @@ class RestartInputer {
 	    NcVar* dmossnV;
 	    NcVar* solnV;
 	    NcVar* avlnV;
+	    NcVar* ch4V;
 
 	    NcVar* prvltrfcnAV;
 

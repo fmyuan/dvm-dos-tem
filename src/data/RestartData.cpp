@@ -134,6 +134,8 @@ void RestartData::reinitValue(){
 		orgn[il] = MISSING_D;
 		avln[il] = MISSING_D;
 
+		ch4[il] = MISSING_D;
+
 		for (int i=0; i<12; i++){
 			prvltrfcnA[i][il]  = MISSING_D;
 		}

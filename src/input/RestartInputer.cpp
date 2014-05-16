@@ -127,6 +127,8 @@ void RestartInputer::init(string & dirfile){
     solnV  =restartFile->get_var("SOLN");
     avlnV  =restartFile->get_var("AVLN");
 
+    ch4V  =restartFile->get_var("CH4");
+
     prvltrfcnAV  =restartFile->get_var("PRVLTRFCNA");
 
 };
@@ -670,6 +672,14 @@ void RestartInputer::getRestartData(RestartData *resid, const int &cid){
 	varbool = avlnV->get(&resid->avln[0], 1, MAX_SOI_LAY);
 	if(!varbool){
 		string msg = "problem in reading 'AVLN' in RestartInputer";
+ 		cout<<msg+"\n";
+ 		exit(-1);
+	}
+
+	ch4V->set_cur(cid, 0);
+	varbool = ch4V->get(&resid->ch4[0], 1, MAX_SOI_LAY);
+	if(!varbool){
+		string msg = "problem in reading 'CH4' in RestartInputer";
  		cout<<msg+"\n";
  		exit(-1);
 	}

@@ -95,6 +95,8 @@ class RestartData {
 	    double orgn[MAX_SOI_LAY];
 	    double avln[MAX_SOI_LAY];
 
+	    double ch4[MAX_SOI_LAY];
+
 	  	double prvltrfcnA[12][MAX_SOI_LAY];   //previous 12-month litterfall (root death) input C/N ratios in each soil layer for adjusting 'kd'
    	
 };

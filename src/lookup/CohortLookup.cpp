@@ -585,6 +585,10 @@ void CohortLookup::assignBgc4Ground(string &dircmt){
 
 	fctrcomm >> fnloss; getline(fctrcomm,str);
 
+	fctrcomm >> rebul; getline(fctrcomm,str);
+	fctrcomm >> rp; getline(fctrcomm,str);
+	fctrcomm >> roxid; getline(fctrcomm,str);
+
 	//
 	fctrcomm >> initdmossc; getline(fctrcomm,str);
 	fctrcomm >> initshlwc; getline(fctrcomm,str);
@@ -592,6 +596,7 @@ void CohortLookup::assignBgc4Ground(string &dircmt){
 	fctrcomm >> initminec; getline(fctrcomm,str);
 	fctrcomm >> initsoln; getline(fctrcomm,str);
 	fctrcomm >> initavln; getline(fctrcomm,str);
+	fctrcomm >> initch4; getline(fctrcomm,str);
 
 	fctrcomm.close();
 

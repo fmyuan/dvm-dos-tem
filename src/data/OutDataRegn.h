@@ -20,8 +20,8 @@ enum outvarlistkey {
    		     I_gpp,  I_npp,  I_ltrfalc, I_ltrfaln, I_nuptake,
 
    		     I_permafrost, I_mossdz, I_oshlwdz, I_odeepdz, I_mineadz, I_minebdz, I_minecdz,
-   		     I_oshlwc, I_odeepc, I_mineac, I_minebc, I_minecc, I_orgn, I_avln,
-   		     I_rh, I_netnmin,
+   		     I_oshlwc, I_odeepc, I_mineac, I_minebc, I_minecc, I_orgn, I_avln, I_ch4,
+   		     I_rh, I_ch4flx, I_ch4flx2a, I_ch4flx2p, I_ch4flx2b, I_netnmin,
 
    		     I_orgninput, I_avlninput, I_doclost, I_orgnlost, I_avlnlost,
 
@@ -97,8 +97,13 @@ class OutDataRegn{
 
    		double orgn[12];
    		double avln[12];
+   		double ch4[12];
 
    		double rh[12];
+   		double ch4flux[12];
+   		double ch4flux2a[12];
+   		double ch4flux2p[12];
+   		double ch4flux2b[12];
    		double netnmin[12];
 
    		double orgninput[12];

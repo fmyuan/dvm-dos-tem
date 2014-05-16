@@ -143,7 +143,8 @@ void EnvOutputer::init(string & dirfile){
 }
 
 void EnvOutputer::outputCohortEnvVars_dly(const int &ipft, EnvDataDly * envod, const int&iy, const int&im, const int &id, const int & tstepcnt){
- 	NcError err(NcError::verbose_nonfatal);
+
+	NcError err(NcError::verbose_nonfatal);
 
  	if (ipft<=0) {
 

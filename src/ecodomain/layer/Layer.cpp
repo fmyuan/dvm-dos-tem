@@ -66,6 +66,7 @@
 	soma = MISSING_D;
 	sompr= MISSING_D;
 	somcr= MISSING_D;
+	ch4= MISSING_D;
 
 	cfrac= MISSING_D;
 

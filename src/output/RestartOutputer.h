@@ -136,8 +136,9 @@ class RestartOutputer {
 	    NcVar* solnV;
 	    NcVar* avlnV;
 
-	    NcVar* prvltrfcnAV;
+	    NcVar* ch4V;
 
+	    NcVar* prvltrfcnAV;
 
 };
 

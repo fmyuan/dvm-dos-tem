@@ -19,11 +19,11 @@ class RegnOutputer{
 		RegnOutputer();
 		~RegnOutputer();
 	
- 		void init(string& outputdir, string& stage, int MAX_TIMESTEP);
+ 		void init(string& outputdir, string& stage, const int& startyr, const int& endyr);
   
  		void outputCohortVars(const int & yrind, const int & chtid, const int & status);
   
-  		void outputCohortMissing(const int & yrind, const int & chtid);
+  		void outputCohortMissing(const int & yrind, const int &yrtsteps, const int & chtid);
   		void setOutData(OutDataRegn *regnodp);
   		  
     	NcFile* rFile;
@@ -32,6 +32,7 @@ class RegnOutputer{
 	  	NcVar* statusV;
 		NcVar* yearV;
 		NcVar* yrmonV;
+		NcVar* yrdoyV;
   		NcVar* ysfV;
 
    		//
@@ -53,7 +54,6 @@ class RegnOutputer{
 
    		NcVar* gppV;
    		NcVar* nppV;
-   		NcVar* rhV;
         NcVar* ltrfalcV;
         NcVar* ltrfalnV;
 
@@ -77,6 +77,13 @@ class RegnOutputer{
    		NcVar* orgnV;
    		NcVar* avlnV;
 
+   		NcVar* ch4V;
+
+   		NcVar* rhV;
+   		NcVar* ch4fluxV;
+   		NcVar* ch4flux2aV;
+   		NcVar* ch4flux2pV;
+   		NcVar* ch4flux2bV;
    		NcVar* netnminV;
 
       	NcVar* orgninputV;

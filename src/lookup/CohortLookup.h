@@ -209,6 +209,10 @@ class CohortLookup{
 	    // fraction of avln in soil leaching out with drainage water
 	    double fnloss;
 
+	    // ch4 related parameters
+	    double rebul;          // rate constant for ebulition of CH4 (unit: 1/hour)
+	    double rp;             // rate constant for plant-mediated CH4 emission (unit: 1/hour)
+	    double roxid;          // rate constant for CH4 oxidation (unit: umol/L/hour)
 
   //init values
 	    double initvegc[NUM_PFT_PART][NUM_PFT];     //or, target value for calibration
@@ -222,6 +226,7 @@ class CohortLookup{
 	    double initminec;
 	    double initsoln;    // total soil organic N
 	    double initavln;    // total soil available N
+	    double initch4;     // mean soil CH4 concentration (umolC/L air-space)
 
 //fire related parameters
 	    double fvcombust[NUM_FSEVR][NUM_PFT]; // fraction of burned above-ground vegetation

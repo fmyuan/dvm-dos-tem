@@ -972,6 +972,7 @@ void  Ground::redivideMossLayers(const int &mosstype){
 		ml->soma = 0.;
 		ml->sompr= 0.;
 		ml->somcr= 0.;
+		ml->ch4  = 0.;
 
 	    resortGroundLayers();
 	    updateSoilHorizons();
@@ -1086,6 +1087,7 @@ void Ground::redivideShlwLayers(){
 			plnew->soma  = 0.;
 			plnew->sompr = 0.;
 			plnew->somcr = 0.;
+			plnew->ch4   = nextsl->ch4;
 
 			plnew->derivePhysicalProperty();
 			insertBefore(plnew, nextsl);
@@ -1205,6 +1207,7 @@ void Ground::redivideDeepLayers(){
 			plnew->soma  = 0.5*lfibl->soma;
 			plnew->sompr = lfibl->sompr;
 			plnew->somcr = lfibl->somcr;
+			plnew->ch4   = lfibl->ch4;
 
 			plnew->derivePhysicalProperty();
 			insertAfter(plnew, lfibl);
@@ -1313,6 +1316,7 @@ void Ground::splitOneSoilLayer(SoilLayer*usl, SoilLayer* lsl, const double & upd
 	 lsl->soma =usl->soma;
 	 lsl->sompr=usl->sompr;
 	 lsl->somcr=usl->somcr;
+	 lsl->ch4=usl->ch4;
 
 	 if (usl->isOrganic) {
 		 double pldtop = updeptop + usl->dz;   //usl->dz has been updated above
@@ -1330,6 +1334,7 @@ void Ground::splitOneSoilLayer(SoilLayer*usl, SoilLayer* lsl, const double & upd
 	  usl->soma -= lsl->soma;
 	  usl->sompr-= lsl->sompr;
 	  usl->somcr-= lsl->somcr;
+	  usl->ch4 = lsl->ch4;
 
 };
 
@@ -1355,6 +1360,7 @@ void Ground::combineTwoSoilLayersU2L(SoilLayer* usl, SoilLayer* lsl){
 	  lsl->soma +=usl->soma;
 	  lsl->sompr+=usl->sompr;
 	  lsl->somcr+=usl->somcr;
+	  lsl->ch4 = usl->ch4;
 	  	 	
 	  // after combination, needs to update 'lsl'- 'frozen' status based on 'fronts' if given
 	  getLayerFrozenstatusByFronts(lsl);
@@ -1717,12 +1723,10 @@ void Ground::updateOslThickness5Carbon(Layer* fstsoil){
  	double deepcbot = 0.;
  	double deepctop = 0.;
 
- 	double olddz = 0.;
  	Layer* currl=fstsoil;
  	while(currl!=NULL){
  	  	if(currl->isSoil && (currl->isOrganic || currl->isMoss)){
  	  	 	SoilLayer* sl = dynamic_cast<SoilLayer*>(currl) ;
- 	  	 	olddz = sl->dz;
 			if(sl->isHumic){
 				 deepcbot = deepctop+sl->rawc+sl->soma+sl->sompr+sl->somcr;
  				 getOslThickness5Carbon(sl, deepctop, deepcbot);

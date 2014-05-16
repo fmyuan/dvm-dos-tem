@@ -123,6 +123,8 @@ void RestartOutputer::init(string& outputdir,string& stage){
     solnV  =restartFile->add_var("SOLN", ncDouble, chtD, soillayerD);
     avlnV  =restartFile->add_var("AVLN", ncDouble, chtD, soillayerD);
 
+    ch4V  =restartFile->add_var("CH4", ncDouble, chtD, soillayerD);
+
     prvltrfcnAV  =restartFile->add_var("PRVLTRFCNA", ncDouble, chtD, prvmonthD, soillayerD);
 
 }
@@ -217,6 +219,8 @@ void RestartOutputer::outputVariables(const int & chtcount){
 	somcrV->put_rec(&resod->somcr[0], chtcount);
 	solnV->put_rec(&resod->orgn[0], chtcount);
 	avlnV->put_rec(&resod->avln[0], chtcount);
+
+	ch4V->put_rec(&resod->ch4[0], chtcount);
 
 	prvltrfcnAV->put_rec(&resod->prvltrfcnA[0][0], chtcount);
 		

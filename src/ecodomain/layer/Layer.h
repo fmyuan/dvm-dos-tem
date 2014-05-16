@@ -87,11 +87,12 @@ class Layer {
 		double ice;   //!ice content kg/m2
 		double hcond;  // hydraulic conductivity
 
-		//! soil carbon pool unit : \{kgC}{m^2
+		// soil carbon pools: (kgC/m^2)
 		double rawc;
 		double soma;
 		double sompr;
 		double somcr;
+        double ch4;           //umolC/L
 
 		// misc.
 		double cfrac; //fraction of carbon, relative to total SOM weight (mass) - not used but should be useful in future
