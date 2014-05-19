@@ -87,6 +87,8 @@
    	 		int act_fireno; // fire data in fireid-yearset (2D)
    			int act_fireset;
 
+   			int fseasonno;   //fire season class no.(4 currently): 0 - pre-fireseason; 1 - early; 2 - late; 3 - post-fireseason
+   			int fsizeno;   //fire-size year class no. (5 currently): 0 - small; 1 - intermediate; 2 - large; 3 - very large; 4 - ultra-large
    			//
     		void checking4run();
 

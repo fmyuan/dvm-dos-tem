@@ -8,7 +8,7 @@ RestartInputer::RestartInputer(){
 RestartInputer::~RestartInputer(){
  	//cout<< "closing output files in RestartInputer \n";
    
-    if(restartFile!=NULL){
+    if(restartFile->is_valid()){
     	restartFile->close();
     	delete restartFile;
     }
@@ -140,7 +140,7 @@ void RestartInputer::getReschtId(int &reschtid, const int &recno){
 	chtidV->set_cur(recno);
 	NcBool nb1 = chtidV->get(&reschtid, 1);
 	if(!nb1){	 
-	 string msg = "problem in reading chtid in  RestartInputer";
+		string msg = "problem in reading chtid in  RestartInputer";
 		cout<<msg+"\n";
 		exit(-1);
 	}

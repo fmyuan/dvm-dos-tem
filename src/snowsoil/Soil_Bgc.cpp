@@ -26,13 +26,6 @@
 
 Soil_Bgc::Soil_Bgc(){
 
-	fd = NULL;
-	cd = NULL;
-	ed = NULL;
-	bd = NULL;
-	chtlu = NULL;
-	ground = NULL;
-
 	nfeed    = false;
 	avlnflag = false;
 	baseline = false;

@@ -1,10 +1,7 @@
 #include "Snow_Env.h"
 
 Snow_Env::Snow_Env(){
-	ed = NULL;
-	cd = NULL;
-	ground = NULL;
-	chtlu = NULL;
+//
 };
 
 Snow_Env::~Snow_Env(){

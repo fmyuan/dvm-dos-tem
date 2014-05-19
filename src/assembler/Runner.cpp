@@ -48,10 +48,12 @@ void Runner::initInput(const string &controlfile, const string &runmode){
  		//grid-level input
  		rungrd.ginputer.setModelData(&md);      //for getting the directory infos from ModelData
  		error = rungrd.ginputer.init();	        //checking data file
+ 		if (error!=0) exit (-1);
 
  		//cohort-level input
  		runcht.cinputer.setModelData(&md);      //for getting the directory infos from ModelData
  		error = runcht.cinputer.init();         //checking data file
+ 		if (error!=0) exit (-1);
 
  		runchtlist.clear();
  		if (md.runmode==2 || md.runmode==3) {
@@ -282,7 +284,7 @@ void Runner::setupIDs(){
 		jdata = (int)(jt - rungrd.gfireids.begin());
 		if (jdata>=rungrd.gfireids.size()) {
 			cout<<"GFIREID: "<<runcht.chtfireids.at(jcht)
-					<<" for Cohort: "<<ichtid<<" is not in datagrid/firestatistics.nc";
+					<<" for Cohort "<<ichtid<<" is not in datagrid/firestatistics.nc";
 			exit(-1);
 		}
 		reclistgfire.push_back(jdata);
