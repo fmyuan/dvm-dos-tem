@@ -43,14 +43,14 @@ using namespace std;
 #include "assembler/Runner.h"
 
 int main(int argc, char* argv[]){
-	
+
 	setvbuf(stdout, NULL, _IONBF, 0);
 	setvbuf(stderr, NULL, _IONBF, 0);
 
 	string Mode = "siterun";
  	string regnmode = "";
     string chtid = "1";
-    string controlfile = "config/controlfile_site.txt";
+    string controlfile = "Run/controlfile_site.txt";
 
 	if (Mode == "siterun") {
 		time_t stime;

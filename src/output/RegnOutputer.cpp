@@ -236,24 +236,29 @@ void RegnOutputer::init(string& outputdir, string & stage, const int& startyr, c
    		orgnV    = rFile->add_var("ORGN", ncDouble, chtD, yearD);
    	if (regnod->outvarlist[I_avln]==1)
    		avlnV    = rFile->add_var("AVLN", ncDouble, chtD, yearD);
-
    	if (regnod->outvarlist[I_ch4]==1)
-   		avlnV    = rFile->add_var("CH4", ncDouble, chtD, yearD);
+   		ch4V    = rFile->add_var("CH4", ncDouble, chtD, yearD);
 
    	if (regnod->outvarlist[I_rh]==1)
    		rhV        = rFile->add_var("RH", ncDouble, chtD, yearD);
 
+   	if (regnod->outvarlist[I_ch4prod]==1)
+   		ch4prodV   = rFile->add_var("CH4PROD", ncDouble, chtD, yearD);
+
+   	if (regnod->outvarlist[I_ch4oxid]==1)
+   		ch4oxidV   = rFile->add_var("CH4OXID", ncDouble, chtD, yearD);
+
    	if (regnod->outvarlist[I_ch4flx]==1)
-   		rhV        = rFile->add_var("CH4FLUX", ncDouble, chtD, yearD);
+   		ch4fluxV   = rFile->add_var("CH4FLUX", ncDouble, chtD, yearD);
 
    	if (regnod->outvarlist[I_ch4flx2a]==1)
-   		rhV        = rFile->add_var("CH4FLUX2A", ncDouble, chtD, yearD);
+   		ch4flux2aV = rFile->add_var("CH4FLUX2A", ncDouble, chtD, yearD);
 
    	if (regnod->outvarlist[I_ch4flx2p]==1)
-   		rhV        = rFile->add_var("CH4FLUX2P", ncDouble, chtD, yearD);
+   		ch4flux2pV = rFile->add_var("CH4FLUX2P", ncDouble, chtD, yearD);
 
    	if (regnod->outvarlist[I_ch4flx2b]==1)
-   		rhV        = rFile->add_var("CH4FLUX2B", ncDouble, chtD, yearD);
+   		ch4flux2bV = rFile->add_var("CH4FLUX2B", ncDouble, chtD, yearD);
 
    	if (regnod->outvarlist[I_netnmin]==1)
    		netnminV = rFile->add_var("NETNMIN", ncDouble, chtD, yearD);
@@ -436,22 +441,28 @@ void RegnOutputer::init(string& outputdir, string & stage, const int& startyr, c
    		avlnV    = rFile->add_var("AVLN", ncDouble, chtD, yrmonD);
 
    	if (regnod->outvarlist[I_ch4]==2)
-   		avlnV    = rFile->add_var("CH4", ncDouble, chtD, yrmonD);
+   		ch4V    = rFile->add_var("CH4", ncDouble, chtD, yrmonD);
 
    	if (regnod->outvarlist[I_rh]==2)
    		rhV        = rFile->add_var("RH", ncDouble, chtD, yrmonD);
 
+   	if (regnod->outvarlist[I_ch4prod]==2)
+   		ch4prodV   = rFile->add_var("CH4PROD", ncDouble, chtD, yrmonD);
+
+   	if (regnod->outvarlist[I_ch4oxid]==2)
+   		ch4oxidV   = rFile->add_var("CH4OXID", ncDouble, chtD, yrmonD);
+
    	if (regnod->outvarlist[I_ch4flx]==2)
-   		rhV        = rFile->add_var("CH4FLUX", ncDouble, chtD, yrmonD);
+   		ch4fluxV   = rFile->add_var("CH4FLUX", ncDouble, chtD, yrmonD);
 
    	if (regnod->outvarlist[I_ch4flx2a]==2)
-   		rhV        = rFile->add_var("CH4FLUX2A", ncDouble, chtD, yrmonD);
+   		ch4flux2aV = rFile->add_var("CH4FLUX2A", ncDouble, chtD, yrmonD);
 
    	if (regnod->outvarlist[I_ch4flx2p]==2)
-   		rhV        = rFile->add_var("CH4FLUX2P", ncDouble, chtD, yrmonD);
+   		ch4flux2pV = rFile->add_var("CH4FLUX2P", ncDouble, chtD, yrmonD);
 
    	if (regnod->outvarlist[I_ch4flx2b]==2)
-   		rhV        = rFile->add_var("CH4FLUX2B", ncDouble, chtD, yrmonD);
+   		ch4flux2bV        = rFile->add_var("CH4FLUX2B", ncDouble, chtD, yrmonD);
 
    	if (regnod->outvarlist[I_netnmin]==2)
    		netnminV = rFile->add_var("NETNMIN", ncDouble, chtD, yrmonD);
@@ -634,22 +645,28 @@ void RegnOutputer::init(string& outputdir, string & stage, const int& startyr, c
    	   		avlnV    = rFile->add_var("AVLN", ncDouble, chtD, yrdoyD);
 
    	   	if (regnod->outvarlist[I_ch4]==3)
-   	   		avlnV    = rFile->add_var("CH4", ncDouble, chtD, yrdoyD);
+   	   		ch4V    = rFile->add_var("CH4", ncDouble, chtD, yrdoyD);
 
    	   	if (regnod->outvarlist[I_rh]==3)
    	   		rhV        = rFile->add_var("RH", ncDouble, chtD, yrdoyD);
 
+   	   	if (regnod->outvarlist[I_ch4prod]==3)
+   	   		ch4prodV   = rFile->add_var("CH4PROD", ncDouble, chtD, yrdoyD);
+
+   	   	if (regnod->outvarlist[I_ch4oxid]==3)
+   	   		ch4oxidV   = rFile->add_var("CH4OXID", ncDouble, chtD, yrdoyD);
+
    	   	if (regnod->outvarlist[I_ch4flx]==3)
-   	   		rhV        = rFile->add_var("CH4FLUX", ncDouble, chtD, yrdoyD);
+   	   		ch4fluxV   = rFile->add_var("CH4FLUX", ncDouble, chtD, yrdoyD);
 
    	   	if (regnod->outvarlist[I_ch4flx2a]==3)
-   	   		rhV        = rFile->add_var("CH4FLUX2A", ncDouble, chtD, yrdoyD);
+   	   		ch4flux2aV = rFile->add_var("CH4FLUX2A", ncDouble, chtD, yrdoyD);
 
    	   	if (regnod->outvarlist[I_ch4flx2p]==3)
-   	   		rhV        = rFile->add_var("CH4FLUX2P", ncDouble, chtD, yrdoyD);
+   	   		ch4flux2pV = rFile->add_var("CH4FLUX2P", ncDouble, chtD, yrdoyD);
 
    	   	if (regnod->outvarlist[I_ch4flx2b]==3)
-   	   		rhV        = rFile->add_var("CH4FLUX2B", ncDouble, chtD, yrdoyD);
+   	   		ch4flux2bV = rFile->add_var("CH4FLUX2B", ncDouble, chtD, yrdoyD);
 
    	   	if (regnod->outvarlist[I_netnmin]==3)
    	   		netnminV = rFile->add_var("NETNMIN", ncDouble, chtD, yrdoyD);
@@ -772,7 +789,7 @@ void RegnOutputer::outputCohortVars(const int & yrind, const int & chtcount, con
    	yrmonV->put(&regnod->month[0], 1, MINY);
 
    	yrdoyV->set_cur(chtcount, yrind);
-   	yrdoyV->put(&regnod->month[0], 1, DINY);
+   	yrdoyV->put(&regnod->doy[0], 1, DINY);
 
 /////// YEARLY OUTPUT /////////////////////////////////////////////////////////////////
    	if (regnod->outvarlist[I_growstart]==1){
@@ -942,8 +959,8 @@ void RegnOutputer::outputCohortVars(const int & yrind, const int & chtcount, con
    	}
 
    	if (regnod->outvarlist[I_ch4]==1){
-   	   	avlnV->set_cur(chtcount, yrind);
-		avlnV->put(&regnod->ch4[0], 1, 1);
+   	   	ch4V->set_cur(chtcount, yrind);
+		ch4V->put(&regnod->ch4[0], 1, 1);
    	}
 
    	if (regnod->outvarlist[I_rh]==1){
@@ -951,24 +968,34 @@ void RegnOutputer::outputCohortVars(const int & yrind, const int & chtcount, con
 		rhV->put(&regnod->rh[0], 1, 1);
    	}
 
+   	if (regnod->outvarlist[I_ch4prod]==1){
+   	   	ch4prodV->set_cur(chtcount, yrind);
+		ch4prodV->put(&regnod->ch4prod[0], 1, 1);
+   	}
+
+   	if (regnod->outvarlist[I_ch4oxid]==1){
+   	   	ch4oxidV->set_cur(chtcount, yrind);
+		ch4oxidV->put(&regnod->ch4oxid[0], 1, 1);
+   	}
+
    	if (regnod->outvarlist[I_ch4flx]==1){
-   	   	avlnV->set_cur(chtcount, yrind);
-		avlnV->put(&regnod->ch4flux[0], 1, 1);
+   	   	ch4fluxV->set_cur(chtcount, yrind);
+		ch4fluxV->put(&regnod->ch4flux[0], 1, 1);
    	}
 
    	if (regnod->outvarlist[I_ch4flx2a]==1){
-   	   	avlnV->set_cur(chtcount, yrind);
-		avlnV->put(&regnod->ch4flux2a[0], 1, 1);
+   	   	ch4flux2aV->set_cur(chtcount, yrind);
+		ch4flux2aV->put(&regnod->ch4flux2a[0], 1, 1);
    	}
 
    	if (regnod->outvarlist[I_ch4flx2p]==1){
-   	   	avlnV->set_cur(chtcount, yrind);
-		avlnV->put(&regnod->ch4flux2p[0], 1, 1);
+   	   	ch4flux2pV->set_cur(chtcount, yrind);
+		ch4flux2pV->put(&regnod->ch4flux2p[0], 1, 1);
    	}
 
    	if (regnod->outvarlist[I_ch4flx2b]==1){
-   	   	avlnV->set_cur(chtcount, yrind);
-		avlnV->put(&regnod->ch4flux2b[0], 1, 1);
+   	   	ch4flux2bV->set_cur(chtcount, yrind);
+		ch4flux2bV->put(&regnod->ch4flux2b[0], 1, 1);
    	}
 
    	if (regnod->outvarlist[I_netnmin]==1){
@@ -1359,8 +1386,8 @@ void RegnOutputer::outputCohortVars(const int & yrind, const int & chtcount, con
    	   	}
 
    	   	if (regnod->outvarlist[I_ch4]==2){
-   	   	   	avlnV->set_cur(chtcount, yrind*MINY);
-   			avlnV->put(&regnod->ch4[0], 1, MINY);
+   	   	   	ch4V->set_cur(chtcount, yrind*MINY);
+   			ch4V->put(&regnod->ch4[0], 1, MINY);
    	   	}
 
    	   	if (regnod->outvarlist[I_rh]==2){
@@ -1368,24 +1395,34 @@ void RegnOutputer::outputCohortVars(const int & yrind, const int & chtcount, con
    			rhV->put(&regnod->rh[0], 1, MINY);
    	   	}
 
+   	   	if (regnod->outvarlist[I_ch4prod]==2){
+   	   	   	ch4prodV->set_cur(chtcount, yrind*MINY);
+   			ch4prodV->put(&regnod->ch4prod[0], 1, MINY);
+   	   	}
+
+   	   	if (regnod->outvarlist[I_ch4oxid]==2){
+   	   	   	ch4oxidV->set_cur(chtcount, yrind*MINY);
+   			ch4oxidV->put(&regnod->ch4oxid[0], 1, MINY);
+   	   	}
+
    	   	if (regnod->outvarlist[I_ch4flx]==2){
-   	   	   	avlnV->set_cur(chtcount, yrind*MINY);
-   			avlnV->put(&regnod->ch4flux[0], 1, MINY);
+   	   	   	ch4fluxV->set_cur(chtcount, yrind*MINY);
+   			ch4fluxV->put(&regnod->ch4flux[0], 1, MINY);
    	   	}
 
    	   	if (regnod->outvarlist[I_ch4flx2a]==2){
-   	   	   	avlnV->set_cur(chtcount, yrind*MINY);
-   			avlnV->put(&regnod->ch4flux2a[0], 1, MINY);
+   	   	   	ch4flux2aV->set_cur(chtcount, yrind*MINY);
+   			ch4flux2aV->put(&regnod->ch4flux2a[0], 1, MINY);
    	   	}
 
    	   	if (regnod->outvarlist[I_ch4flx2p]==2){
-   	   	   	avlnV->set_cur(chtcount, yrind*MINY);
-   			avlnV->put(&regnod->ch4flux2p[0], 1, MINY);
+   	   	   	ch4flux2pV->set_cur(chtcount, yrind*MINY);
+   			ch4flux2pV->put(&regnod->ch4flux2p[0], 1, MINY);
    	   	}
 
    	   	if (regnod->outvarlist[I_ch4flx2b]==2){
-   	   	   	avlnV->set_cur(chtcount, yrind*MINY);
-   			avlnV->put(&regnod->ch4flux2b[0], 1, MINY);
+   	   	   	ch4flux2bV->set_cur(chtcount, yrind*MINY);
+   			ch4flux2bV->put(&regnod->ch4flux2b[0], 1, MINY);
    	   	}
 
    	   	if (regnod->outvarlist[I_netnmin]==2){
@@ -1609,30 +1646,30 @@ void RegnOutputer::outputCohortVars(const int & yrind, const int & chtcount, con
    	   	}
 
 /////// DAILY OUTPUT /////////////////////////////////////////////////////////////////
-   	    	   	if (regnod->outvarlist[I_growstart]==3){
-   	    	   	   	growstartV->set_cur(chtcount, yrind*DINY);
-   	    			growstartV->put(&regnod->growstart[0][0], 1, DINY, NUM_PFT);
-   	    	   	}
+   	    if (regnod->outvarlist[I_growstart]==3){
+   	       	growstartV->set_cur(chtcount, yrind*DINY);
+   	       	growstartV->put(&regnod->growstart[0][0], 1, DINY, NUM_PFT);
+   	    }
 
-   	    	   	if (regnod->outvarlist[I_growend]==3){
-   	    	   	   	growendV->set_cur(chtcount, yrind*DINY);
-   	    			growendV->put(&regnod->growend[0][0], 1, DINY, NUM_PFT);
-   	    	   	}
+   	    if (regnod->outvarlist[I_growend]==3){
+   	       	growendV->set_cur(chtcount, yrind*DINY);
+   	    	growendV->put(&regnod->growend[0][0], 1, DINY, NUM_PFT);
+   	    }
 
-   	    	   	if (regnod->outvarlist[I_vegcov]==3){
-   	    	   	   	vegcovV->set_cur(chtcount, yrind*DINY);
-   	    			vegcovV->put(&regnod->vegcov[0][0], 1, DINY, NUM_PFT);
-   	    	   	}
+   	    if (regnod->outvarlist[I_vegcov]==3){
+   	       	vegcovV->set_cur(chtcount, yrind*DINY);
+   	       	vegcovV->put(&regnod->vegcov[0][0], 1, DINY, NUM_PFT);
+   	    }
 
-   	    	   	if (regnod->outvarlist[I_vegage]==3){
-   	    	   	   	vegageV->set_cur(chtcount, yrind*DINY);
-   	    			vegageV->put(&regnod->vegage[0][0], 1, DINY, NUM_PFT);
-   	    	   	}
+   	    if (regnod->outvarlist[I_vegage]==3){
+   	       	vegageV->set_cur(chtcount, yrind*DINY);
+   	       	vegageV->put(&regnod->vegage[0][0], 1, DINY, NUM_PFT);
+   	   	}
 
-   	    	   	if (regnod->outvarlist[I_lai]==3){
-   	    	   	   	laiV->set_cur(chtcount, yrind*DINY);
-   	    			laiV->put(&regnod->lai[0][0], 1, DINY, NUM_PFT);
-   	    	   	}
+   	    if (regnod->outvarlist[I_lai]==3){
+   	       	laiV->set_cur(chtcount, yrind*DINY);
+   	       	laiV->put(&regnod->lai[0][0], 1, DINY, NUM_PFT);
+   	   	}
 
    	    	   	if (regnod->outvarlist[I_vegc]==3){
    	    	   	   	vegcV->set_cur(chtcount, yrind*DINY);
@@ -1776,8 +1813,8 @@ void RegnOutputer::outputCohortVars(const int & yrind, const int & chtcount, con
    	    	   	}
 
    	    	   	if (regnod->outvarlist[I_ch4]==3){
-   	    	   	   	avlnV->set_cur(chtcount, yrind*DINY);
-   	    			avlnV->put(&regnod->ch4[0], 1, DINY);
+   	    	   	   	ch4V->set_cur(chtcount, yrind*DINY);
+   	    			ch4V->put(&regnod->ch4[0], 1, DINY);
    	    	   	}
 
    	    	   	if (regnod->outvarlist[I_rh]==3){
@@ -1785,24 +1822,34 @@ void RegnOutputer::outputCohortVars(const int & yrind, const int & chtcount, con
    	    			rhV->put(&regnod->rh[0], 1, DINY);
    	    	   	}
 
+   	    	   	if (regnod->outvarlist[I_ch4prod]==3){
+   	    	   	   	ch4prodV->set_cur(chtcount, yrind*DINY);
+   	    			ch4prodV->put(&regnod->ch4prod[0], 1, DINY);
+   	    	   	}
+
+   	    	   	if (regnod->outvarlist[I_ch4oxid]==3){
+   	    	   	   	ch4oxidV->set_cur(chtcount, yrind*DINY);
+   	    			ch4oxidV->put(&regnod->ch4oxid[0], 1, DINY);
+   	    	   	}
+
    	    	   	if (regnod->outvarlist[I_ch4flx]==3){
-   	    	   	   	avlnV->set_cur(chtcount, yrind*DINY);
-   	    			avlnV->put(&regnod->ch4flux[0], 1, DINY);
+   	    	   	   	ch4fluxV->set_cur(chtcount, yrind*DINY);
+   	    			ch4fluxV->put(&regnod->ch4flux[0], 1, DINY);
    	    	   	}
 
    	    	   	if (regnod->outvarlist[I_ch4flx2a]==3){
-   	    	   	   	avlnV->set_cur(chtcount, yrind*DINY);
-   	    			avlnV->put(&regnod->ch4flux2a[0], 1, DINY);
+   	    	   	   	ch4flux2aV->set_cur(chtcount, yrind*DINY);
+   	    			ch4flux2aV->put(&regnod->ch4flux2a[0], 1, DINY);
    	    	   	}
 
    	    	   	if (regnod->outvarlist[I_ch4flx2p]==3){
-   	    	   	   	avlnV->set_cur(chtcount, yrind*DINY);
-   	    			avlnV->put(&regnod->ch4flux2p[0], 1, DINY);
+   	    	   	   	ch4flux2pV->set_cur(chtcount, yrind*DINY);
+   	    			ch4flux2pV->put(&regnod->ch4flux2p[0], 1, DINY);
    	    	   	}
 
    	    	   	if (regnod->outvarlist[I_ch4flx2b]==3){
-   	    	   	   	avlnV->set_cur(chtcount, yrind*DINY);
-   	    			avlnV->put(&regnod->ch4flux2b[0], 1, DINY);
+   	    	   	   	ch4flux2bV->set_cur(chtcount, yrind*DINY);
+   	    			ch4flux2bV->put(&regnod->ch4flux2b[0], 1, DINY);
    	    	   	}
 
    	    	   	if (regnod->outvarlist[I_netnmin]==3){

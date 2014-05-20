@@ -21,7 +21,7 @@ enum outvarlistkey {
 
    		     I_permafrost, I_mossdz, I_oshlwdz, I_odeepdz, I_mineadz, I_minebdz, I_minecdz,
    		     I_oshlwc, I_odeepc, I_mineac, I_minebc, I_minecc, I_orgn, I_avln, I_ch4,
-   		     I_rh, I_ch4flx, I_ch4flx2a, I_ch4flx2p, I_ch4flx2b, I_netnmin,
+   		     I_rh, I_ch4prod, I_ch4oxid, I_ch4flx, I_ch4flx2a, I_ch4flx2p, I_ch4flx2b, I_netnmin,
 
    		     I_orgninput, I_avlninput, I_doclost, I_orgnlost, I_avlnlost,
 
@@ -47,120 +47,123 @@ class OutDataRegn{
 		~OutDataRegn();
 
 	 	int chtid;
-	  	int status[12];
+	  	int status[DINY];
 		int year;
-		int month[12];
+		int month[MINY];
+		int doy[DINY];
    		int yrsdist;
 
-   		int outvarlist[78];
+   		int outvarlist[I_outvarno];
 
    		// after update the following vars, please update the list and enum above
-   		int growstart[12][NUM_PFT];
-   		int growend[12][NUM_PFT];
-   		double vegcov[12][NUM_PFT];
-   		double vegage[12][NUM_PFT];
+   		int growstart[DINY][NUM_PFT];
+   		int growend[DINY][NUM_PFT];
+   		double vegcov[DINY][NUM_PFT];
+   		double vegage[DINY][NUM_PFT];
 
-   		double lai[12][NUM_PFT];
-   		double vegc[12][NUM_PFT];
-   		double leafc[12][NUM_PFT];
-   		double stemc[12][NUM_PFT];
-   		double rootc[12][NUM_PFT];
-   		double vegn[12][NUM_PFT];
-   		double labn[12][NUM_PFT];
-   		double leafn[12][NUM_PFT];
-  		double stemn[12][NUM_PFT];
-  		double rootn[12][NUM_PFT];
+   		double lai[DINY][NUM_PFT];
+   		double vegc[DINY][NUM_PFT];
+   		double leafc[DINY][NUM_PFT];
+   		double stemc[DINY][NUM_PFT];
+   		double rootc[DINY][NUM_PFT];
+   		double vegn[DINY][NUM_PFT];
+   		double labn[DINY][NUM_PFT];
+   		double leafn[DINY][NUM_PFT];
+  		double stemn[DINY][NUM_PFT];
+  		double rootn[DINY][NUM_PFT];
 
-   		double gpp[12][NUM_PFT];
-   		double npp[12][NUM_PFT];
+   		double gpp[DINY][NUM_PFT];
+   		double npp[DINY][NUM_PFT];
 
-        double ltrfalc[12][NUM_PFT];
-        double ltrfaln[12][NUM_PFT];
+        double ltrfalc[DINY][NUM_PFT];
+        double ltrfaln[DINY][NUM_PFT];
 
-        double nuptake[12][NUM_PFT];
+        double nuptake[DINY][NUM_PFT];
 
         //
-   		int permafrost[12];
+   		int permafrost[DINY];
 
-   		double mossdz[12];
-   		double oshlwdz[12];
-   		double odeepdz[12];
-   		double mineadz[12];
-   		double minebdz[12];
-   		double minecdz[12];
+   		double mossdz[DINY];
+   		double oshlwdz[DINY];
+   		double odeepdz[DINY];
+   		double mineadz[DINY];
+   		double minebdz[DINY];
+   		double minecdz[DINY];
 
-   		double oshlwc[12];
-   		double odeepc[12];
-   		double mineac[12];
-   		double minebc[12];
-   		double minecc[12];
+   		double oshlwc[DINY];
+   		double odeepc[DINY];
+   		double mineac[DINY];
+   		double minebc[DINY];
+   		double minecc[DINY];
 
-   		double orgn[12];
-   		double avln[12];
-   		double ch4[12];
+   		double orgn[DINY];
+   		double avln[DINY];
+   		double ch4[DINY];
 
-   		double rh[12];
-   		double ch4flux[12];
-   		double ch4flux2a[12];
-   		double ch4flux2p[12];
-   		double ch4flux2b[12];
-   		double netnmin[12];
+   		double rh[DINY];
+   		double ch4prod[DINY];
+   		double ch4oxid[DINY];
+   		double ch4flux[DINY];
+   		double ch4flux2a[DINY];
+   		double ch4flux2p[DINY];
+   		double ch4flux2b[DINY];
+   		double netnmin[DINY];
 
-   		double orgninput[12];
-   		double avlninput[12];
+   		double orgninput[DINY];
+   		double avlninput[DINY];
 
-      	double doclost[12];
-      	double orgnlost[12];
-      	double avlnlost[12];
+      	double doclost[DINY];
+      	double orgnlost[DINY];
+      	double avlnlost[DINY];
 
       	//
-      	double eet[12];
-   		double pet[12];
-   		double qinfl[12];
-   		double qdrain[12];
-      	double qrunoff[12];
+      	double eet[DINY];
+   		double pet[DINY];
+   		double qinfl[DINY];
+   		double qdrain[DINY];
+      	double qrunoff[DINY];
 
-      	double snwthick[12];
-      	double swe[12];
+      	double snwthick[DINY];
+      	double swe[DINY];
 
-   		double wtd[12];
-   		double alc[12];
-      	double ald[12];
+   		double wtd[DINY];
+   		double alc[DINY];
+      	double ald[DINY];
 
-   		double vwcshlw[12];
-   		double vwcdeep[12];
-   		double vwcminea[12];
-      	double vwcmineb[12];
-      	double vwcminec[12];
+   		double vwcshlw[DINY];
+   		double vwcdeep[DINY];
+   		double vwcminea[DINY];
+      	double vwcmineb[DINY];
+      	double vwcminec[DINY];
 
-   		double tshlw[12];
-   		double tdeep[12];
-   		double tminea[12];
-   		double tmineb[12];
-   		double tminec[12];
+   		double tshlw[DINY];
+   		double tdeep[DINY];
+   		double tminea[DINY];
+   		double tmineb[DINY];
+   		double tminec[DINY];
 
-   		double hkshlw[12];
-   		double hkdeep[12];
-   		double hkminea[12];
-   		double hkmineb[12];
-   		double hkminec[12];
+   		double hkshlw[DINY];
+   		double hkdeep[DINY];
+   		double hkminea[DINY];
+   		double hkmineb[DINY];
+   		double hkminec[DINY];
 
-   		double tcshlw[12];
-   		double tcdeep[12];
-   		double tcminea[12];
-   		double tcmineb[12];
-   		double tcminec[12];
+   		double tcshlw[DINY];
+   		double tcdeep[DINY];
+   		double tcminea[DINY];
+   		double tcmineb[DINY];
+   		double tcminec[DINY];
 
-   		double tbotrock[12];
+   		double tbotrock[DINY];
 
    		//
-   		double burnthick[12];
-   		double burnsoic[12];
-   		double burnvegc[12];
-   		double burnsoin[12];
-   		double burnvegn[12];
-   		double burnretainc[12];
-   		double burnretainn[12];
+   		double burnthick[DINY];
+   		double burnsoic[DINY];
+   		double burnvegc[DINY];
+   		double burnsoin[DINY];
+   		double burnvegn[DINY];
+   		double burnretainc[DINY];
+   		double burnretainn[DINY];
 	 
 };
 

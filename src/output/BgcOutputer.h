@@ -13,6 +13,7 @@
 
 #include "../data/BgcData.h"
 #include "../data/FirData.h"
+#include "../data/onebgc.h"
 
 using namespace std;
 
@@ -22,6 +23,7 @@ class BgcOutputer{
 		~BgcOutputer();
 				
 		void init(string & dirfile);
+		void outputCohortBgcVars_dly(const int &ipft, CohortData *cd, onebgc *bgcod, const int & calyr, const int & calmon, const int & calday, const int & recordcnt);
 		void outputCohortBgcVars_mly(const int &ipft, BgcData *bgcod, FirData *fod, const int & calyr, const int & calmon, const int & recordcnt);
 		void outputCohortBgcVars_yly(const int &ipft, BgcData *bgcod, FirData *fod, const int & calyr, const int & recordcnt);
 
@@ -40,6 +42,7 @@ class BgcOutputer{
 		NcVar* errorV;    //error code
 		NcVar* yearV;
 		NcVar* monV;
+		NcVar* dayV;
 
 		// vegetation stats/fluxes
 	   	NcVar* callV;
@@ -141,10 +144,16 @@ class BgcOutputer{
    		NcVar* burnretaincV;
    		NcVar* burnretainnV;
 
+   		// methane
    		NcVar* totch4fluxV;
    		NcVar* totch4flux2AV;   // by diffusion
    		NcVar* totch4flux2PV;   // by plant
    		NcVar* totch4flux2EV;   // by ebullation
+
+   		NcVar* totch4prodV;
+  		NcVar* ch4prodV; //[MAX_SOI_LAY];
+   		NcVar* totch4oxidV;
+  		NcVar* ch4oxidV; //[MAX_SOI_LAY];
 
 };
 

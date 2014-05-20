@@ -79,6 +79,7 @@ class RunCohort {
  		EnvOutputer envmlyouter;
  		EnvOutputer envylyouter;
  		
+ 		BgcOutputer bgcdlyouter;
  		BgcOutputer bgcmlyouter;
  		BgcOutputer bgcylyouter;
 

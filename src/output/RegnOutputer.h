@@ -78,6 +78,8 @@ class RegnOutputer{
    		NcVar* avlnV;
 
    		NcVar* ch4V;
+   		NcVar* ch4prodV;
+   		NcVar* ch4oxidV;
 
    		NcVar* rhV;
    		NcVar* ch4fluxV;

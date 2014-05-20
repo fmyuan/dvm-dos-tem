@@ -32,6 +32,7 @@ void BgcOutputer::init(string & dirfile){
   	errorV = ncfileenv->add_var("ERRORID", ncInt, timeD);
 	yearV  = ncfileenv->add_var("YEAR", ncInt, timeD);
 	monV   = ncfileenv->add_var("MONTH", ncInt, timeD);
+	dayV   = ncfileenv->add_var("DAY", ncInt, timeD);
 
 	// veg C/N state variables
    	callV = ncfileenv->add_var("VEGCSUM", ncDouble, timeD, pftD);
@@ -128,6 +129,214 @@ void BgcOutputer::init(string & dirfile){
    	burnretaincV= ncfileenv->add_var("BURNRETAINC", ncDouble, timeD);
    	burnretainnV= ncfileenv->add_var("BURNRETAINN", ncDouble, timeD);
 
+   	//methane
+   	ch4V         = ncfileenv->add_var("CH4", ncDouble, timeD, soilayerD);
+   	totch4fluxV  = ncfileenv->add_var("TOTCH4FLUX", ncDouble, timeD);;
+	totch4flux2AV= ncfileenv->add_var("TOTCH4FLUX2A", ncDouble, timeD);;   // by diffusion
+	totch4flux2PV= ncfileenv->add_var("TOTCH4FLUX2P", ncDouble, timeD);;   // by plant
+	totch4flux2EV= ncfileenv->add_var("TOTCH4FLUX2E", ncDouble, timeD);;   // by ebullation
+
+   	totch4prodV  = ncfileenv->add_var("TOTCH4PROD", ncDouble, timeD);;
+   	ch4prodV     = ncfileenv->add_var("CH4PROD", ncDouble, timeD, soilayerD);
+   	totch4oxidV  = ncfileenv->add_var("TOTCH4OXID", ncDouble, timeD);;
+   	ch4oxidV     = ncfileenv->add_var("CH4OXID", ncDouble, timeD, soilayerD);
+
+}
+
+void BgcOutputer::outputCohortBgcVars_dly(const int &ipft, CohortData *cd, onebgc *bd, const int &calyr,
+		const int &calday, const int &calmon, const int & tstepcnt){
+ 	NcError err(NcError::verbose_nonfatal);
+
+// 	if (ipft < 0) {  // for 'all PFTs', the index is -1
+		if (tstepcnt==0) chtidV->put(&cd->chtid);
+		yearV->put_rec(&calyr, tstepcnt);
+		monV->put_rec(&calmon, tstepcnt);
+		dayV->put_rec(&calday, tstepcnt);
+
+		// soil C/N state variables for all PFTs
+   		wdebriscV->put_rec(&bd->bgc_sois.wdebrisc, tstepcnt);
+   		wdebrisnV->put_rec(&bd->bgc_sois.wdebrisn, tstepcnt);
+   		rawcV->put_rec(&bd->bgc_sois.rawc[0], tstepcnt);
+   		somaV->put_rec(&bd->bgc_sois.soma[0], tstepcnt);
+   		somprV->put_rec(&bd->bgc_sois.sompr[0], tstepcnt);
+   		somcrV->put_rec(&bd->bgc_sois.somcr[0], tstepcnt);
+   		orgnV->put_rec(&bd->bgc_sois.orgn[0], tstepcnt);
+   		avlnV->put_rec(&bd->bgc_sois.avln[0], tstepcnt);
+
+   		shlwcV->put_rec(&bd->bgc_soid.shlwc, tstepcnt);
+   		deepcV->put_rec(&bd->bgc_soid.deepc, tstepcnt);
+   		mineacV->put_rec(&bd->bgc_soid.mineac, tstepcnt);
+   		minebcV->put_rec(&bd->bgc_soid.minebc, tstepcnt);
+   		mineccV->put_rec(&bd->bgc_soid.minecc, tstepcnt);
+   		rawcsumV->put_rec(&bd->bgc_soid.rawcsum, tstepcnt);
+   		somasumV->put_rec(&bd->bgc_soid.somasum, tstepcnt);
+   		somprsumV->put_rec(&bd->bgc_soid.somprsum, tstepcnt);
+   		somcrsumV->put_rec(&bd->bgc_soid.somcrsum, tstepcnt);
+   		orgnsumV->put_rec(&bd->bgc_soid.orgnsum, tstepcnt);
+   		avlnsumV->put_rec(&bd->bgc_soid.avlnsum, tstepcnt);
+
+   		//soil C/N fluxes
+
+   	 	rhV->put_rec(&bd->bgc_soi2a.rhtot, tstepcnt);
+		knmoistV->put_rec(&bd->bgc_soid.knmoist[0], tstepcnt);
+   		rhmoistV->put_rec(&bd->bgc_soid.rhmoist[0], tstepcnt);
+
+   		rhq10V->put_rec(&bd->bgc_soid.rhq10[0], tstepcnt);
+   		soilltrfcnV->put_rec(&bd->bgc_soid.ltrfcn[0], tstepcnt);
+
+   		nepV->put_rec(&bd->bgc_a2soi.orgcinput, tstepcnt);
+   		orgninputV->put_rec(&bd->bgc_a2soi.orgninput, tstepcnt);
+   		avlninputV->put_rec(&bd->bgc_a2soi.avlninput, tstepcnt);
+
+   		doclostV->put_rec(&bd->bgc_soi2l.doclost, tstepcnt);      //DOC lost
+   		avlnlostV->put_rec(&bd->bgc_soi2l.avlnlost, tstepcnt);     // N leaching
+   		orgnlostV->put_rec(&bd->bgc_soi2l.orgnlost, tstepcnt);     // DON loss
+
+   		//methane
+   		ch4V->put_rec(&bd->bgc_sois.ch4[0], tstepcnt);
+   		totch4fluxV->put_rec(&bd->bgc_soi2a.totCH4Flux_m, tstepcnt);
+   		totch4flux2AV->put_rec(&bd->bgc_soi2a.totFlux2A_m, tstepcnt);
+   		totch4flux2PV->put_rec(&bd->bgc_soi2a.totPlant_m, tstepcnt);
+   		totch4flux2EV->put_rec(&bd->bgc_soi2a.totEbul_m, tstepcnt);
+
+   		totch4prodV->put_rec(&bd->bgc_soi2a.totProd_m, tstepcnt);
+  		ch4prodV->put_rec(&bd->bgc_soi2a.Prod_m[0], tstepcnt); //[MAX_SOI_LAY];
+   		totch4oxidV->put_rec(&bd->bgc_soi2a.totOxid_m, tstepcnt);
+  		ch4oxidV->put_rec(&bd->bgc_soi2a.Oxid_m[0], tstepcnt); //[MAX_SOI_LAY];
+
+	//}
+
+ 	if (ipft>=0) {
+ 		// veg C/N state variables - output for each PFT
+ 		callV->set_cur(tstepcnt, ipft);
+ 		callV->put(&bd->bgc_vegs.call, 1, 1);
+
+ 		cV->set_cur(tstepcnt, ipft, 0);
+ 		cV->put(&bd->bgc_vegs.c[0], 1, 1, NUM_PFT_PART);
+
+ 		nallV->set_cur(tstepcnt, ipft);
+ 		nallV->put(&bd->bgc_vegs.nall, 1, 1);
+
+ 		labnV->set_cur(tstepcnt, ipft);
+ 		labnV->put(&bd->bgc_vegs.labn, 1, 1);
+
+ 		strnallV->set_cur(tstepcnt, ipft);
+ 		strnallV->put(&bd->bgc_vegs.strnall, 1, 1);
+
+ 		strnV->set_cur(tstepcnt, ipft, 0);
+ 		strnV->put(&bd->bgc_vegs.strn[0], 1, 1, NUM_PFT_PART);
+
+ 		deadcV->set_cur(tstepcnt, ipft);
+ 		deadcV->put(&bd->bgc_vegs.deadc, 1, 1);
+
+ 		callV->set_cur(tstepcnt, ipft);
+ 		deadnV->put(&bd->bgc_vegs.deadn, 1, 1);
+
+ 		//veg C/N fluxes for each PFT
+ 		gppftV->set_cur(tstepcnt, ipft);
+ 		gppftV->put(&bd->bgc_vegd.ftemp, 1, 1);
+
+ 		gppgvV->set_cur(tstepcnt, ipft);
+ 		gppgvV->put(&bd->bgc_vegd.gv, 1, 1);
+
+ 		gppfnaV->set_cur(tstepcnt, ipft);
+ 		gppfnaV->put(&bd->bgc_vegd.fna, 1, 1);
+
+ 		gppfcaV->set_cur(tstepcnt, ipft);
+ 		gppfcaV->put(&bd->bgc_vegd.fca, 1, 1);
+
+ 		raq10V->set_cur(tstepcnt, ipft);
+ 		raq10V->put(&bd->bgc_vegd.raq10, 1, 1);
+
+ 		rmkrV->set_cur(tstepcnt, ipft, 0);
+ 		rmkrV->put(&bd->bgc_vegd.kr[0], 1, 1, NUM_PFT_PART);
+
+ 		// C/N fluxes
+ 		ingppallV->set_cur(tstepcnt, ipft);
+ 		ingppallV->put(&bd->bgc_a2v.ingppall, 1, 1);
+
+ 		ingppV->set_cur(tstepcnt, ipft, 0);
+ 		ingppV->put(&bd->bgc_a2v.ingpp[0], 1, 1, NUM_PFT_PART);
+
+ 		innppallV->set_cur(tstepcnt, ipft);
+ 		innppallV->put(&bd->bgc_a2v.innppall, 1, 1);
+
+ 		innppV->set_cur(tstepcnt, ipft, 0);
+ 		innppV->put(&bd->bgc_a2v.innpp[0], 1, 1, NUM_PFT_PART);
+
+ 		gppallV->set_cur(tstepcnt, ipft);
+ 		gppallV->put(&bd->bgc_a2v.gppall, 1, 1);
+
+ 		gppV->set_cur(tstepcnt, ipft, 0);
+ 		gppV->put(&bd->bgc_a2v.gpp[0], 1, 1, NUM_PFT_PART);
+
+ 		nppallV->set_cur(tstepcnt, ipft);
+ 		nppallV->put(&bd->bgc_a2v.nppall, 1, 1);
+
+ 		nppV->set_cur(tstepcnt, ipft, 0);
+ 		nppV->put(&bd->bgc_a2v.npp[0], 1, 1, NUM_PFT_PART);
+
+ 		rmallV->set_cur(tstepcnt, ipft);
+ 		rmallV->put(&bd->bgc_v2a.rmall,  1, 1);
+
+ 		rmV->set_cur(tstepcnt, ipft, 0);
+ 		rmV->put(&bd->bgc_v2a.rm[0], 1, 1, NUM_PFT_PART);
+
+ 		rgallV->set_cur(tstepcnt, ipft);
+		rgallV->put(&bd->bgc_v2a.rgall,  1, 1);
+
+ 		rgV->set_cur(tstepcnt, ipft, 0);
+ 		rgV->put(&bd->bgc_v2a.rg[0], 1, 1, NUM_PFT_PART);
+
+ 		ltrfalcallV->set_cur(tstepcnt, ipft);
+ 		if (&cd->m_veg.nonvascular[ipft]>0) {
+ 			ltrfalcallV->put(&bd->bgc_v2soi.mossdeathc,  1, 1);
+ 		} else {
+ 			ltrfalcallV->put(&bd->bgc_v2soi.ltrfalcall,  1, 1);
+ 		}
+
+		ltrfalcV->set_cur(tstepcnt, ipft, 0);
+		ltrfalcV->put(&bd->bgc_v2soi.ltrfalc[0], 1, 1, NUM_PFT_PART);
+
+		//
+ 		ltrfalnallV->set_cur(tstepcnt, ipft);
+ 		if (&cd->m_veg.nonvascular[ipft]>0) {
+ 			ltrfalnallV->put(&bd->bgc_v2soi.mossdeathn,  1, 1);
+ 		} else {
+ 			ltrfalnallV->put(&bd->bgc_v2soi.ltrfalnall,  1, 1);
+ 		}
+
+		ltrfalnV->set_cur(tstepcnt, ipft, 0);
+		ltrfalnV->put(&bd->bgc_v2soi.ltrfaln[0], 1, 1, NUM_PFT_PART);
+
+		innuptakeV->set_cur(tstepcnt, ipft);
+		innuptakeV->put(&bd->bgc_soi2v.innuptake,  1, 1);
+
+		nrootextractV->set_cur(tstepcnt, ipft, 0);
+		nrootextractV->put(&bd->bgc_soi2v.nextract[0], 1, 1, MAX_SOI_LAY);
+
+		luptakeV->set_cur(tstepcnt, ipft);
+		luptakeV->put(&bd->bgc_soi2v.lnuptake,  1, 1);
+
+		suptakeallV->set_cur(tstepcnt, ipft);
+		suptakeallV->put(&bd->bgc_soi2v.snuptakeall,  1, 1);
+
+		suptakeV->set_cur(tstepcnt, ipft);
+		suptakeV->put(&bd->bgc_soi2v.snuptake[0], 1, 1, NUM_PFT_PART);
+
+		nmobilallV->set_cur(tstepcnt, ipft);
+		nmobilallV->put(&bd->bgc_v2v.nmobilall, 1, 1);
+
+		nmobilV->set_cur(tstepcnt, ipft);
+		nmobilV->put(&bd->bgc_v2v.nmobil[0], 1, 1, NUM_PFT_PART);
+
+		nresorballV->set_cur(tstepcnt, ipft);
+		nresorballV->put(&bd->bgc_v2v.nresorball, 1, 1);
+
+		nresorbV->set_cur(tstepcnt, ipft);
+		nresorbV->put(&bd->bgc_v2v.nresorb[0], 1, 1, NUM_PFT_PART);
+
+ 	}
 }
 
 void BgcOutputer::outputCohortBgcVars_mly(const int &ipft, BgcData *bd, FirData *fd, const int &calyr, const int &calmon, const int & tstepcnt){
@@ -137,6 +346,7 @@ void BgcOutputer::outputCohortBgcVars_mly(const int &ipft, BgcData *bd, FirData 
 		if (tstepcnt==0) chtidV->put(&bd->cd->chtid);
 		yearV->put_rec(&calyr, tstepcnt);
 		monV->put_rec(&calmon, tstepcnt);
+		dayV->put_rec(&MISSING_I, tstepcnt);
 
 		// soil C/N state variables for all PFTs
    		wdebriscV->put_rec(&bd->m_sois.wdebrisc, tstepcnt);
@@ -147,6 +357,7 @@ void BgcOutputer::outputCohortBgcVars_mly(const int &ipft, BgcData *bd, FirData 
    		somcrV->put_rec(&bd->m_sois.somcr[0], tstepcnt);
    		orgnV->put_rec(&bd->m_sois.orgn[0], tstepcnt);
    		avlnV->put_rec(&bd->m_sois.avln[0], tstepcnt);
+   		ch4V->put_rec(&bd->m_sois.ch4[0], tstepcnt);
 
    		shlwcV->put_rec(&bd->m_soid.shlwc, tstepcnt);
    		deepcV->put_rec(&bd->m_soid.deepc, tstepcnt);
@@ -189,6 +400,18 @@ void BgcOutputer::outputCohortBgcVars_mly(const int &ipft, BgcData *bd, FirData 
    		burnretaincV->put_rec(&ftmp1, tstepcnt);
    		double ftmp2 = fd->fire_v2soi.abvn+fd->fire_v2soi.blwn;
    		burnretainnV->put_rec(&ftmp2, tstepcnt);
+
+   		//methane
+   		ch4V->put_rec(&bd->m_sois.ch4[0], tstepcnt);
+   		totch4fluxV->put_rec(&bd->m_soi2a.totCH4Flux_m, tstepcnt);
+   		totch4flux2AV->put_rec(&bd->m_soi2a.totFlux2A_m, tstepcnt);
+   		totch4flux2PV->put_rec(&bd->m_soi2a.totPlant_m, tstepcnt);
+   		totch4flux2EV->put_rec(&bd->m_soi2a.totEbul_m, tstepcnt);
+
+   		totch4prodV->put_rec(&bd->m_soi2a.totProd_m, tstepcnt);
+  		ch4prodV->put_rec(&bd->m_soi2a.Prod_m[0], tstepcnt); //[MAX_SOI_LAY];
+   		totch4oxidV->put_rec(&bd->m_soi2a.totOxid_m, tstepcnt);
+  		ch4oxidV->put_rec(&bd->m_soi2a.Oxid_m[0], tstepcnt); //[MAX_SOI_LAY];
 
 	//}
 
@@ -335,6 +558,7 @@ void BgcOutputer::outputCohortBgcVars_yly(const int &ipft, BgcData *bgcod, FirDa
 
 		yearV->put_rec(&calyr, tstepcnt);
 		monV->put_rec(&MISSING_I, tstepcnt);
+		dayV->put_rec(&MISSING_I, tstepcnt);
 
 		// soil C/N state variables
    		wdebriscV->put_rec(&bgcod->y_sois.wdebrisc, tstepcnt);
@@ -345,6 +569,7 @@ void BgcOutputer::outputCohortBgcVars_yly(const int &ipft, BgcData *bgcod, FirDa
    		somcrV->put_rec(&bgcod->y_sois.somcr[0], tstepcnt);
    		orgnV->put_rec(&bgcod->y_sois.orgn[0], tstepcnt);
    		avlnV->put_rec(&bgcod->y_sois.avln[0], tstepcnt);
+   		ch4V->put_rec(&bgcod->y_sois.ch4[0], tstepcnt);
 
    		shlwcV->put_rec(&bgcod->y_soid.shlwc, tstepcnt);
    		deepcV->put_rec(&bgcod->y_soid.deepc, tstepcnt);
@@ -385,6 +610,18 @@ void BgcOutputer::outputCohortBgcVars_yly(const int &ipft, BgcData *bgcod, FirDa
    		burnretaincV->put_rec(&ftmp1, tstepcnt);
    		double ftmp2 = fd->fire_v2soi.abvn+fd->fire_v2soi.blwn;
    		burnretainnV->put_rec(&ftmp2, tstepcnt);
+
+   		//methane
+   		ch4V->put_rec(&bgcod->y_sois.ch4[0], tstepcnt);
+   		totch4fluxV->put_rec(&bgcod->y_soi2a.totCH4Flux_m, tstepcnt);
+   		totch4flux2AV->put_rec(&bgcod->y_soi2a.totFlux2A_m, tstepcnt);
+   		totch4flux2PV->put_rec(&bgcod->y_soi2a.totPlant_m, tstepcnt);
+   		totch4flux2EV->put_rec(&bgcod->y_soi2a.totEbul_m, tstepcnt);
+
+   		totch4prodV->put_rec(&bgcod->y_soi2a.totProd_m, tstepcnt);
+  		ch4prodV->put_rec(&bgcod->y_soi2a.Prod_m[0], tstepcnt); //[MAX_SOI_LAY];
+   		totch4oxidV->put_rec(&bgcod->y_soi2a.totOxid_m, tstepcnt);
+  		ch4oxidV->put_rec(&bgcod->y_soi2a.Oxid_m[0], tstepcnt); //[MAX_SOI_LAY];
 
  	}
 

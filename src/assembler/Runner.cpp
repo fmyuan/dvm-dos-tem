@@ -102,6 +102,9 @@ void Runner::initOutput() {
 			if (md.outSiteDay){
 				envfname = md.outputdir+"cmtenv_dly"+stage+".nc";
 				runcht.envdlyouter.init(envfname);				// set netcdf files for output
+
+				bgcfname = md.outputdir+"cmtbgc_dly"+stage+".nc";
+				runcht.bgcdlyouter.init(bgcfname);				// set netcdf files for output
 			}
 
 			if (md.outSiteMonth){

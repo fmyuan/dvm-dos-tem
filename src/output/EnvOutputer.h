@@ -7,7 +7,7 @@
 #include <netcdfcpp.h>
 
 #include "../data/EnvData.h"
-#include "../data/EnvDataDly.h"
+#include "../data/oneenv.h"
 
 #include "../inc/errorcode.h"
 #include "../inc/timeconst.h"
@@ -21,7 +21,7 @@ class EnvOutputer{
 		~EnvOutputer();
 				
 		void init(string & dirfile);
-		void outputCohortEnvVars_dly(const int &ipft, EnvDataDly *envodly, const int&iy, const int&im, const int &id, const int & tstepcnt);
+		void outputCohortEnvVars_dly(const int &ipft, oneenv *envodly, const int&iy, const int&im, const int &id, const int & tstepcnt);
 		void outputCohortEnvVars_mly(const int &ipft, snwstate_dim *m_snow, EnvData * envod, const int&iy, const int&im, const int & tstepcnt);
 		void outputCohortEnvVars_yly(const int &ipft, snwstate_dim *y_snow, EnvData * envod, const int &iy, const int & tstepcnt);
 

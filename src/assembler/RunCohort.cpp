@@ -99,9 +99,9 @@ int RunCohort::allchtids(){
 void RunCohort::init(){
 
 	// switches of N cycles
-    md->nfeed   = 1;
-    md->avlnflg = 1;
-	md->baseline= 1;
+    md->nfeed   = true;
+    md->avlnflg = true;
+	md->baseline= true;
 
 	// switches of modules
 	md->envmodule = true;
@@ -129,7 +129,7 @@ int RunCohort::readData(){
 	cht.cd.act_atm_drv_yr = md->act_clmyr;
 	if (md->act_clmstep == MINY) { //if climate data is in monthly time-step, read it all-years
 		cinputer.getClimate(cht.cd.tair, cht.cd.prec, cht.cd.nirr, cht.cd.vapo, 0, cht.cd.act_atm_drv_yr, clmrecno);
-	} else if (md->act_clmstep == DINY) { //if climate data is in daily time-step, read it yearly and calculate monthly data
+	} else if (md->act_clmstep == DINY) { //if climate data is in daily time-step, read it yearly for calculating monthly data
 	    float ta[DINY];
 	    float pre[DINY];
 	    float nir[DINY];
@@ -255,6 +255,7 @@ void RunCohort::run_cohortly(){
 
 	    //
 		if(cht.md->runeq){
+		    used_atmyr = fmin(MAX_ATM_NOM_YR, cht.cd.act_atm_drv_yr);
 
 			// a quick pre-run to get reasonably-well 'env' conditions, which may be good for 'eq' run
 			runEnvmodule();
@@ -366,7 +367,7 @@ void RunCohort::run_timeseries(){
 		 cht.cd.year = cht.timer->getCalendarYear();
 
 		 if (md->act_clmstep == DINY) { //if climate data is in daily time-step, read it yearly
-			 int clmyrcount = yrindex%used_atmyr;  // this will recycle climate data series
+			int clmyrcount = yrindex%used_atmyr;  // this will recycle climate data series
 			cinputer.getClimate(cht.cd.d_tair, cht.cd.d_prec, cht.cd.d_nirr, cht.cd.d_vapo, clmyrcount, 1, clmrecno);
 		 }
 		 cht.prepareDayDrivingData(yrindex, used_atmyr);
@@ -385,7 +386,6 @@ void RunCohort::run_timeseries(){
 	       if (outputyrind >=0) {
 	    	   if (md->outSiteDay){
 	    		   for (int id=0; id<dinmcurr; id++) {
-	    			   cht.outbuffer.envoddlyall[id].chtid = cht.cd.chtid;
 	    			   envdlyouter.outputCohortEnvVars_dly(-1, &cht.outbuffer.envoddlyall[id],
 			    				                               icalyr, im, id, dstepcnt);     // this will output non-veg (multiple PFT) related variables
 	    			   for (int ip=0; ip<NUM_PFT; ip++) {
@@ -395,6 +395,8 @@ void RunCohort::run_timeseries(){
 
 	    			    	}
 	    			   }
+	    			   bgcdlyouter.outputCohortBgcVars_dly(-1, &cht.cd, &cht.outbuffer.bgcoddlyall[id],
+			    				                               icalyr, im, id, dstepcnt);     // this will output non-veg (multiple PFT) related variables
 
 	    			   dstepcnt++;
 	    		   }

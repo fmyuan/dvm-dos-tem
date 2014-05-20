@@ -19,8 +19,8 @@ class Atmosphere{
 		void updateDailyAtm(const int & mid, const int & dayid);
 	
     	void prepareMonthDrivingData();
-    	void prepareDayDrivingData(const int & mid, const int & usedatmyr, const bool & changeclm, const bool &changeco2);
-    	void prepareDayDrivingData2(const int &yrcount, const bool &changeco2);
+    	void prepareDayDrivingData(const int & yrcount, const int & usedatmyr, const bool & changeclm, const bool &changeco2);
+    	void prepareDayDrivingData2(const int & yrcount, const bool &changeco2);
 
     	void setCohortData(CohortData* cdp);
     	void setEnvData(EnvData* edp);

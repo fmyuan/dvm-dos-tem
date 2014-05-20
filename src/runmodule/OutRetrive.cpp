@@ -42,50 +42,95 @@ void OutRetrive::setRegnOutData(OutDataRegn *regnodp){
 // data storing is the best choice
 void OutRetrive::assignSiteDlyOutputBuffer_Env(snwstate_dim d_snow, const int &ipft, const int &iday){
 	if (ipft<0) {
-	        envoddlyall[iday].d_snow = d_snow;
+	        envoddlyall[iday].dim_snow = d_snow;
 
-            envoddlyall[iday].d_atms = edall->d_atms;
-            envoddlyall[iday].d_vegs = edall->d_vegs;
-            envoddlyall[iday].d_snws = edall->d_snws;
-            envoddlyall[iday].d_sois = edall->d_sois;
+            envoddlyall[iday].env_atms = edall->d_atms;
+            envoddlyall[iday].env_vegs = edall->d_vegs;
+            envoddlyall[iday].env_snws = edall->d_snws;
+            envoddlyall[iday].env_sois = edall->d_sois;
 
-            envoddlyall[iday].d_atmd = edall->d_atmd;
-            envoddlyall[iday].d_vegd = edall->d_vegd;
-            envoddlyall[iday].d_snwd = edall->d_snwd;
-            envoddlyall[iday].d_soid = edall->d_soid;
+            envoddlyall[iday].env_atmd = edall->d_atmd;
+            envoddlyall[iday].env_vegd = edall->d_vegd;
+            envoddlyall[iday].env_snwd = edall->d_snwd;
+            envoddlyall[iday].env_soid = edall->d_soid;
 
-            envoddlyall[iday].d_l2a = edall->d_l2a;
-            envoddlyall[iday].d_a2l = edall->d_a2l;
-            envoddlyall[iday].d_a2v = edall->d_a2v;
-            envoddlyall[iday].d_v2a = edall->d_v2a;
-            envoddlyall[iday].d_v2g = edall->d_v2g;
-            envoddlyall[iday].d_soi2l = edall->d_soi2l;
-            envoddlyall[iday].d_soi2a = edall->d_soi2a;
-            envoddlyall[iday].d_snw2a = edall->d_snw2a;
-            envoddlyall[iday].d_snw2soi = edall->d_snw2soi;
+            envoddlyall[iday].env_l2a = edall->d_l2a;
+            envoddlyall[iday].env_a2l = edall->d_a2l;
+            envoddlyall[iday].env_a2v = edall->d_a2v;
+            envoddlyall[iday].env_v2a = edall->d_v2a;
+            envoddlyall[iday].env_v2g = edall->d_v2g;
+            envoddlyall[iday].env_soi2l = edall->d_soi2l;
+            envoddlyall[iday].env_soi2a = edall->d_soi2a;
+            envoddlyall[iday].env_snw2a = edall->d_snw2a;
+            envoddlyall[iday].env_snw2soi = edall->d_snw2soi;
 
 	} else {
-	        envoddly[ipft][iday].d_snow = d_snow;
+	        envoddly[ipft][iday].dim_snow = d_snow;
 
-            envoddly[ipft][iday].d_atms = ed[ipft]->d_atms;
-            envoddly[ipft][iday].d_vegs = ed[ipft]->d_vegs;
-            envoddly[ipft][iday].d_snws = ed[ipft]->d_snws;
-            envoddly[ipft][iday].d_sois = ed[ipft]->d_sois;
+            envoddly[ipft][iday].env_atms = ed[ipft]->d_atms;
+            envoddly[ipft][iday].env_vegs = ed[ipft]->d_vegs;
+            envoddly[ipft][iday].env_snws = ed[ipft]->d_snws;
+            envoddly[ipft][iday].env_sois = ed[ipft]->d_sois;
 
-            envoddly[ipft][iday].d_atmd = ed[ipft]->d_atmd;
-            envoddly[ipft][iday].d_vegd = ed[ipft]->d_vegd;
-            envoddly[ipft][iday].d_snwd = ed[ipft]->d_snwd;
-            envoddly[ipft][iday].d_soid = ed[ipft]->d_soid;
+            envoddly[ipft][iday].env_atmd = ed[ipft]->d_atmd;
+            envoddly[ipft][iday].env_vegd = ed[ipft]->d_vegd;
+            envoddly[ipft][iday].env_snwd = ed[ipft]->d_snwd;
+            envoddly[ipft][iday].env_soid = ed[ipft]->d_soid;
 
-            envoddly[ipft][iday].d_l2a = ed[ipft]->d_l2a;
-            envoddly[ipft][iday].d_a2l = ed[ipft]->d_a2l;
-            envoddly[ipft][iday].d_a2v = ed[ipft]->d_a2v;
-            envoddly[ipft][iday].d_v2a = ed[ipft]->d_v2a;
-            envoddly[ipft][iday].d_v2g = ed[ipft]->d_v2g;
-            envoddly[ipft][iday].d_soi2l = ed[ipft]->d_soi2l;
-            envoddly[ipft][iday].d_soi2a = ed[ipft]->d_soi2a;
-            envoddly[ipft][iday].d_snw2a = ed[ipft]->d_snw2a;
-            envoddly[ipft][iday].d_snw2soi = ed[ipft]->d_snw2soi;
+            envoddly[ipft][iday].env_l2a = ed[ipft]->d_l2a;
+            envoddly[ipft][iday].env_a2l = ed[ipft]->d_a2l;
+            envoddly[ipft][iday].env_a2v = ed[ipft]->d_a2v;
+            envoddly[ipft][iday].env_v2a = ed[ipft]->d_v2a;
+            envoddly[ipft][iday].env_v2g = ed[ipft]->d_v2g;
+            envoddly[ipft][iday].env_soi2l = ed[ipft]->d_soi2l;
+            envoddly[ipft][iday].env_soi2a = ed[ipft]->d_soi2a;
+            envoddly[ipft][iday].env_snw2a = ed[ipft]->d_snw2a;
+            envoddly[ipft][iday].env_snw2soi = ed[ipft]->d_snw2soi;
+	}
+};
+
+// the following is needed, because daily output is done in the last day of the month, and then
+// data storing is the best choice
+void OutRetrive::assignSiteDlyOutputBuffer_Bgc(const int &ipft, const int &iday){
+	if (ipft<0) {
+		bgcoddlyall[iday].bgc_vegs = bdall->d_vegs;
+		bgcoddlyall[iday].bgc_sois = bdall->d_sois;
+		bgcoddlyall[iday].bgc_vegd = bdall->d_vegd;
+		bgcoddlyall[iday].bgc_soid = bdall->d_soid;
+		bgcoddlyall[iday].bgc_l2a  = bdall->d_l2a;
+		bgcoddlyall[iday].bgc_a2v  = bdall->d_a2v;
+		bgcoddlyall[iday].bgc_v2a  = bdall->d_v2a;
+		bgcoddlyall[iday].bgc_v2soi = bdall->d_v2soi;
+		bgcoddlyall[iday].bgc_soi2v = bdall->d_soi2v;
+		bgcoddlyall[iday].bgc_v2v   = bdall->d_v2v;
+		bgcoddlyall[iday].bgc_soi2l = bdall->d_soi2l;
+		bgcoddlyall[iday].bgc_soi2a = bdall->d_soi2a;
+		bgcoddlyall[iday].bgc_a2soi = bdall->d_a2soi;
+		bgcoddlyall[iday].bgc_soi2soi = bdall->d_soi2soi;
+
+		for (int il=0; il<MAX_SOI_LAY; il++){
+			bgcoddlyall[iday].prvltrfcnque[il] = bdall->prvltrfcnque[il];
+		}
+
+	} else {
+		bgcoddly[ipft][iday].bgc_vegs = bd[ipft]->d_vegs;
+		bgcoddly[ipft][iday].bgc_sois = bd[ipft]->d_sois;
+		bgcoddly[ipft][iday].bgc_vegd = bd[ipft]->d_vegd;
+		bgcoddly[ipft][iday].bgc_soid = bd[ipft]->d_soid;
+		bgcoddly[ipft][iday].bgc_l2a  = bd[ipft]->d_l2a;
+		bgcoddly[ipft][iday].bgc_a2v  = bd[ipft]->d_a2v;
+		bgcoddly[ipft][iday].bgc_v2a  = bd[ipft]->d_v2a;
+		bgcoddly[ipft][iday].bgc_v2soi = bd[ipft]->d_v2soi;
+		bgcoddly[ipft][iday].bgc_soi2v = bd[ipft]->d_soi2v;
+		bgcoddly[ipft][iday].bgc_v2v   = bd[ipft]->d_v2v;
+		bgcoddly[ipft][iday].bgc_soi2l = bd[ipft]->d_soi2l;
+		bgcoddly[ipft][iday].bgc_soi2a = bd[ipft]->d_soi2a;
+		bgcoddly[ipft][iday].bgc_a2soi = bd[ipft]->d_a2soi;
+		bgcoddly[ipft][iday].bgc_soi2soi = bd[ipft]->d_soi2soi;
+
+		for (int il=0; il<MAX_SOI_LAY; il++){
+			bgcoddly[ipft][iday].prvltrfcnque[il] = bd[ipft]->prvltrfcnque[il];
+		}
 	}
 };
 

@@ -587,25 +587,25 @@ void Cohort::updateMonthly_Bgc(const int & currmind, const int & dinmcurr){
         edall->cd->d_veg  = cd.d_veg;
         edall->cd->d_vegd = cd.d_vegd;
 
-        edall->d_atms = outbuffer.envoddlyall[id].d_atms;
-        edall->d_vegs = outbuffer.envoddlyall[id].d_vegs;
-        edall->d_snws = outbuffer.envoddlyall[id].d_snws;
-        edall->d_sois = outbuffer.envoddlyall[id].d_sois;
+        edall->d_atms = outbuffer.envoddlyall[id].env_atms;
+        edall->d_vegs = outbuffer.envoddlyall[id].env_vegs;
+        edall->d_snws = outbuffer.envoddlyall[id].env_snws;
+        edall->d_sois = outbuffer.envoddlyall[id].env_sois;
 
-        edall->d_atmd = outbuffer.envoddlyall[id].d_atmd;
-        edall->d_vegd = outbuffer.envoddlyall[id].d_vegd;
-        edall->d_snwd = outbuffer.envoddlyall[id].d_snwd;
-        edall->d_soid = outbuffer.envoddlyall[id].d_soid;
+        edall->d_atmd = outbuffer.envoddlyall[id].env_atmd;
+        edall->d_vegd = outbuffer.envoddlyall[id].env_vegd;
+        edall->d_snwd = outbuffer.envoddlyall[id].env_snwd;
+        edall->d_soid = outbuffer.envoddlyall[id].env_soid;
 
-        edall->d_l2a = outbuffer.envoddlyall[id].d_l2a;
-        edall->d_a2l = outbuffer.envoddlyall[id].d_a2l;
-        edall->d_a2v = outbuffer.envoddlyall[id].d_a2v;
-        edall->d_v2a = outbuffer.envoddlyall[id].d_v2a;
-        edall->d_v2g = outbuffer.envoddlyall[id].d_v2g;
-        edall->d_soi2l = outbuffer.envoddlyall[id].d_soi2l;
-        edall->d_soi2a = outbuffer.envoddlyall[id].d_soi2a;
-        edall->d_snw2a = outbuffer.envoddlyall[id].d_snw2a;
-        edall->d_snw2soi = outbuffer.envoddlyall[id].d_snw2soi;
+        edall->d_l2a = outbuffer.envoddlyall[id].env_l2a;
+        edall->d_a2l = outbuffer.envoddlyall[id].env_a2l;
+        edall->d_a2v = outbuffer.envoddlyall[id].env_a2v;
+        edall->d_v2a = outbuffer.envoddlyall[id].env_v2a;
+        edall->d_v2g = outbuffer.envoddlyall[id].env_v2g;
+        edall->d_soi2l = outbuffer.envoddlyall[id].env_soi2l;
+        edall->d_soi2a = outbuffer.envoddlyall[id].env_soi2a;
+        edall->d_snw2a = outbuffer.envoddlyall[id].env_snw2a;
+        edall->d_snw2soi = outbuffer.envoddlyall[id].env_snw2soi;
 
         // call the ODE for soil bgc
 		soilbgc.prepareIntegration(md->nfeed, md->avlnflg, md->baseline);
