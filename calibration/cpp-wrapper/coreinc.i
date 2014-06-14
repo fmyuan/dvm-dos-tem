@@ -29,29 +29,29 @@
 %rename(clone) operator=;
 
 			%{
-				#include "../../src/inc/cohortconst.h"
-				#include "../../src/inc/layerconst.h"
-				#include "../../src/inc/parameters.h"
-				#include "../../src/inc/temconst.h"
-				#include "../../src/inc/timeconst.h"
+				#include "inc/cohortconst.h"
+				#include "inc/layerconst.h"
+				#include "inc/parameters.h"
+				#include "inc/temconst.h"
+				#include "inc/timeconst.h"
 
-				#include "../../src/inc/errorcode.h"
+				#include "inc/ErrorCode.h"
 
-				#include "../../src/inc/states.h"
-				#include "../../src/inc/diagnostics.h"
-				#include "../../src/inc/fluxes.h"
+				#include "inc/states.h"
+				#include "inc/diagnostics.h"
+				#include "inc/fluxes.h"
 
 			%}
 
-			%include "../../src/inc/cohortconst.h"
-			%include "../../src/inc/layerconst.h"
-			%include "../../src/inc/parameters.h"
-			%include "../../src/inc/temconst.h"
-			%include "../../src/inc/timeconst.h"
+			%include "inc/cohortconst.h"
+			%include "inc/layerconst.h"
+			%include "inc/parameters.h"
+			%include "inc/temconst.h"
+			%include "inc/timeconst.h"
 
-			%include "../../src/inc/errorcode.h"
+			%include "inc/ErrorCode.h"
 
-			%include "../../src/inc/states.h"
-			%include "../../src/inc/diagnostics.h"
-			%include "../../src/inc/fluxes.h"
+			%include "inc/states.h"
+			%include "inc/diagnostics.h"
+			%include "inc/fluxes.h"
 			

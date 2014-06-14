@@ -3,7 +3,7 @@ package DATA;
 import TEMJNI.temcore;
 
 public class ConstTime{
-	public final static int DYINY = temcore.getDYINY();  // DINY is not used
+	public final static int DYINY = temcore.getDINY();  // DINY is not used
 	public final static int MINY  = temcore.getMINY();	
 
 	public final static int DINM[] = {31,  28,  31,  30,  31,  30,  31,  31,  30,  31,  30,  31};

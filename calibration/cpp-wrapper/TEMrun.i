@@ -3,7 +3,7 @@
  *
  */
 
-	%module temcore
+	%module TEMrun
 
 //Translate operators
 %rename(add) operator+;
@@ -36,24 +36,24 @@
 %include "corelookup.i"
 
 			%{
-				#include "../../src/runmodule/Cohort.h"
-				#include "../../src/runmodule/Controller.h"
-				#include "../../src/runmodule/Grid.h"
-				#include "../../src/runmodule/ModelData.h"
-				#include "../../src/runmodule/OutRetrive.h"
-				#include "../../src/runmodule/Region.h"
-				#include "../../src/runmodule/Timer.h"
+				#include "runmodule/Cohort.h"
+				#include "runmodule/Controller.h"
+				#include "runmodule/Grid.h"
+				#include "runmodule/ModelData.h"
+				#include "runmodule/OutRetrive.h"
+				#include "runmodule/Region.h"
+				#include "runmodule/Timer.h"
 
-				#include "../cpp-wrapper/TEMccjava.h"
+				#include "TEMccjava.h"
 								
 			%}
 
-			%include "../../src/runmodule/Cohort.h"
-			%include "../../src/runmodule/Controller.h"
-			%include "../../src/runmodule/Grid.h"
-			%include "../../src/runmodule/ModelData.h"
-			%include "../../src/runmodule/OutRetrive.h"
-			%include "../../src/runmodule/Region.h"
-			%include "../../src/runmodule/Timer.h"
-			%include "../cpp-wrapper/TEMccjava.h"
+			%include "runmodule/Cohort.h"
+			%include "runmodule/Controller.h"
+			%include "runmodule/Grid.h"
+			%include "runmodule/ModelData.h"
+			%include "runmodule/OutRetrive.h"
+			%include "runmodule/Region.h"
+			%include "runmodule/Timer.h"
+			%include "TEMccjava.h"
 			

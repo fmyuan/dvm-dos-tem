@@ -51,11 +51,9 @@ public class BioVariablePlotter {
 	public PlotterMode2 avlnTP;
 	public PlotterMode2 orgnTP;	
 
-	// A few flux/state vairables at monthly time-step
+	// A few flux/state vairables at monthly/daily time-step
 	public PlotterMode3 m_vcfluxTP;
 	public PlotterMode2 m_vnfluxTP;
-	public PlotterMode2 m_scfluxTP;
-	public PlotterMode4 m_snfluxTP;
 	
 	public PlotterMode1 m_vegclTP;
 	public PlotterMode1 m_vegcsTP;
@@ -64,6 +62,15 @@ public class BioVariablePlotter {
 	public PlotterMode2 m_vegnlTP;
 	public PlotterMode1 m_vegnsTP;
 	public PlotterMode1 m_vegnrTP;
+
+	//
+	public PlotterMode2 m_scstateTP;
+	public PlotterMode2 m_scfluxTP;
+	public PlotterMode3 m_ch4TP;
+	
+	public PlotterMode1 m_snstateTP;
+	public PlotterMode2 m_snflux1TP;
+	public PlotterMode2 m_snflux2TP;
 
 
 	public BioVariablePlotter() {
@@ -81,12 +88,14 @@ public class BioVariablePlotter {
 			JPanel fluxpanel = getFluxPanel();
 			JPanel vstatepanel = getVstatePanel();
 			JPanel sstatepanel = getSstatePanel();
-			JPanel monthlypanel = getMonthPanel();
+			JPanel vdynpanel = getVseasonalPanel();
+			JPanel sdynpanel = getSseasonalPanel();
 
 			tp.add("Yearly Fluxes", fluxpanel);
-			tp.add("Yearly Veg. States", vstatepanel);
-			tp.add("Yearly Soil States", sstatepanel);
-			tp.add("Monthly Checking", monthlypanel);
+			tp.add("Yearly States - Veg.", vstatepanel);
+			tp.add("Yearly States - Soil", sstatepanel);
+			tp.add("Seasonally Checking - Veg.", vdynpanel);
+			tp.add("Seasonally Checking - Soil", sdynpanel);
 
 			f.add(tp, BorderLayout.CENTER);
 
@@ -411,7 +420,7 @@ public class BioVariablePlotter {
 		return targetPanel;
 	}
 
-	private JPanel getMonthPanel() {
+	private JPanel getVseasonalPanel() {
 		JPanel targetPanel = new JPanel();
 		targetPanel.setLayout(new BoxLayout(targetPanel, BoxLayout.X_AXIS));
 
@@ -457,16 +466,6 @@ public class BioVariablePlotter {
 		mvegcrTG.add(mvegcrPanel);
 		leftJTP.add(mvegcrTG);
 
-		m_scfluxTP = new PlotterMode2("tLTRFsim", "RHsim", 36);
-		JPanel mscfluxPanel = m_scfluxTP.getPanel();
-		mscfluxPanel.setPreferredSize(new Dimension(330, 125));
-		JTaskPaneGroup mscfluxTG = new JTaskPaneGroup();
-		mscfluxTG.setSpecial(false);
-		mscfluxTG.setExpanded(true);
-		mscfluxTG.setTitle("Soil C fluxes");
-		mscfluxTG.add(mscfluxPanel);
-		leftJTP.add(mscfluxTG);
-
 		///
 		JTaskPane rightJTP = new JTaskPane();
 
@@ -510,15 +509,81 @@ public class BioVariablePlotter {
 		mvegnrTG.add(mvegnrPanel);
 		rightJTP.add(mvegnrTG);
 		
-		m_snfluxTP = new PlotterMode4("tNuptake", "tNltrf", "netNmin","Nimmob",24);
-		JPanel msnfluxPanel = m_snfluxTP.getPanel();
-		msnfluxPanel.setPreferredSize(new Dimension(330, 125));
-		JTaskPaneGroup msnfluxTG = new JTaskPaneGroup();
-		msnfluxTG.setSpecial(false);
-		msnfluxTG.setExpanded(true);
-		msnfluxTG.setTitle("Soil N fluxes");
-		msnfluxTG.add(msnfluxPanel);
-		rightJTP.add(msnfluxTG);
+		targetPanel.add(leftJTP);
+		targetPanel.add(rightJTP);
+		
+		targetPanel.setPreferredSize(new Dimension(420, 900));
+		return targetPanel;
+	}
+	
+	private JPanel getSseasonalPanel() {
+		JPanel targetPanel = new JPanel();
+		targetPanel.setLayout(new BoxLayout(targetPanel, BoxLayout.X_AXIS));
+
+		JTaskPane leftJTP = new JTaskPane();
+		
+		m_scstateTP = new PlotterMode2("tRAWC", "tSOMA", 36);
+		JPanel mscstatePanel = m_scstateTP.getPanel();
+		mscstatePanel.setPreferredSize(new Dimension(330, 125));
+		JTaskPaneGroup mscstateTG = new JTaskPaneGroup();
+		mscstateTG.setSpecial(false);
+		mscstateTG.setExpanded(true);
+		mscstateTG.setTitle("Short-lived Soil C states");
+		mscstateTG.add(mscstatePanel);
+		leftJTP.add(mscstateTG);
+
+		m_ch4TP = new PlotterMode3("CH4DIFFsim", "CH4EBULsim", "CH4PLANTsim", 36);
+		JPanel mch4Panel = m_ch4TP.getPanel();
+		mch4Panel.setPreferredSize(new Dimension(330, 125));
+		JTaskPaneGroup mch4TG = new JTaskPaneGroup();
+		mch4TG.setSpecial(false);
+		mch4TG.setExpanded(true);
+		mch4TG.setTitle("CH4 fluxes via pathes");
+		mch4TG.add(mch4Panel);
+		leftJTP.add(mch4TG);
+
+		m_scfluxTP = new PlotterMode2("RHsim", "tCH4FLUX",36);
+		JPanel mscfluxPanel = m_scfluxTP.getPanel();
+		mscfluxPanel.setPreferredSize(new Dimension(330, 125));
+		JTaskPaneGroup mscfluxTG = new JTaskPaneGroup();
+		mscfluxTG.setSpecial(false);
+		mscfluxTG.setExpanded(true);
+		mscfluxTG.setTitle("Total Soil C Fluxes");
+		mscfluxTG.add(mscfluxPanel);
+		leftJTP.add(mscfluxTG);
+
+		///
+		JTaskPane rightJTP = new JTaskPane();
+
+		m_snstateTP = new PlotterMode1("totAVLN",36);
+		JPanel msnstatePanel = m_snstateTP.getPanel();
+		msnstatePanel.setPreferredSize(new Dimension(330, 125));
+		JTaskPaneGroup msnstateTG = new JTaskPaneGroup();
+		msnstateTG.setSpecial(false);
+		msnstateTG.setExpanded(true);
+		msnstateTG.setTitle("Soil Available N");
+		msnstateTG.add(msnstatePanel);
+		rightJTP.add(msnstateTG);
+		
+		m_snflux1TP = new PlotterMode2("netNmin","Nimmob",36);
+		JPanel msnflux1Panel = m_snflux1TP.getPanel();
+		msnflux1Panel.setPreferredSize(new Dimension(330, 125));
+		JTaskPaneGroup msnflux1TG = new JTaskPaneGroup();
+		msnflux1TG.setSpecial(false);
+		msnflux1TG.setExpanded(true);
+		msnflux1TG.setTitle("Soil N fluxes1");
+		msnflux1TG.add(msnflux1Panel);
+		rightJTP.add(msnflux1TG);
+
+		m_snflux2TP = new PlotterMode2("AVLN_I","AVLN_O",24);
+		JPanel msnflux2Panel = m_snflux2TP.getPanel();
+		msnflux2Panel.setPreferredSize(new Dimension(330, 125));
+		JTaskPaneGroup msnflux2TG = new JTaskPaneGroup();
+		msnflux2TG.setSpecial(false);
+		msnflux2TG.setExpanded(true);
+		msnflux2TG.setTitle("Soil N fluxes2");
+		msnflux2TG.add(msnflux2Panel);
+		rightJTP.add(msnflux2TG);
 
 		targetPanel.add(leftJTP);
 		targetPanel.add(rightJTP);
@@ -563,14 +628,18 @@ public class BioVariablePlotter {
 		m_vegcsTP.reset();
 		m_vegcrTP.reset();
 		m_vcfluxTP.reset();
-		m_scfluxTP.reset();
 		
 		m_vegnlTP.reset();
 		m_vegnsTP.reset();
 		m_vegnrTP.reset();
 		m_vnfluxTP.reset();
-		m_snfluxTP.reset();
 
+		m_scstateTP.reset();
+        m_scfluxTP.reset();
+		m_ch4TP.reset();
+		m_snstateTP.reset();
+		m_snflux1TP.reset();
+		m_snflux2TP.reset();
 				
 	}
 

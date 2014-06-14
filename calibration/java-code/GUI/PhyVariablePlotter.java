@@ -53,12 +53,12 @@ public class PhyVariablePlotter {
 			JTabbedPane tp = new JTabbedPane();
 
 			JPanel ylypanel  = getYearlyPanel();
-			JPanel mly1panel = getMonthly1Panel();
-			JPanel mly2panel = getMonthly2Panel();
+			JPanel mly1panel = getDaily1Panel();
+			JPanel mly2panel = getDaily2Panel();
 
 			tp.add("Yealy Variables", ylypanel);
-			tp.add("Monthly Variables - Hydrological", mly1panel);
-			tp.add("Monthly Variables - Thermal", mly2panel);
+			tp.add("Daily Variables - Hydrological", mly1panel);
+			tp.add("Daily Variables - Thermal", mly2panel);
 
 			f.add(tp, BorderLayout.CENTER);
 
@@ -168,7 +168,7 @@ public class PhyVariablePlotter {
 		return targetPanel;
 	}
 
-	private JPanel getMonthly1Panel() {
+	private JPanel getDaily1Panel() {
 		JPanel targetPanel = new JPanel();
 		targetPanel.setLayout(new BoxLayout(targetPanel, BoxLayout.X_AXIS));
 
@@ -243,7 +243,7 @@ public class PhyVariablePlotter {
 		return targetPanel;
 	}
 
-	private JPanel getMonthly2Panel() {
+	private JPanel getDaily2Panel() {
 		JPanel targetPanel = new JPanel();
 		targetPanel.setLayout(new BoxLayout(targetPanel, BoxLayout.X_AXIS));
 

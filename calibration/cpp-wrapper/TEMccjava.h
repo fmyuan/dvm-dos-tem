@@ -1,9 +1,9 @@
 #ifndef TEMCCJAVA_H_
     #define TEMCCJAVA_H_
 
-    #include "../../src/runmodule/Controller.h"
-    #include "../../src/runmodule/ModelData.h"
-    #include "../../src/runmodule/Cohort.h"
+    #include "runmodule/Controller.h"
+    #include "runmodule/ModelData.h"
+    #include "runmodule/Cohort.h"
 
     class TEMccjava{
 	public :

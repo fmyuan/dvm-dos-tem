@@ -322,12 +322,11 @@ public class Runner {
 			for (icht=0; icht<runcht.chtids.size(); icht++){
 				int gridid = runcht.chtgridids.get(icht);
 
-				int it = rungrd.grdids.indexOf(gridid);
-				if (it>=0) {
-					igrd = rungrd.grdids.get(it);
-					runcht.chtdrainids.add(rungrd.drainids.get(igrd));
-					runcht.chtsoilids.add(rungrd.soilids.get(igrd));
-					runcht.chtgfireids.add(rungrd.gfireids.get(igrd));
+				igrd = rungrd.grdids.indexOf(gridid);
+				if (igrd>=0) {
+					runcht.chtdrainids.add(rungrd.grddrgids.get(igrd));
+					runcht.chtsoilids.add(rungrd.grdsoilids.get(igrd));
+					runcht.chtgfireids.add(rungrd.grdfireids.get(igrd));
 
 				} else {
 					runcht.chtdrainids.add(-1);
@@ -463,7 +462,7 @@ public class Runner {
 			}
 
 			//getting the cohort data for current cohort
-			error = runcht.readData(true);
+			error = runcht.readData();
 			if (error!=0){
 				System.out.println("problem in reading grided data in Runner::run_siter \n");
 				System.exit(-1);
@@ -529,7 +528,7 @@ public class Runner {
 				}
 
 				//getting the cohort data for current cohort
-				error = runcht.readData(true);
+				error = runcht.readData();
 				if (error!=0){
 					System.out.println("problem in reading grided data in Runner::run_regner \n");
 					System.exit(-1);

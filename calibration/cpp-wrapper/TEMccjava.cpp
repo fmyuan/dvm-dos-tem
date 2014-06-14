@@ -85,6 +85,7 @@ void TEMccjava::setSbCalPar(soipar_cal *jscalpar) {
         cht->chtlu.kdcsoma = jscalpar->kdcsoma;
         cht->chtlu.kdcsompr= jscalpar->kdcsompr;
         cht->chtlu.kdcsomcr= jscalpar->kdcsomcr;
+        cht->chtlu.kdcratio4me= jscalpar->kdcratio4me;
 
         // parameters passing
         cht->soilbgc.initializeParameter();
@@ -121,6 +122,7 @@ void TEMccjava::getSbCalPar() {
 		scalpar.kdcsoma = cht->chtlu.kdcsoma;
 		scalpar.kdcsompr= cht->chtlu.kdcsompr;
 		scalpar.kdcsomcr= cht->chtlu.kdcsomcr;
+		scalpar.kdcratio4me= cht->chtlu.kdcratio4me;
 
 };
 

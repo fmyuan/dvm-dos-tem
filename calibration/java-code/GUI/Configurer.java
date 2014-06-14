@@ -74,6 +74,7 @@ public class Configurer{
 	public static int I_KDCSOMA =17;
 	public static int I_KDCSOMPR=18;
 	public static int I_KDCSOMCR=19;
+	public static int I_KDCR4ME=20;
  
 	//BGC targetted flux/state variable Index (in table)
 	public static int I_GPPt    =0;

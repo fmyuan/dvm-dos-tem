@@ -29,22 +29,22 @@
 %rename(clone) operator=;
 
 			%{
-				#include "../../src/data/BgcData.h"
-				#include "../../src/data/CohortData.h"
-				#include "../../src/data/EnvData.h"
-				#include "../../src/data/FirData.h"
-				#include "../../src/data/GridData.h"
-				#include "../../src/data/RegionData.h"
-				#include "../../src/data/RestartData.h"
-				#include "../../src/data/OutDataRegn.h"
+				#include "data/BgcData.h"
+				#include "data/CohortData.h"
+				#include "data/EnvData.h"
+				#include "data/FirData.h"
+				#include "data/GridData.h"
+				#include "data/RegionData.h"
+				#include "data/RestartData.h"
+				#include "data/OutDataRegn.h"
 			%}
 
-			%include "../../src/data/BgcData.h"
-			%include "../../src/data/CohortData.h"
-			%include "../../src/data/EnvData.h"
-			%include "../../src/data/FirData.h"
-			%include "../../src/data/GridData.h"
-			%include "../../src/data/RegionData.h"
-			%include "../../src/data/RestartData.h"
-			%include "../../src/data/OutDataRegn.h"
+			%include "data/BgcData.h"
+			%include "data/CohortData.h"
+			%include "data/EnvData.h"
+			%include "data/FirData.h"
+			%include "data/GridData.h"
+			%include "data/RegionData.h"
+			%include "data/RestartData.h"
+			%include "data/OutDataRegn.h"
 			

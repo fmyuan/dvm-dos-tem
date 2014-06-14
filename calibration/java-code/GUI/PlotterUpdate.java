@@ -165,7 +165,7 @@ public class PlotterUpdate {
 		
 	};
 		
-	public void updateMlyBioGraph(int yrcnt, int im, BgcData pftbd, BgcData allbd){		//update plots
+	public void updateDlyBioGraph(int yrcnt, int im, BgcData pftbd, BgcData allbd){		//update plots
 		if(BioVariablePlotter.f.isVisible()){
 			 
 			double x = (double)yrcnt+(double)im/12.0;
@@ -202,16 +202,30 @@ public class PlotterUpdate {
 			var1plotter.m_vegnrTP.addPoint(x, y1);
 			
 			// all pfts - for soil
-			y1 = allbd.getM_v2soi().getLtrfalcall();
-			y2 = allbd.getM_soi2a().getRhtot();
+			y1 = allbd.getD_soid().getRawcsum();
+			y2 = allbd.getD_soid().getSomasum();
+			var1plotter.m_scstateTP.addPoint(x, y1, y2);
+
+			y1 = allbd.getD_soi2a().getRhtot();
+			y2 = allbd.getD_soi2a().getTotCH4Flux_m();
 			var1plotter.m_scfluxTP.addPoint(x, y1, y2);
 
-			y1 = allbd.getM_soi2v().getSnuptakeall()+allbd.getM_soi2v().getLnuptake();
-			y2 = allbd.getM_v2soi().getLtrfalnall();
-			y3 = allbd.getM_soi2soi().getNetnminsum();
-			y4 = allbd.getM_soi2soi().getNimmobsum();
-			var1plotter.m_snfluxTP.addPoint(x, y1, y2, y3, y4);
-						
+			y1 = allbd.getD_soi2a().getTotFlux2A_m();
+			y2 = allbd.getD_soi2a().getTotEbul_m();
+			y3 = allbd.getD_soi2a().getTotPlant_m();
+			var1plotter.m_ch4TP.addPoint(x, y1, y2, y3);
+
+			y1 = allbd.getD_soid().getAvlnsum();
+			var1plotter.m_snstateTP.addPoint(x, y1);
+
+			y1 = allbd.getD_soi2soi().getNetnminsum();
+			y2 = allbd.getD_soi2soi().getNimmobsum();
+			var1plotter.m_snflux1TP.addPoint(x, y1, y2);
+
+			y3 = allbd.getD_a2soi().getAvlninput();
+			y4 = allbd.getD_soi2l().getAvlnlost();
+			var1plotter.m_snflux2TP.addPoint(x, y3, y4);
+
 		}	
 	
 	};
@@ -268,7 +282,7 @@ public class PlotterUpdate {
 		
 	};
 	
-	public void updateMlyPhyGraph(int yrcnt, int im, EnvData alled){		//update plots
+	public void updateDlyPhyGraph(int yrcnt, int im, EnvData alled){		//update plots
 
 		if(PhyVariablePlotter.f.isVisible()){
 
@@ -276,49 +290,48 @@ public class PlotterUpdate {
 		double y1 = 0., y2 = 0., y3 = 0.;
 		
 		//
-		y1 = alled.getM_a2l().getRnfl();
-		y2 = alled.getM_a2l().getSnfl();
+		y1 = alled.getD_a2l().getRnfl();
+		y2 = alled.getD_a2l().getSnfl();
 		var2plotter.mpptTP.addPoint(x, y1, y2);
 		
-		y1 = alled.getM_l2a().getPet();
-		y2 = alled.getM_l2a().getEet();
+		y1 = alled.getD_l2a().getPet();
+		y2 = alled.getD_l2a().getEet();
 		var2plotter.metTP.addPoint(x, y1, y2);
 
-		y1 = alled.getM_soi2l().getQover();
-		y2 = alled.getM_soi2l().getQdrain();
+		y1 = alled.getD_soi2l().getQover();
+		y2 = alled.getD_soi2l().getQdrain();
 		var2plotter.mqoutTP.addPoint(x, y1, y2);
 
-		y1 = alled.getM_sois().getWatertab();
-		y2 = alled.getM_sois().getDraindepth();
+		y1 = alled.getD_sois().getWatertab();
+		y2 = alled.getD_sois().getDraindepth();
 		var2plotter.mwtbdrgdTP.addPoint(x, y1, y2);
 		
-		y1 = alled.getM_soid().getVwcshlw();
-		y2 = alled.getM_soid().getVwcdeep();
+		y1 = alled.getD_soid().getVwcshlw();
+		y2 = alled.getD_soid().getVwcdeep();
 		var2plotter.mvwc1TP.addPoint(x, y1, y2);
 
-		y1 = alled.getM_soid().getVwcminea();
-		y2 = alled.getM_soid().getVwcmineb();
-		y3 = alled.getM_soid().getVwcminec();
+		y1 = alled.getD_soid().getVwcminea();
+		y2 = alled.getD_soid().getVwcmineb();
+		y3 = alled.getD_soid().getVwcminec();
 		var2plotter.mvwc2TP.addPoint(x, y1, y2, y3);
 
 		//
-		y1 = alled.getM_a2l().getPar();
+		y1 = alled.getD_a2l().getPar();
 		var2plotter.mppfdTP.addPoint(x, y1);
 
-		y1 = alled.getM_atms().getTa();
+		y1 = alled.getD_atms().getTa();
 		var2plotter.mtaTP.addPoint(x, y1);
 
-		y1 = alled.getM_soid().getAld();
-		y2 = alled.getM_soid().getAlc();
+		y1 = alled.getD_soid().getAld();
+		y2 = alled.getD_soid().getAlc();
 		var2plotter.maldTP.addPoint(x, y1, y2);
 
-		y1 = alled.getM_soid().getTshlw();
-		y2 = alled.getM_soid().getTdeep();
+		y1 = alled.getD_soid().getTdeep();
 		var2plotter.mts1TP.addPoint(x, y1, y2);
 
-		y1 = alled.getM_soid().getTminea();
-		y2 = alled.getM_soid().getTmineb();
-		y3 = alled.getM_soid().getTminec();
+		y1 = alled.getD_soid().getTminea();
+		y2 = alled.getD_soid().getTmineb();
+		y3 = alled.getD_soid().getTminec();
 		var2plotter.mts2TP.addPoint(x, y1, y2, y3);
 		
 		}

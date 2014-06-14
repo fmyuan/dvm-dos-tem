@@ -379,7 +379,7 @@ public class CohortInputer {
 			for (int iy = 0; iy < act_atm_drv_yr; iy++) {
 				for (int im = 0; im < 12; im++) {
 					int iyim =iy*12+im;
-					tair[iyim] = this.tairA.getFloat(ind1.set(recid,iy,im));
+					tair[iyim] = this.tairA.getFloat(ind1.set(iy,im,recid));
 				}
 			}
 
@@ -387,7 +387,7 @@ public class CohortInputer {
 			for (int iy = 0; iy < act_atm_drv_yr; iy++) {
 				for (int im = 0; im < 12; im++){
 					int iyim =iy*12+im;
-					nirr[iyim] = this.nirrA.getFloat(ind2.set(recid,iy,im));
+					nirr[iyim] = this.nirrA.getFloat(ind2.set(iy,im,recid));
 				}
 			}
 
@@ -395,7 +395,7 @@ public class CohortInputer {
 			for (int iy = 0; iy < act_atm_drv_yr; iy++) {
 				for (int im = 0; im < 12; im++) {
 					int iyim =iy*12+im;
-					prec[iyim] = this.precA.getFloat(ind3.set(recid,iy,im));
+					prec[iyim] = this.precA.getFloat(ind3.set(iy,im,recid));
 				}
 			}
 
@@ -403,7 +403,7 @@ public class CohortInputer {
 			for (int iy = 0; iy < act_atm_drv_yr; iy++) {
 				for (int im = 0; im < 12; im++) {
 					int iyim =iy*12+im;
-					vapo[iyim] = this.vapoA.getFloat(ind4.set(recid,iy,im));
+					vapo[iyim] = this.vapoA.getFloat(ind4.set(iy,im,recid));
 				}
 			}
 			

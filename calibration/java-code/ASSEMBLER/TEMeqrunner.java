@@ -1,6 +1,7 @@
 package ASSEMBLER;
 
 //from java
+import DATA.ConstCohort;
 import DATA.ConstTime;
 
 //GUI
@@ -84,7 +85,7 @@ public class TEMeqrunner implements Runnable{
 			}
 				
 			//getting the cohort data
-			error = eqrunner.runcht.readData(false);
+			error = eqrunner.runcht.readData();
 
 			error = eqrunner.runcht.reinit();
 
@@ -99,7 +100,8 @@ public class TEMeqrunner implements Runnable{
 
 			//getting the default pft index (first PFT with vegcov > 0)
 			ipft = 0;
-	    	double[] vegcov = eqrunner.runcht.cht.getCd().getM_veg().getVegcov();	    	
+	    	double[] vegcov = new double[ConstCohort.NUM_PFT];
+	    	vegcov = eqrunner.runcht.cht.getChtlu().getVegcov().clone();	    	
 	    	while (vegcov[ipft]<=0.0) {
 	    		ipft+=1;
 	    	}
@@ -167,8 +169,8 @@ public class TEMeqrunner implements Runnable{
 				eqrunner.runcht.cht.getTimer().advanceOneMonth();
 				
 				temcj.getData1pft(ipft);			
-				plotting.updateMlyBioGraph(yrcnt, im, temcj.getBd1pft(), eqrunner.runcht.cht.getBdall());
-				plotting.updateMlyPhyGraph(yrcnt, im, eqrunner.runcht.cht.getEdall());
+				plotting.updateDlyBioGraph(yrcnt, im, temcj.getBd1pft(), eqrunner.runcht.cht.getBdall());
+				plotting.updateDlyPhyGraph(yrcnt, im, eqrunner.runcht.cht.getEdall());
 				
 			}
 			plotting.updateYlyBioGraph(yrcnt, eqrunner.runcht.cht.getCd(), temcj.getBd1pft(), ipft, eqrunner.runcht.cht.getBdall());
@@ -217,8 +219,8 @@ public class TEMeqrunner implements Runnable{
 
 				temcj.getData1pft(ipft);
 				
-				plotting.updateMlyBioGraph(yrcnt, im, temcj.getBd1pft(), eqrunner.runcht.cht.getBdall());
-				plotting.updateMlyPhyGraph(yrcnt, im, eqrunner.runcht.cht.getEdall());
+				plotting.updateDlyBioGraph(yrcnt, im, temcj.getBd1pft(), eqrunner.runcht.cht.getBdall());
+				plotting.updateDlyPhyGraph(yrcnt, im, eqrunner.runcht.cht.getEdall());
 			}
 			plotting.updateYlyBioGraph(yrcnt, eqrunner.runcht.cht.getCd(), temcj.getBd1pft(), ipft, eqrunner.runcht.cht.getBdall());
 			plotting.updateYlyPhyGraph(yrcnt, eqrunner.runcht.cht.getCd(), eqrunner.runcht.cht.getEdall());
