@@ -21,7 +21,7 @@ CMT00 // Default TEM Community - ground structure/dimension
 0.04025            // coefminea:
 0.0532             // coefmineb:
 //===========================================================
-CMT01 // CMT1 TEM Community - ground structure/dimension
+CMT30 // Lowland Black Spruce forest - ground structure/dimension
 // Snow characteristics
 350                // snwdenmax:  max. snow density (kg/m3)
 120                // snwdennew:  new (min.) snow density (kg/m3)
@@ -29,7 +29,7 @@ CMT01 // CMT1 TEM Community - ground structure/dimension
 0.                 // initsnwdense: initial snow density (kg/m3)
 // moss characteristics
 0.035              // maxmossthick: max. moss thickness (m)
-0.005              // initdmossthick: initial dead moss thickness (m)
+0.000              // initdmossthick: initial dead moss thickness (m)
 1                  // mosstype: moss type (1: sphagnum; 2: furthermoss; 3: other)
 0.049              // coefmossa:
 0.50               // coefmossb:
@@ -43,7 +43,7 @@ CMT01 // CMT1 TEM Community - ground structure/dimension
 0.04025            // coefminea:
 0.0532             // coefmineb:
 //===========================================================
-CMT02 // CMT2 TEM Community - ground structure/dimension
+CMT51 // coastal polygonal tundra: trough - ground structure/dimension
 // Snow characteristics
 350                // snwdenmax:  max. snow density (kg/m3)
 120                // snwdennew:  new (min.) snow density (kg/m3)
@@ -51,13 +51,13 @@ CMT02 // CMT2 TEM Community - ground structure/dimension
 0.                 // initsnwdense: initial snow density (kg/m3)
 // moss characteristics
 0.035              // maxmossthick: max. moss thickness (m)
-0.005              // initdmossthick: initial dead moss thickness (m)
-1                  // mosstype: moss type (1: sphagnum; 2: furthermoss; 3: other)
+0.007              // initdmossthick: initial dead moss thickness (m)
+3                  // mosstype: moss type (1: sphagnum; 2: furthermoss; 3: other)
 0.049              // coefmossa:
 0.50               // coefmossb:
 // soil characteristics
-0.1                // initfibthick: meters
-0.1                // inithumthick:
+0.020              // initfibthick: meters
+0.150              // inithumthick:
 0.01               // coefshlwa:
 1.3574             // coefshlwb:
 0.03               // coefdeepa:
@@ -65,7 +65,7 @@ CMT02 // CMT2 TEM Community - ground structure/dimension
 0.04025            // coefminea:
 0.0532             // coefmineb:
 //===========================================================
-CMT03 // CMT3 TEM Community - ground structure/dimension
+CMT52 // coastal polygonal tundra: low-center basin - ground structure/dimension
 // Snow characteristics
 350                // snwdenmax:  max. snow density (kg/m3)
 120                // snwdennew:  new (min.) snow density (kg/m3)
@@ -73,13 +73,13 @@ CMT03 // CMT3 TEM Community - ground structure/dimension
 0.                 // initsnwdense: initial snow density (kg/m3)
 // moss characteristics
 0.035              // maxmossthick: max. moss thickness (m)
-0.005              // initdmossthick: initial dead moss thickness (m)
-1                  // mosstype: moss type (1: sphagnum; 2: furthermoss; 3: other)
+0.007              // initdmossthick: initial dead moss thickness (m)
+3                  // mosstype: moss type (1: sphagnum; 2: furthermoss; 3: other)
 0.049              // coefmossa:
 0.50               // coefmossb:
 // soil characteristics
-0.1                // initfibthick: meters
-0.1                // inithumthick:
+0.10               // initfibthick: meters
+0.60               // inithumthick:
 0.01               // coefshlwa:
 1.3574             // coefshlwb:
 0.03               // coefdeepa:
@@ -87,7 +87,7 @@ CMT03 // CMT3 TEM Community - ground structure/dimension
 0.04025            // coefminea:
 0.0532             // coefmineb:
 //===========================================================
-CMT04 // CMT4 TEM Community - ground structure/dimension
+CMT53 // coastal polygonal tundra: low-center transition - ground structure/dimension
 // Snow characteristics
 350                // snwdenmax:  max. snow density (kg/m3)
 120                // snwdennew:  new (min.) snow density (kg/m3)
@@ -95,13 +95,13 @@ CMT04 // CMT4 TEM Community - ground structure/dimension
 0.                 // initsnwdense: initial snow density (kg/m3)
 // moss characteristics
 0.035              // maxmossthick: max. moss thickness (m)
-0.005              // initdmossthick: initial dead moss thickness (m)
-1                  // mosstype: moss type (1: sphagnum; 2: furthermoss; 3: other)
+0.007              // initdmossthick: initial dead moss thickness (m)
+3                  // mosstype: moss type (1: sphagnum; 2: furthermoss; 3: other)
 0.049              // coefmossa:
 0.50               // coefmossb:
 // soil characteristics
-0.1                // initfibthick: meters
-0.1                // inithumthick:
+0.05               // initfibthick: meters
+0.30               // inithumthick:
 0.01               // coefshlwa:
 1.3574             // coefshlwb:
 0.03               // coefdeepa:
@@ -109,7 +109,7 @@ CMT04 // CMT4 TEM Community - ground structure/dimension
 0.04025            // coefminea:
 0.0532             // coefmineb:
 //===========================================================
-CMT05 // CMT5 TEM Community - ground structure/dimension
+CMT54 // coastal polygonal tundra: high-center transition - ground structure/dimension
 // Snow characteristics
 350                // snwdenmax:  max. snow density (kg/m3)
 120                // snwdennew:  new (min.) snow density (kg/m3)
@@ -117,13 +117,13 @@ CMT05 // CMT5 TEM Community - ground structure/dimension
 0.                 // initsnwdense: initial snow density (kg/m3)
 // moss characteristics
 0.035              // maxmossthick: max. moss thickness (m)
-0.005              // initdmossthick: initial dead moss thickness (m)
-1                  // mosstype: moss type (1: sphagnum; 2: furthermoss; 3: other)
+0.007              // initdmossthick: initial dead moss thickness (m)
+3                  // mosstype: moss type (1: sphagnum; 2: furthermoss; 3: other)
 0.049              // coefmossa:
 0.50               // coefmossb:
 // soil characteristics
-0.1                // initfibthick: meters
-0.1                // inithumthick:
+0.01               // initfibthick: meters
+0.45               // inithumthick:
 0.01               // coefshlwa:
 1.3574             // coefshlwb:
 0.03               // coefdeepa:
@@ -131,7 +131,7 @@ CMT05 // CMT5 TEM Community - ground structure/dimension
 0.04025            // coefminea:
 0.0532             // coefmineb:
 //===========================================================
-CMT06 // CMT6 TEM Community - ground structure/dimension
+CMT55 // coastal polygonal tundra: high-center top - ground structure/dimension
 // Snow characteristics
 350                // snwdenmax:  max. snow density (kg/m3)
 120                // snwdennew:  new (min.) snow density (kg/m3)
@@ -139,13 +139,35 @@ CMT06 // CMT6 TEM Community - ground structure/dimension
 0.                 // initsnwdense: initial snow density (kg/m3)
 // moss characteristics
 0.035              // maxmossthick: max. moss thickness (m)
-0.005              // initdmossthick: initial dead moss thickness (m)
-1                  // mosstype: moss type (1: sphagnum; 2: furthermoss; 3: other)
+0.007              // initdmossthick: initial dead moss thickness (m)
+3                  // mosstype: moss type (1: sphagnum; 2: furthermoss; 3: other)
 0.049              // coefmossa:
 0.50               // coefmossb:
 // soil characteristics
-0.1                // initfibthick: meters
-0.1                // inithumthick:
+0.01               // initfibthick: meters
+0.90               // inithumthick:
+0.01               // coefshlwa:
+1.3574             // coefshlwb:
+0.03               // coefdeepa:
+1.2389371          // coefdeepb:
+0.04025            // coefminea:
+0.0532             // coefmineb:
+//===========================================================
+CMT56 // coastal polygonal tundra: rim - ground structure/dimension
+// Snow characteristics
+350                // snwdenmax:  max. snow density (kg/m3)
+120                // snwdennew:  new (min.) snow density (kg/m3)
+0.                 // initsnwthick: initial snow thickness (m)
+0.                 // initsnwdense: initial snow density (kg/m3)
+// moss characteristics
+0.035              // maxmossthick: max. moss thickness (m)
+0.007              // initdmossthick: initial dead moss thickness (m)
+3                  // mosstype: moss type (1: sphagnum; 2: furthermoss; 3: other)
+0.049              // coefmossa:
+0.50               // coefmossb:
+// soil characteristics
+0.01               // initfibthick: meters
+0.10               // inithumthick:
 0.01               // coefshlwa:
 1.3574             // coefshlwb:
 0.03               // coefdeepa:

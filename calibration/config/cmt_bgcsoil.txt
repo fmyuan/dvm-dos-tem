@@ -13,14 +13,18 @@ CMT00 // Default TEM Community  - soil microbial activity (BGC) parameters and d
 29.73             // nmincnsoil:
 0.2               // propftos:
 0.0               // fnloss:  fraction N leaching (0 - 1) when drainage occurs
+1.0               // rebul: rate for ebulition of CH4 (unit: 1/hour)
+1.0               // rp: rate for plant-mediated CH4 emission (unit: 1/hour)
+5.0               // roxid: rate for CH4 oxidation (unit: umol/L/hour)
 17                // initdmossc:
 1783              // initshlwc:
 5021              // initdeepc:
 9000              // initminec:
 363               // initsoln:
 0.76              // initavln:
+0.0               // initch4: (umolC/L)
 //===========================================================
-CMT01 // CMT1 TEM Community  - soil microbial activity (BGC) parameters and default initial conditions
+CMT30 // Lowland Black Spruce Forests  - soil microbial activity (BGC) parameters and default initial conditions
 2.0               // rhq10:
 0.0               // moistmin:
 0.5               // moistopt:
@@ -34,35 +38,18 @@ CMT01 // CMT1 TEM Community  - soil microbial activity (BGC) parameters and defa
 29.73             // nmincnsoil:
 0.2               // propftos:
 0.0               // fnloss:  fraction N leaching (0 - 1) when drainage occurs
-178               // initdmossc:
-1783              // initshlwc:
-5021              // initdeepc:
-9000              // initminec:
-363               // initsoln:
-0.76              // initavln:
-//===========================================================
-CMT02 // CMT2 TEM Community  - soil microbial activity (BGC) parameters and default initial conditions
-2.0               // rhq10:
-0.0               // moistmin:
-0.5               // moistopt:
-1.0               // moistmax:
-84.44             // lcclnc:
-0.372             // fsoma:
-0.611             // fsompr:
-0.017             // fsomcr:
-0.346             // som2co2:
-0.0042            // kn2:
-29.73             // nmincnsoil:
-0.2               // propftos:
-0.0               // fnloss:  fraction N leaching (0 - 1) when drainage occurs
+1.0               // rebul: rate for ebulition of CH4 (unit: 1/hour)
+1.0               // rp: rate for plant-mediated CH4 emission (unit: 1/hour)
+5.0               // roxid: rate for CH4 oxidation (unit: umol/L/hour)
 0.0               // initdmossc:
 1783              // initshlwc:
 5021              // initdeepc:
 9000              // initminec:
 363               // initsoln:
 0.76              // initavln:
+0.0               // initch4: (umolC/L)
 //===========================================================
-CMT03 // CMT3 TEM Community  - soil microbial activity (BGC) parameters and default initial conditions
+CMT51 // coastal polygonal tundra: trough  - soil microbial activity (BGC) parameters and default initial conditions
 2.0               // rhq10:
 0.0               // moistmin:
 0.5               // moistopt:
@@ -76,14 +63,18 @@ CMT03 // CMT3 TEM Community  - soil microbial activity (BGC) parameters and defa
 29.73             // nmincnsoil:
 0.2               // propftos:
 0.0               // fnloss:  fraction N leaching (0 - 1) when drainage occurs
-0.0               // initdmossc:
-1783              // initshlwc:
-5021              // initdeepc:
-9000              // initminec:
-363               // initsoln:
-0.76              // initavln:
+1.0               // rebul: rate for ebulition of CH4 (unit: 1/hour)
+1.0               // rp: rate for plant-mediated CH4 emission (unit: 1/hour)
+5.0               // roxid: rate for CH4 oxidation (unit: umol/L/hour)
+100               // initdmossc:
+400               // initshlwc:
+8500              // initdeepc:
+19200             // initminec:
+1880              // initsoln:
+1.00              // initavln:
+0.0               // initch4: (umolC/L)
 //===========================================================
-CMT04 // CMT4 TEM Community  - soil microbial activity (BGC) parameters and default initial conditions
+CMT52 // coastal polygonal tundra: low-center basin  - soil microbial activity (BGC) parameters and default initial conditions
 2.0               // rhq10:
 0.0               // moistmin:
 0.5               // moistopt:
@@ -97,14 +88,18 @@ CMT04 // CMT4 TEM Community  - soil microbial activity (BGC) parameters and defa
 29.73             // nmincnsoil:
 0.2               // propftos:
 0.0               // fnloss:  fraction N leaching (0 - 1) when drainage occurs
-0.0               // initdmossc:
-1783              // initshlwc:
-5021              // initdeepc:
-9000              // initminec:
-363               // initsoln:
-0.76              // initavln:
+1.0               // rebul: rate for ebulition of CH4 (unit: 1/hour)
+1.0               // rp: rate for plant-mediated CH4 emission (unit: 1/hour)
+5.0               // roxid: rate for CH4 oxidation (unit: umol/L/hour)
+100               // initdmossc:
+1200              // initshlwc:
+69700             // initdeepc:
+11700             // initminec:
+5510              // initsoln:
+1.00              // initavln:
+0.0               // initch4: (umolC/L)
 //===========================================================
-CMT05 // CMT5 TEM Community  - soil microbial activity (BGC) parameters and default initial conditions
+CMT53 // coastal polygonal tundra: low-center transition  - soil microbial activity (BGC) parameters and default initial conditions
 2.0               // rhq10:
 0.0               // moistmin:
 0.5               // moistopt:
@@ -118,14 +113,18 @@ CMT05 // CMT5 TEM Community  - soil microbial activity (BGC) parameters and defa
 29.73             // nmincnsoil:
 0.2               // propftos:
 0.0               // fnloss:  fraction N leaching (0 - 1) when drainage occurs
-0.0               // initdmossc:
-1783              // initshlwc:
-5021              // initdeepc:
-9000              // initminec:
-363               // initsoln:
-0.76              // initavln:
+1.0               // rebul: rate for ebulition of CH4 (unit: 1/hour)
+1.0               // rp: rate for plant-mediated CH4 emission (unit: 1/hour)
+5.0               // roxid: rate for CH4 oxidation (unit: umol/L/hour)
+100               // initdmossc:
+800               // initshlwc:
+35000             // initdeepc:
+15000             // initminec:
+3386              // initsoln:
+0.75              // initavln:
+0.0               // initch4: (umolC/L)
 //===========================================================
-CMT06 // CMT6 TEM Community  - soil microbial activity (BGC) parameters and default initial conditions
+CMT54 // coastal polygonal tundra: low-center transition  - soil microbial activity (BGC) parameters and default initial conditions
 2.0               // rhq10:
 0.0               // moistmin:
 0.5               // moistopt:
@@ -139,9 +138,63 @@ CMT06 // CMT6 TEM Community  - soil microbial activity (BGC) parameters and defa
 29.73             // nmincnsoil:
 0.2               // propftos:
 0.0               // fnloss:  fraction N leaching (0 - 1) when drainage occurs
-0.0               // initdmossc:
-1783              // initshlwc:
-5021              // initdeepc:
-9000              // initminec:
-363               // initsoln:
-0.76              // initavln:
+1.0               // rebul: rate for ebulition of CH4 (unit: 1/hour)
+1.0               // rp: rate for plant-mediated CH4 emission (unit: 1/hour)
+5.0               // roxid: rate for CH4 oxidation (unit: umol/L/hour)
+100               // initdmossc:
+100               // initshlwc:
+33700             // initdeepc:
+18800             // initminec:
+3500              // initsoln:
+0.75              // initavln:
+0.0               // initch4: (umolC/L)
+//===========================================================
+CMT55 // coastal polygonal tundra: high-center top  - soil microbial activity (BGC) parameters and default initial conditions
+2.0               // rhq10:
+0.0               // moistmin:
+0.5               // moistopt:
+1.0               // moistmax:
+84.44             // lcclnc:
+0.372             // fsoma:
+0.611             // fsompr:
+0.017             // fsomcr:
+0.346             // som2co2:
+0.0042            // kn2:
+29.73             // nmincnsoil:
+0.2               // propftos:
+0.0               // fnloss:  fraction N leaching (0 - 1) when drainage occurs
+1.0               // rebul: rate for ebulition of CH4 (unit: 1/hour)
+1.0               // rp: rate for plant-mediated CH4 emission (unit: 1/hour)
+5.0               // roxid: rate for CH4 oxidation (unit: umol/L/hour)
+100               // initdmossc:
+100               // initshlwc:
+67400             // initdeepc:
+11700             // initminec:
+4500              // initsoln:
+0.50              // initavln:
+0.0               // initch4: (umolC/L)
+//===========================================================
+CMT56 // coastal polygonal tundra: rim  - soil microbial activity (BGC) parameters and default initial conditions
+2.0               // rhq10:
+0.0               // moistmin:
+0.5               // moistopt:
+1.0               // moistmax:
+84.44             // lcclnc:
+0.372             // fsoma:
+0.611             // fsompr:
+0.017             // fsomcr:
+0.346             // som2co2:
+0.0042            // kn2:
+29.73             // nmincnsoil:
+0.2               // propftos:
+0.0               // fnloss:  fraction N leaching (0 - 1) when drainage occurs
+1.0               // rebul: rate for ebulition of CH4 (unit: 1/hour)
+1.0               // rp: rate for plant-mediated CH4 emission (unit: 1/hour)
+5.0               // roxid: rate for CH4 oxidation (unit: umol/L/hour)
+100               // initdmossc:
+100               // initshlwc:
+5800              // initdeepc:
+25900             // initminec:
+2100              // initsoln:
+0.50              // initavln:
+0.0               // initch4: (umolC/L)
