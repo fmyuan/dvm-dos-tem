@@ -10,7 +10,7 @@
 	const int MAX_FSIZE_DRV_YR = 109; // maximum number of years of fire size history at regional-scale (YUAN);
 	const int MAX_CO2_DRV_YR = 109;   // maximum number of years of CO2 at regional-scale (YUAN);
 	
-	const int MAX_ATM_DRV_YR = 109; // maximum number of years of atmopsheric driving data
+	const int MAX_ATM_DRV_YR = 113; // maximum number of years of atmopsheric driving data
 	const int MAX_ATM_NOM_YR = 30;  // maximum number of years of NORMAL atmopsheric driving data (YUAN: used for spin-up)
 
 	//vegetation data set dimension
@@ -22,8 +22,8 @@
 	const int MAX_SP_YR = 900;    // maximum number of years of spinup run;
 
     const int BEG_TR_YR = 1901;
-    const int END_TR_YR = 2009;
-    const int BEG_SC_YR = 2010;
+    const int END_TR_YR = 2013;
+    const int BEG_SC_YR = 2014;
     const int END_SC_YR = 2100;
 	
     //YUAN: the following is upon the above and modified from the original definition
