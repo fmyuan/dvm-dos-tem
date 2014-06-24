@@ -4,7 +4,7 @@ public class DataGrid {
   
     public float lat;
     public float lon;
-    public float alldaylengths[] = new float[365]; 
+    public float alldaylengths[] = new float[ConstTime.DINY]; 
 
 	public int drgtype;
 

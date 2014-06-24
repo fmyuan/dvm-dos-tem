@@ -150,8 +150,13 @@ public class Runner {
  		runcht.cinputer.init(md);                //checking data file and their dimensions
  		md.setAct_chtno(runcht.cinputer.act_chtno);
  		md.setAct_initchtno(runcht.cinputer.act_initchtno);
+ 		
  		md.setAct_clmno(runcht.cinputer.act_clmno);
  		md.setAct_clmyr(runcht.cinputer.act_clmyr);
+        md.setAct_clmyr_beg(runcht.cinputer.act_clmyr_beg);
+        md.setAct_clmyr_end(runcht.cinputer.act_clmyr_end);
+        md.setAct_clmstep(runcht.cinputer.act_clmstep);
+ 		
  		md.setAct_vegno(runcht.cinputer.act_vegno);
  		md.setAct_vegset(runcht.cinputer.act_vegset);
  		md.setAct_fireno(runcht.cinputer.act_fireno);
@@ -464,13 +469,13 @@ public class Runner {
 			//getting the cohort data for current cohort
 			error = runcht.readData();
 			if (error!=0){
-				System.out.println("problem in reading grided data in Runner::run_siter \n");
+				System.out.println("problem in reading cohort data in Runner::run_siter \n");
 				System.exit(-1);
 			}
 
 			error = runcht.reinit();
 			if (error!=0){
-				System.out.println("problem in reading grided data in Runner::run_siter \n");
+				System.out.println("problem in reinitializing cohort in Runner::run_siter \n");
 				System.exit(-1);
 			}
 

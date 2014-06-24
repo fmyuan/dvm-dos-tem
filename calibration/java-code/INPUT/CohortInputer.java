@@ -16,6 +16,9 @@ public class CohortInputer {
 	
 	public int act_clmno;   //
 	public int act_clmyr;
+	public int act_clmyr_end;
+	public int act_clmyr_beg;
+	public int act_clmstep;
 	
 	public int act_vegno;
 	public int act_vegset;
@@ -37,6 +40,7 @@ public class CohortInputer {
 	// id and data in 'climate.nc'
 	Array clmidA;
 	Array clmyearA;
+	Array clmstepA;
 	Array tairA;
 	Array precA;
 	Array nirrA;
@@ -163,8 +167,22 @@ public class CohortInputer {
 
 				Variable clmyearV = clmncfile.findVariable("YEAR");
 				this.clmyearA = clmyearV.read();
-				
 				this.act_clmyr = this.clmyearA.getShape()[0];
+				this.act_clmyr_beg = this.clmyearA.getInt(0);
+				this.act_clmyr_end = this.clmyearA.getInt(act_clmyr-1);
+				
+				Variable clmstepV = null;
+				if (clmncfile.findDimension("MONTH") != null) {
+					clmstepV = clmncfile.findVariable("MONTH");
+					System.out.println("MONTHLY time-step in 'climate.nc'!");
+				} else if (clmncfile.findDimension("DOY") != null) {
+					clmstepV = clmncfile.findVariable("DOY");
+					System.out.println("DAILY time-step in 'climate.nc'!");
+				} else {
+					System.out.println("invalid climate data timestep!");
+				}
+			    this.clmstepA = clmstepV.read();
+				this.act_clmstep = clmstepA.getShape()[0];
 
 				Variable tairV = clmncfile.findVariable("TAIR");
 				this.tairA = tairV.read();
@@ -372,37 +390,38 @@ public class CohortInputer {
 	//Note: initial file has two types: 'sitein.nc', 'restart.nc', which are 
 	//very different, so NOT read here.
 	public int getClimate(float tair[], float prec[], float nirr[], float vapo[], 
-			int act_atm_drv_yr, int recid){     //recid starts from 0
+			int yr_beg, int yrs, int recid){     //recid starts from 0
 		
 		try {
+			int yr0 = yr_beg-this.act_clmyr_beg;
 			Index ind1 = this.tairA.getIndex();
-			for (int iy = 0; iy < act_atm_drv_yr; iy++) {
-				for (int im = 0; im < 12; im++) {
-					int iyim =iy*12+im;
+			for (int iy = yr0; iy < yr0+yrs; iy++) {
+				for (int im = 0; im < this.act_clmstep; im++) {
+					int iyim =iy*this.act_clmstep+im;
 					tair[iyim] = this.tairA.getFloat(ind1.set(iy,im,recid));
 				}
 			}
 
 			Index ind2 = this.nirrA.getIndex();
-			for (int iy = 0; iy < act_atm_drv_yr; iy++) {
-				for (int im = 0; im < 12; im++){
-					int iyim =iy*12+im;
+			for (int iy = yr0; iy < yr0+yrs; iy++) {
+				for (int im = 0; im < this.act_clmstep; im++){
+					int iyim =iy*this.act_clmstep+im;
 					nirr[iyim] = this.nirrA.getFloat(ind2.set(iy,im,recid));
 				}
 			}
 
 			Index ind3 = this.precA.getIndex();
-			for (int iy = 0; iy < act_atm_drv_yr; iy++) {
-				for (int im = 0; im < 12; im++) {
-					int iyim =iy*12+im;
+			for (int iy = yr0; iy < yr0+yrs; iy++) {
+				for (int im = 0; im < this.act_clmstep; im++) {
+					int iyim =iy*this.act_clmstep+im;
 					prec[iyim] = this.precA.getFloat(ind3.set(iy,im,recid));
 				}
 			}
 
 			Index ind4 = this.vapoA.getIndex();
-			for (int iy = 0; iy < act_atm_drv_yr; iy++) {
-				for (int im = 0; im < 12; im++) {
-					int iyim =iy*12+im;
+			for (int iy = yr0; iy < yr0+yrs; iy++) {
+				for (int im = 0; im < this.act_clmstep; im++) {
+					int iyim =iy*this.act_clmstep+im;
 					vapo[iyim] = this.vapoA.getFloat(ind4.set(iy,im,recid));
 				}
 			}

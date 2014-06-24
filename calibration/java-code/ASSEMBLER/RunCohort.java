@@ -174,28 +174,59 @@ public class RunCohort {
 		int error = 0;
 		
 		//reading the climate data
-		jcd.act_atm_drv_yr = cinputer.act_clmyr;	
-		error = cinputer.getClimate(jcd.tair, jcd.prec, jcd.nirr, jcd.vapo, 
-				jcd.act_atm_drv_yr,	clmrecno);
+		jcd.act_atm_drv_yr = cinputer.act_clmyr;
+		
+		if (cinputer.act_clmstep == ConstTime.MINY) {
+			error = cinputer.getClimate(jcd.tair, jcd.prec, jcd.nirr, jcd.vapo, 
+				cinputer.act_clmyr_beg, jcd.act_atm_drv_yr,	clmrecno);
+	    } else if (cinputer.act_clmstep == ConstTime.DINY) { //if climate data is in daily time-step, read it yearly for calculating monthly data
+	    	float ta[] = new float[ConstTime.DINY];
+	    	float pre[] = new float[ConstTime.DINY];
+	    	float nir[] = new float[ConstTime.DINY];
+	    	float vap[] = new float[ConstTime.DINY];
+
+	    	for (int iyr=0; iyr<jcd.act_atm_drv_yr; iyr++) {
+	    		cinputer.getClimate(ta, pre, nir, vap, iyr, 1, clmrecno);
+	    		for (int im=0; im<ConstTime.MINY; im++) {
+	    			float mta = 0.f;
+	    			float mpre = 0.f;
+	    			float mnir = 0.f;
+	    			float mvap = 0.f;
+	    			for (int id=0; id<ConstTime.DINM[im]; id++) {
+	    				mta  += ta[ConstTime.DOYINDFST[im]+id];
+	    				mpre += pre[ConstTime.DOYINDFST[im]+id];
+	    				mnir += nir[ConstTime.DOYINDFST[im]+id];
+	    				mvap += vap[ConstTime.DOYINDFST[im]+id];
+	    			}
+	    			jcd.tair[iyr*ConstTime.MINY+im] = mta/ConstTime.DINM[im];
+	    			jcd.prec[iyr*ConstTime.MINY+im] = mpre;
+	    			jcd.nirr[iyr*ConstTime.MINY+im] = mnir/ConstTime.DINM[im];
+	    			jcd.vapo[iyr*ConstTime.MINY+im] = mvap/ConstTime.DINM[im];
+	    		}
+	    	}
+	    }
 		if (error<0) return error;
 
-			//reading the vegetation community type data from 'vegetation.nc'
-			jcd.act_vegset = cinputer.act_vegset;
-			error = cinputer.getVegetation(jcd.vegyear, jcd.vegtype, 
+		//reading the vegetation community type data from 'vegetation.nc'
+		jcd.act_vegset = cinputer.act_vegset;
+		error = cinputer.getVegetation(jcd.vegyear, jcd.vegtype, 
 				jcd.vegfrac, vegrecno);
-			if (error<0) return error;
+		if (error<0) return error;
 
-			//INDEX of veg. community codes, must be one of in those parameter files under 'config/'
-			jcd.cmttype = jcd.vegtype[0];  //default, i.e., the first set of data
-			for (int i=1; i<jcd.act_vegset; i++) {
-				if (jcd.year>=jcd.vegyear[i]) {
-					jcd.cmttype = jcd.vegtype[i];
-				}
+		//INDEX of veg. community codes, must be one of in those parameter files under 'config/'
+		jcd.cmttype = jcd.vegtype[0];  //default, i.e., the first set of data
+		for (int i=1; i<jcd.act_vegset; i++) {
+			if (jcd.year>=jcd.vegyear[i]) {
+				jcd.cmttype = jcd.vegtype[i];
 			}
+		}
 		
 		
 		// read-in parameters AND initial conditions as inputs
 		String configdir = "config/";
+		if(!cht.getMd().getConfigdir().isEmpty()) {
+			configdir = cht.getMd().getConfigdir();
+		}
 		cht.getChtlu().setDir(configdir);
 		if (jcd.cmttype<10) {
 			cht.getChtlu().setCmtcode("CMT0"+String.valueOf(jcd.cmttype));

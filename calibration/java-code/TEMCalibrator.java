@@ -80,7 +80,7 @@ public class TEMCalibrator {
 			Runner Siter = new Runner();
 			
 			//TEM I/O options
-			String controlfile = "config/controlfile_site.txt";
+			String controlfile = "config_coastaltundra/controlfile_site.txt";
 			String runmode = "siter";
 						
 			Siter.chtid = 1;
