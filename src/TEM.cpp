@@ -50,7 +50,7 @@ int main(int argc, char* argv[]){
 	string Mode = "siterun";
  	string regnmode = "";
     string chtid = "1";
-    string controlfile = "config_coastaltundra/controlfile_site.txt";
+    string controlfile = "Run/controlfile_site.txt";
 
 	if (Mode == "siterun") {
 		time_t stime;

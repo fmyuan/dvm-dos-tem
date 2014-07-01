@@ -7,12 +7,8 @@
 	#include "../data/EnvData.h"
 	#include "../data/BgcData.h"
 	#include "../data/FirData.h"
-
     #include "../data/RestartData.h"
-
     #include "../data/OutDataRegn.h"
-    #include "../data/oneenv.h"
-	#include "../data/onebgc.h"
 
 	class OutRetrive{
 		public :
@@ -20,12 +16,6 @@
 			~OutRetrive();
 
 			int cohortcount;
-
-	    	oneenv envoddly[NUM_PFT][31];
-	    	oneenv envoddlyall[31];
-
-	    	onebgc bgcoddly[NUM_PFT][31];
-	    	onebgc bgcoddlyall[31];
 
 	    	OutDataRegn * regnod;
 
@@ -41,10 +31,7 @@
 	    	void setRestartOutData(RestartData *resodp);
 
 	    	//
-	    	void assignSiteDlyOutputBuffer_Env(snwstate_dim d_snow, const int &ipft, const int &iday);
-	    	void assignSiteDlyOutputBuffer_Bgc(const int &ipft, const int &iday);
-
-	    	void updateRegnOutputBuffer(const int &im);
+	    	void updateRegnOutputBuffer(const int &im, const int &idoy);
 
 	    	void updateRestartOutputBuffer();
 

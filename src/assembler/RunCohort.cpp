@@ -373,37 +373,35 @@ void RunCohort::run_timeseries(){
 		 cht.prepareDayDrivingData(yrindex, used_atmyr);
 
 		 int outputyrind = cht.timer->getOutputYearIndex();
-		 for (int im=0; im<12;im++){
-
+		 for (int im=0; im<12; im++){
 		   int currmind=  im;
 		   cht.cd.month = im+1;
 		   int dinmcurr = cht.timer->getDaysInMonth(im);;
 
-		   cht.updateMonthly(yrindex, currmind, dinmcurr);
-	       cht.timer->advanceOneMonth();
+		   for (int id=0; id<dinmcurr; id++) {
+			   cht.updateOneTimestep(yrindex, currmind, id);
 
-	    	// site output module calling
-	       if (outputyrind >=0) {
-	    	   if (md->outSiteDay){
-	    		   for (int id=0; id<dinmcurr; id++) {
-	    			   envdlyouter.outputCohortEnvVars_dly(-1, &cht.outbuffer.envoddlyall[id],
-			    				                               icalyr, im, id, dstepcnt);     // this will output non-veg (multiple PFT) related variables
-	    			   for (int ip=0; ip<NUM_PFT; ip++) {
-	    			    	if (cht.cd.d_veg.vegcov[ip]>0.){
-	    			    		envdlyouter.outputCohortEnvVars_dly(ip, &cht.outbuffer.envoddly[ip][id],
-	    			    				                               icalyr, im, id, dstepcnt);
-
-	    			    	}
+			   // site-daily output
+			   if (outputyrind >=0 && md->outSiteDay){
+				   envdlyouter.outputCohortEnvVars_dly(-1, &cht.cd.d_snow, cht.edall,
+						   icalyr, im, id, dstepcnt);     // this will output non-veg (multiple PFT) related variables
+				   for (int ip=0; ip<NUM_PFT; ip++) {
+					   if (cht.cd.d_veg.vegcov[ip]>0.){
+	    			    	envdlyouter.outputCohortEnvVars_dly(ip,&cht.cd.d_snow, cht.edall,
+	    			    			icalyr, im, id, dstepcnt);
 	    			   }
-	    			   bgcdlyouter.outputCohortBgcVars_dly(-1, &cht.cd, &cht.outbuffer.bgcoddlyall[id],
-			    				                               icalyr, im, id, dstepcnt);     // this will output non-veg (multiple PFT) related variables
+				   }
 
-	    			   dstepcnt++;
-	    		   }
+				   bgcdlyouter.outputCohortBgcVars_dly(-1, &cht.cd, cht.bdall,
+						   icalyr, im, id, dstepcnt);     // this will output non-veg (multiple PFT) related variables
+
+				   dstepcnt++;
 	    	   }
+		   } // end of for loop of daily
+		   cht.timer->advanceOneMonth();
 
-	    	   //
-	    	   if (md->outSiteMonth){
+		   // site-monthly output
+		   if (outputyrind >=0 && md->outSiteMonth){
 	    		   dimmlyouter.outputCohortDimVars_mly(&cht.cd, mstepcnt);
 	    		   envmlyouter.outputCohortEnvVars_mly(-1, &cht.cd.m_snow, cht.edall,
 	    				                               icalyr, im, mstepcnt);
@@ -419,10 +417,10 @@ void RunCohort::run_timeseries(){
 	    		    	}
 	    		   }
 	    		   mstepcnt++;
-	    	   }
+		   }
 
-	    		//
-	    	   if (md->outSiteYear && im==11){
+		   // site-yearly output
+		   if (outputyrind >= 0 && md->outSiteYear && im==11){
 	    		   dimylyouter.outputCohortDimVars_yly(&cht.cd, ystepcnt);
 	    		   envylyouter.outputCohortEnvVars_yly(-1, &cht.cd.y_snow, cht.edall, icalyr, ystepcnt);
 		    	   bgcylyouter.outputCohortBgcVars_yly(-1, cht.bdall, cht.fd, icalyr, ystepcnt);
@@ -436,34 +434,33 @@ void RunCohort::run_timeseries(){
 	    		    	}
 	    		   }
 	    		   ystepcnt++;
+	       }
 
-	    	   }
+		 } // end of for loop of monthly
 
-	       } // end of site calling output modules
-
-	    }
-
-		if (md->outRegn && outputyrind >=0){
+		 // output of summarized variables as requested at end of a year
+		 if (md->outRegn && outputyrind >=0){
 			regnouter.outputCohortVars(outputyrind, cohortcount, 0);  // "0" implies good data
-		}
+		 }
 
-		if(cht.md->consoledebug){
-	    	cout <<"TEM " << cht.md->runstages <<" run: year "
-	    	<<icalyr<<" @cohort "<<cohortcount+1<<"\n";
+		 if(cht.md->consoledebug){
+			cout <<"TEM " << cht.md->runstages <<" run: year "
+					   <<icalyr<<" @cohort "<<cohortcount+1<<"\n";
 
-	    }
+		 }
 
-		// if EQ run,option for simulation break
-  	   	if (cht.md->runeq) {
+		 // if EQ run, option for simulation break (temporarily off)
+		 if (cht.md->runeq) {
   	   		//cht.equiled = cht.testEquilibrium();
   	   		//if(cht.equiled )break;
-  	   	}
-	}
+		 }
+
+	} //end of for loop of yearly
 
 };
 
 // run one cohort at one time-step (monthly)
-void RunCohort::run_monthly(){
+void RunCohort::run_OneTimestep(){
 
 	 // timing
 	 int yrindex = cht.timer->getCurrentYearIndex();     // starting from 0
@@ -481,7 +478,7 @@ void RunCohort::run_monthly(){
 	 cht.prepareDayDrivingData(yrindex, used_atmyr);
 
      // calling the core model modules
-	 cht.updateMonthly(yrindex, mnindex, dinmcurr);
+	 cht.updateOneTimestep(yrindex, mnindex, dinmcurr);
 
 	 //'restart.nc' always output at the end of time-step (monthly)
 	 resouter.outputVariables(cohortcount);
