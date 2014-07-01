@@ -142,7 +142,8 @@ void EnvOutputer::init(string & dirfile){
 
 }
 
-void EnvOutputer::outputCohortEnvVars_dly(const int &ipft, oneenv * envod, const int&iy, const int&im, const int &id, const int & tstepcnt){
+void EnvOutputer::outputCohortEnvVars_dly(const int &ipft, snwstate_dim *d_snow,
+		EnvData *envod, const int&iy, const int&im, const int &id, const int & tstepcnt){
 
 	NcError err(NcError::verbose_nonfatal);
 
@@ -155,146 +156,146 @@ void EnvOutputer::outputCohortEnvVars_dly(const int &ipft, oneenv * envod, const
  		dayV->put_rec(&id, tstepcnt);
 
  		// atm variables
- 		co2V->put_rec(&envod->env_atms.co2, tstepcnt);
- 		tairV->put_rec(&envod->env_atms.ta, tstepcnt);
- 		nirrV->put_rec(&envod->env_a2l.nirr, tstepcnt);
- 		precV->put_rec(&envod->env_a2l.prec, tstepcnt);
- 		vpV->put_rec(&envod->env_atmd.vp, tstepcnt);
- 		svpV->put_rec(&envod->env_atmd.svp, tstepcnt);
- 		vpdV->put_rec(&envod->env_atmd.vpd, tstepcnt);
- 		parV->put_rec(&envod->env_a2l.par, tstepcnt);
- 		rnflV->put_rec(&envod->env_a2l.rnfl, tstepcnt);
- 		snflV->put_rec(&envod->env_a2l.snfl, tstepcnt);
+ 		co2V->put_rec(&envod->d_atms.co2, tstepcnt);
+ 		tairV->put_rec(&envod->d_atms.ta, tstepcnt);
+ 		nirrV->put_rec(&envod->d_a2l.nirr, tstepcnt);
+ 		precV->put_rec(&envod->d_a2l.prec, tstepcnt);
+ 		vpV->put_rec(&envod->d_atmd.vp, tstepcnt);
+ 		svpV->put_rec(&envod->d_atmd.svp, tstepcnt);
+ 		vpdV->put_rec(&envod->d_atmd.vpd, tstepcnt);
+ 		parV->put_rec(&envod->d_a2l.par, tstepcnt);
+ 		rnflV->put_rec(&envod->d_a2l.rnfl, tstepcnt);
+ 		snflV->put_rec(&envod->d_a2l.snfl, tstepcnt);
 
  		// land-surface variables
- 		pardownV->put_rec(&envod->env_a2v.pardown, tstepcnt);
- 		parabsorbV->put_rec(&envod->env_a2v.parabsorb, tstepcnt);
- 		swdownV->put_rec(&envod->env_a2v.swdown, tstepcnt);
- 		swinterV->put_rec(&envod->env_a2v.swinter, tstepcnt);
- 		rinterV->put_rec(&envod->env_a2v.rinter, tstepcnt);
- 		sinterV->put_rec(&envod->env_a2v.sinter, tstepcnt);
- 		eetV->put_rec(&envod->env_l2a.eet, tstepcnt);
- 		petV->put_rec(&envod->env_l2a.pet, tstepcnt);
+ 		pardownV->put_rec(&envod->d_a2v.pardown, tstepcnt);
+ 		parabsorbV->put_rec(&envod->d_a2v.parabsorb, tstepcnt);
+ 		swdownV->put_rec(&envod->d_a2v.swdown, tstepcnt);
+ 		swinterV->put_rec(&envod->d_a2v.swinter, tstepcnt);
+ 		rinterV->put_rec(&envod->d_a2v.rinter, tstepcnt);
+ 		sinterV->put_rec(&envod->d_a2v.sinter, tstepcnt);
+ 		eetV->put_rec(&envod->d_l2a.eet, tstepcnt);
+ 		petV->put_rec(&envod->d_l2a.pet, tstepcnt);
  	}
 
  	if (ipft>=0) {
  		//canopy-env variables for ipft
  		vegwaterV->set_cur(tstepcnt, ipft);
- 		vegwaterV->put(&envod->env_vegs.rwater, 1, 1);
+ 		vegwaterV->put(&envod->d_vegs.rwater, 1, 1);
 
  		vegsnowV->set_cur(tstepcnt, ipft);
- 		vegsnowV->put(&envod->env_vegs.snow, 1, 1);
+ 		vegsnowV->put(&envod->d_vegs.snow, 1, 1);
 
  		vegrcV->set_cur(tstepcnt, ipft);
- 		vegrcV->put(&envod->env_vegd.rc, 1, 1);
+ 		vegrcV->put(&envod->d_vegd.rc, 1, 1);
 
  		vegccV->set_cur(tstepcnt, ipft);
- 		vegccV->put(&envod->env_vegd.cc, 1, 1);
+ 		vegccV->put(&envod->d_vegd.cc, 1, 1);
 
  		vegbtranV->set_cur(tstepcnt, ipft);
-   		vegbtranV->put(&envod->env_vegd.btran, 1, 1);
+   		vegbtranV->put(&envod->d_vegd.btran, 1, 1);
 
    		vegm_ppfdV->set_cur(tstepcnt, ipft);
-   		vegm_ppfdV->put(&envod->env_vegd.m_ppfd, 1, 1);
+   		vegm_ppfdV->put(&envod->d_vegd.m_ppfd, 1, 1);
 
    		vegm_vpdV->set_cur(tstepcnt, ipft);
-   		vegm_vpdV->put(&envod->env_vegd.m_vpd, 1, 1);
+   		vegm_vpdV->put(&envod->d_vegd.m_vpd, 1, 1);
 
  		vegswreflV->set_cur(tstepcnt, ipft);
-   		vegswreflV->put(&envod->env_v2a.swrefl, 1, 1);
+   		vegswreflV->put(&envod->d_v2a.swrefl, 1, 1);
 
    		vegswthflV->set_cur(tstepcnt, ipft);
-   		vegswthflV->put(&envod->env_v2g.swthfl, 1, 1);
+   		vegswthflV->put(&envod->d_v2g.swthfl, 1, 1);
 
  		vegevapV->set_cur(tstepcnt, ipft);
-   		vegevapV->put(&envod->env_v2a.evap, 1, 1);
+   		vegevapV->put(&envod->d_v2a.evap, 1, 1);
 
    		vegtranV->set_cur(tstepcnt, ipft);
-   		vegtranV->put(&envod->env_v2a.tran, 1, 1);
+   		vegtranV->put(&envod->d_v2a.tran, 1, 1);
 
    		vegevap_pV->set_cur(tstepcnt, ipft);
-   		vegevap_pV->put(&envod->env_v2a.evap_pet, 1, 1);
+   		vegevap_pV->put(&envod->d_v2a.evap_pet, 1, 1);
 
    		vegtran_pV->set_cur(tstepcnt, ipft);
-   		vegtran_pV->put(&envod->env_v2a.tran_pet, 1, 1);
+   		vegtran_pV->put(&envod->d_v2a.tran_pet, 1, 1);
 
    		vegsublimV->set_cur(tstepcnt, ipft);
-   		vegsublimV->put(&envod->env_v2a.sublim, 1, 1);
+   		vegsublimV->put(&envod->d_v2a.sublim, 1, 1);
 
  		vegrdripV->set_cur(tstepcnt, ipft);
-   		vegrdripV->put(&envod->env_v2g.rdrip, 1, 1);
+   		vegrdripV->put(&envod->d_v2g.rdrip, 1, 1);
 
    		vegrthflV->set_cur(tstepcnt, ipft);
-   		vegrthflV->put(&envod->env_v2g.rthfl, 1, 1);
+   		vegrthflV->put(&envod->d_v2g.rthfl, 1, 1);
 
    		vegsdripV->set_cur(tstepcnt, ipft);
-   		vegsdripV->put(&envod->env_v2g.sdrip, 1, 1);
+   		vegsdripV->put(&envod->d_v2g.sdrip, 1, 1);
 
    		vegsthflV->set_cur(tstepcnt, ipft);
-   		vegsthflV->put(&envod->env_v2g.sthfl, 1, 1);
+   		vegsthflV->put(&envod->d_v2g.sthfl, 1, 1);
 
  	}
 
 	if (ipft<=0) {
 		//snow
 
-		snwlnumV->put_rec(&envod->dim_snow.numsnwl, tstepcnt);
-		snwthickV->put_rec(&envod->dim_snow.thick, tstepcnt);
-		snwdenseV->put_rec(&envod->dim_snow.dense, tstepcnt);
-		snwextramassV->put_rec(&envod->dim_snow.extramass, tstepcnt);
-		snwdzV->put_rec(&envod->dim_snow.dz[0], tstepcnt);
-		snwageV->put_rec(&envod->dim_snow.age[0], tstepcnt);
-		snwrhoV->put_rec(&envod->dim_snow.rho[0], tstepcnt);
-		snwporV->put_rec(&envod->dim_snow.por[0], tstepcnt);
+		snwlnumV->put_rec(&d_snow->numsnwl, tstepcnt);
+		snwthickV->put_rec(&d_snow->thick, tstepcnt);
+		snwdenseV->put_rec(&d_snow->dense, tstepcnt);
+		snwextramassV->put_rec(&d_snow->extramass, tstepcnt);
+		snwdzV->put_rec(&d_snow->dz[0], tstepcnt);
+		snwageV->put_rec(&d_snow->age[0], tstepcnt);
+		snwrhoV->put_rec(&d_snow->rho[0], tstepcnt);
+		snwporV->put_rec(&d_snow->por[0], tstepcnt);
 
-		sweV->put_rec(&envod->env_snws.swe[0], tstepcnt);
-		tsnwV->put_rec(&envod->env_snws.tsnw[0], tstepcnt);
-		swesumV->put_rec(&envod->env_snws.swesum, tstepcnt);
-		tsnwaveV->put_rec(&envod->env_snws.tsnwave, tstepcnt);
-		snwswreflV->put_rec(&envod->env_snw2a.swrefl, tstepcnt);
-		snwsublimV->put_rec(&envod->env_snw2a.sublim, tstepcnt);
+		sweV->put_rec(&envod->d_snws.swe[0], tstepcnt);
+		tsnwV->put_rec(&envod->d_snws.tsnw[0], tstepcnt);
+		swesumV->put_rec(&envod->d_snws.swesum, tstepcnt);
+		tsnwaveV->put_rec(&envod->d_snws.tsnwave, tstepcnt);
+		snwswreflV->put_rec(&envod->d_snw2a.swrefl, tstepcnt);
+		snwsublimV->put_rec(&envod->d_snw2a.sublim, tstepcnt);
 
 		//soil
-		soilicesumV->put_rec(&envod->env_soid.icesum, tstepcnt);
-		soilliqsumV->put_rec(&envod->env_soid.liqsum, tstepcnt);
-		soilvwcshlwV->put_rec(&envod->env_soid.vwcshlw, tstepcnt);
-		soilvwcdeepV->put_rec(&envod->env_soid.vwcdeep, tstepcnt);
-		soilvwcmineaV->put_rec(&envod->env_soid.vwcminea, tstepcnt);
-		soilvwcminebV->put_rec(&envod->env_soid.vwcmineb, tstepcnt);
-		soilvwcminecV->put_rec(&envod->env_soid.vwcminec, tstepcnt);
-		soiltaveV->put_rec(&envod->env_soid.tsave, tstepcnt);
-		soiltshlwV->put_rec(&envod->env_soid.tshlw, tstepcnt);
-		soiltdeepV->put_rec(&envod->env_soid.tdeep, tstepcnt);
-		soiltmineaV->put_rec(&envod->env_soid.tminea, tstepcnt);
-		soiltminebV->put_rec(&envod->env_soid.tmineb, tstepcnt);
-		soiltminecV->put_rec(&envod->env_soid.tminec, tstepcnt);
+		soilicesumV->put_rec(&envod->d_soid.icesum, tstepcnt);
+		soilliqsumV->put_rec(&envod->d_soid.liqsum, tstepcnt);
+		soilvwcshlwV->put_rec(&envod->d_soid.vwcshlw, tstepcnt);
+		soilvwcdeepV->put_rec(&envod->d_soid.vwcdeep, tstepcnt);
+		soilvwcmineaV->put_rec(&envod->d_soid.vwcminea, tstepcnt);
+		soilvwcminebV->put_rec(&envod->d_soid.vwcmineb, tstepcnt);
+		soilvwcminecV->put_rec(&envod->d_soid.vwcminec, tstepcnt);
+		soiltaveV->put_rec(&envod->d_soid.tsave, tstepcnt);
+		soiltshlwV->put_rec(&envod->d_soid.tshlw, tstepcnt);
+		soiltdeepV->put_rec(&envod->d_soid.tdeep, tstepcnt);
+		soiltmineaV->put_rec(&envod->d_soid.tminea, tstepcnt);
+		soiltminebV->put_rec(&envod->d_soid.tmineb, tstepcnt);
+		soiltminecV->put_rec(&envod->d_soid.tminec, tstepcnt);
 
-		soiltsV->put_rec(&envod->env_sois.ts[0], tstepcnt);
-		soilliqV->put_rec(&envod->env_sois.liq[0], tstepcnt);
-		soiliceV->put_rec(&envod->env_sois.ice[0], tstepcnt);
-		soilvwcV->put_rec(&envod->env_soid.vwc[0], tstepcnt);
-		soillwcV->put_rec(&envod->env_soid.lwc[0], tstepcnt);
-		soiliwcV->put_rec(&envod->env_soid.iwc[0], tstepcnt);
-		soilfrontzV->put_rec(&envod->env_sois.frontsz[0], tstepcnt);
-		soilfronttypeV->put_rec(&envod->env_sois.frontstype[0], tstepcnt);
+		soiltsV->put_rec(&envod->d_sois.ts[0], tstepcnt);
+		soilliqV->put_rec(&envod->d_sois.liq[0], tstepcnt);
+		soiliceV->put_rec(&envod->d_sois.ice[0], tstepcnt);
+		soilvwcV->put_rec(&envod->d_soid.vwc[0], tstepcnt);
+		soillwcV->put_rec(&envod->d_soid.lwc[0], tstepcnt);
+		soiliwcV->put_rec(&envod->d_soid.iwc[0], tstepcnt);
+		soilfrontzV->put_rec(&envod->d_sois.frontsz[0], tstepcnt);
+		soilfronttypeV->put_rec(&envod->d_sois.frontstype[0], tstepcnt);
 
-		soilwatertabV->put_rec(&envod->env_sois.watertab, tstepcnt);
-		permafrostV->put_rec(&envod->env_soid.permafrost, tstepcnt);
-		soilaldV->put_rec(&envod->env_soid.ald, tstepcnt);
-		soilalcV->put_rec(&envod->env_soid.alc, tstepcnt);
+		soilwatertabV->put_rec(&envod->d_sois.watertab, tstepcnt);
+		permafrostV->put_rec(&envod->d_soid.permafrost, tstepcnt);
+		soilaldV->put_rec(&envod->d_soid.ald, tstepcnt);
+		soilalcV->put_rec(&envod->d_soid.alc, tstepcnt);
 
-		soilgrowstartV->put_rec(&envod->env_soid.rtdpgrowstart, tstepcnt);
-		soilgrowendV->put_rec(&envod->env_soid.rtdpgrowend, tstepcnt);
-		soiltsrtdpV->put_rec(&envod->env_soid.rtdpts, tstepcnt);
-		soiltsdegdayV->put_rec(&envod->env_soid.rtdpgdd, tstepcnt);
-		soilrtthawpctV->put_rec(&envod->env_soid.rtdpthawpct, tstepcnt);
+		soilgrowstartV->put_rec(&envod->d_soid.rtdpgrowstart, tstepcnt);
+		soilgrowendV->put_rec(&envod->d_soid.rtdpgrowend, tstepcnt);
+		soiltsrtdpV->put_rec(&envod->d_soid.rtdpts, tstepcnt);
+		soiltsdegdayV->put_rec(&envod->d_soid.rtdpgdd, tstepcnt);
+		soilrtthawpctV->put_rec(&envod->d_soid.rtdpthawpct, tstepcnt);
 
-		soilswreflV->put_rec(&envod->env_soi2a.swrefl, tstepcnt);
-		soilevapV->put_rec(&envod->env_soi2a.evap, tstepcnt);
-		soilevap_pV->put_rec(&envod->env_soi2a.evap_pet, tstepcnt);
+		soilswreflV->put_rec(&envod->d_soi2a.swrefl, tstepcnt);
+		soilevapV->put_rec(&envod->d_soi2a.evap, tstepcnt);
+		soilevap_pV->put_rec(&envod->d_soi2a.evap_pet, tstepcnt);
 
-		qoverV->put_rec(&envod->env_soi2l.qover, tstepcnt);
-		qdrainV->put_rec(&envod->env_soi2l.qdrain, tstepcnt);
+		qoverV->put_rec(&envod->d_soi2l.qover, tstepcnt);
+		qdrainV->put_rec(&envod->d_soi2l.qdrain, tstepcnt);
 	}
 
 }

@@ -246,7 +246,7 @@ void Cohort::initStatePar() {
 	}
 
 	//integrating the individual 'bd' initial conditions into 'bdall' initial conditions, if veg involved
-	getBd4allveg_monthly();
+	getBd4allveg();
  
 	// fire processes
 	fd->init();
@@ -316,42 +316,47 @@ void Cohort::prepareDayDrivingData(const int & yrindx, const int & usedatmyr){
 	}
 };
 
-void Cohort::updateMonthly(const int & yrcnt, const int & currmind, const int & dinmcurr){
+void Cohort::updateOneTimestep(const int & yrcnt, const int & currmind, const int & currdinm){
 
-	//
+	// currmind: zero-based, currdinm: day in the month (1 based)
+	cd.day = currdinm;
+    cd.month = currmind;
+	int dinmcurr = DINM[currmind];
+	int doy = DOYINDFST[currmind]+DINM[currmind];
+
 	if(currmind==0) cd.beginOfYear();
-	cd.beginOfMonth();
+	if(currdinm==1) cd.beginOfMonth();
 
   	// first, update the water/thermal process to get (bio)physical conditions
  	if(md->envmodule){
-  		updateMonthly_Env(currmind, dinmcurr);
+  		updateEnv(currmind, currdinm);
   	}
 
  	// secondly, update the current dimension/structure of veg-snow/soil column (domain)
-   	updateMonthly_DIMveg(currmind, md->dvmmodule);
+   	updateDIMveg(currmind, currdinm, md->dvmmodule);
 
-   	updateMonthly_DIMgrd(currmind, md->dslmodule);
+   	updateDIMgrd(currmind, currdinm, md->dslmodule);
 
    	//thirdly, update the BGC process to get the C/N states and fluxes
   	if(md->bgcmodule){
-  		updateMonthly_Bgc(currmind, dinmcurr);
+  		updateBgc(currmind, currdinm);
   	}
 
   	// fourthly, run the disturbance module
    	if(md->dsbmodule){
-   	   	updateMonthly_Fir(yrcnt, currmind);
+   	   	updateFir(yrcnt, currmind);
    	}
 
-	cd.endOfMonth();
+	if(currdinm==dinmcurr) cd.endOfMonth();
 	if(currmind==11) cd.endOfYear();
 
 	////////////////////////////
-	// output all data for multple cohorts
+	// store all data for single/multiple cohorts
 	if (md->outRegn) {
-		outbuffer.updateRegnOutputBuffer(currmind);
+		outbuffer.updateRegnOutputBuffer(currmind, doy);
 	}
 
-	// always output the restart data (monthly)
+	// always output the restart data (current time-step)
 	outbuffer.updateRestartOutputBuffer();
 
 };
@@ -359,13 +364,14 @@ void Cohort::updateMonthly(const int & yrcnt, const int & currmind, const int & 
 /////////////////////////////////////////////////////////////////////////////////
 
 /////////////////////////////////////////////////////////
-//Environment Module Calling at monthly time-step, but involving daily time-step loop
+//Environment Module Calling at one time-step
 /////////////////////////////////////////////////////////
-void Cohort::updateMonthly_Env(const int & currmind, const int & dinmcurr){
+void Cohort::updateEnv(const int & currmind, const int & currdinm){
 
 //Yuan: note that the Veg-Env module calling is for a few PFTs within ONE cohort
 //      1) ed calling is done for each PFTs within the module
 //      2) Env-module calling is done for one PFT, so needs loop for vegetation-relevant processes
+//      3) 'currmind': zero-based, 'currdinm': day of the month (1 based)
 
     // (i) the n factor for soil temperature calculation from Tair
 
@@ -393,9 +399,12 @@ void Cohort::updateMonthly_Env(const int & currmind, const int & dinmcurr){
 				ed[ip].veg_beginOfYear();
 				ed[ip].grnd_beginOfYear();
 			}
-			ed[ip].atm_beginOfMonth();
-			ed[ip].veg_beginOfMonth();
-			ed[ip].grnd_beginOfMonth();
+
+			if (currdinm==1){
+				ed[ip].atm_beginOfMonth();
+				ed[ip].veg_beginOfMonth();
+				ed[ip].grnd_beginOfMonth();
+			}
 		}
 	}
 	//
@@ -404,21 +413,22 @@ void Cohort::updateMonthly_Env(const int & currmind, const int & dinmcurr){
 		edall->veg_beginOfYear();
 		edall->grnd_beginOfYear();
 	}
-	edall->atm_beginOfMonth();
-	edall->veg_beginOfMonth();
-	edall->grnd_beginOfMonth();
+	if (currdinm==1){
+		edall->atm_beginOfMonth();
+		edall->veg_beginOfMonth();
+		edall->grnd_beginOfMonth();
+	}
 
 	// (iii) daily light/water processes at plant canopy
 	double tdrv, daylength;
-	for(int id =0; id<dinmcurr; id++){
 
-		cd.day = id+1;
+        int dinmcurr = DINM[currmind];
 
-		int doy =timer->getDOYIndex(currmind, id);
+		int doy =timer->getDOYIndex(currmind, currdinm);
 		daylength = gd->alldaylengths[doy];
 
 		//get the daily atm drivers and the data is in 'edall'
-		atm.updateDailyAtm(currmind, id);
+		atm.updateDailyAtm(currmind, currdinm);
 
 		//Initialize some daily variables for 'ground'
 		cd.beginOfDay();
@@ -461,11 +471,6 @@ void Cohort::updateMonthly_Env(const int & currmind, const int & dinmcurr){
 		// integrating daily 'veg' portion in 'ed' of all PFTs for 'edall'
 		getEd4allveg_daily();
 
-/*
-		if (cd.year==1 && doy==37){
-			cout<<"checking";
-		}
-//*/
 		tdrv = edall->d_atms.ta;
 
 		// Snow-soil Env-module: ground/soil temperatur e- moisture dynamics at daily timestep
@@ -497,7 +502,7 @@ void Cohort::updateMonthly_Env(const int & currmind, const int & dinmcurr){
 				ed[ip].veg_endOfDay(dinmcurr);
 				ed[ip].grnd_endOfDay(dinmcurr, doy);
 				// accumulate yearly vars at the last day of a month
-				if(id==dinmcurr-1){
+				if(currdinm==dinmcurr){
 					ed[ip].atm_endOfMonth();
 					ed[ip].veg_endOfMonth(currmind);
 					ed[ip].grnd_endOfMonth();
@@ -507,126 +512,94 @@ void Cohort::updateMonthly_Env(const int & currmind, const int & dinmcurr){
 
 		//accumulate daily vars into monthly for 'ed' of all pfts
 		edall->atm_endOfDay(dinmcurr);
-		edall->veg_endOfDay(dinmcurr);              //be sure 'getEd4allpfts_daily' called above
+		edall->veg_endOfDay(dinmcurr);              //be sure 'getEd4allpfts' called above
 		edall->grnd_endOfDay(dinmcurr, doy);
 
 		// accumulate yearly vars at the last day of a month for all pfts
-		if(id==dinmcurr-1){
+		if(currdinm==dinmcurr){
 			edall->atm_endOfMonth();
 			edall->veg_endOfMonth(currmind);
 			edall->grnd_endOfMonth();
 		}
 
-		////////////////////////////
-		//output data store for daily - because the output is implemented monthly
-		if (md->outSiteDay) {
-			outbuffer.assignSiteDlyOutputBuffer_Env(cd.d_snow, -1, id);   // '-1' indicates for all-pft integrated datasets
-			for (int ip=0; ip<NUM_PFT; ip++) {
-				if (cd.d_veg.vegcov[ip]>0.0)
-				outbuffer.assignSiteDlyOutputBuffer_Env(cd.d_snow, ip, id);
-			}
-		}
-	
-	} // end of day loop in a month
-
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-// Biogeochemical Module Calling at monthly timestep
+// Biogeochemical Module Calling at one timestep
 ///////////////////////////////////////////////////////////////////////////////////////////
-void Cohort::updateMonthly_Bgc(const int & currmind, const int & dinmcurr){
-	//
-	if(currmind==0){		
+void Cohort::updateBgc(const int & currmind, const int & currdinm){
 
+	// currmind: zero-based, currdinm: day in the month (1 based)
+	int dinmcurr = DINM[currmind];
+	int doy =timer->getDOYIndex(currmind, currdinm);
+
+	// initializing accumulators
+	if(currmind==0){		
 	    for (int ip=0; ip<NUM_PFT; ip++){
 	    	if (cd.m_veg.vegcov[ip]>0.){
 	    		bd[ip].veg_beginOfYear();
-
 	    		bd[ip].soil_beginOfYear();
 	    		bd[ip].land_beginOfYear();
 	    	}
 		}
+	}
 
+	if (currdinm==1){
 		bdall->veg_beginOfYear();
 		bdall->soil_beginOfYear();
 		bdall->land_beginOfYear();
 	}
 
-	// vegetation BGC module calling
-	for (int ip=0; ip<NUM_PFT; ip++){
-    	if (cd.m_veg.vegcov[ip]>0.){
+	// vegetation BGC module calling, currently at monthly-timestep
+	// it's called at the last day of the month, so that monthly drivers/states are updated
+	if (currdinm == dinmcurr) {
+		for (int ip=0; ip<NUM_PFT; ip++){
+			if (cd.m_veg.vegcov[ip]>0.){
 
-    		vegbgc[ip].prepareIntegration(md->nfeed);
-		 	vegintegrator[ip].updateMonthlyVbgc();
-    		vegbgc[ip].afterIntegration();
+				vegbgc[ip].prepareIntegration(md->nfeed);
+				vegintegrator[ip].updateMonthlyVbgc();
+				vegbgc[ip].afterIntegration();
 
-    		bd[ip].veg_endOfMonth(dinmcurr);                // yearly data accumulation and daily data assignment
-    		if(currmind==11){
-    			vegbgc[ip].adapt();             // this will evolve C/N ratio with CO2
-    			bd[ip].veg_endOfYear();
-    		}
-    	}
+				bd[ip].veg_endOfMonth(dinmcurr);                // yearly data accumulation and daily data assignment
+				if(currmind==11){
+					vegbgc[ip].adapt();             // this will evolve C/N ratio with CO2
+					bd[ip].veg_endOfYear();
+				}
+			}
+		}
+
+		getBd4allveg();      // integrating the monthly pfts' 'bd' to allveg 'bdall'
+		bdall->veg_endOfMonth(dinmcurr);    // yearly data accumulation and daily data assignment
+		if(currmind==11){
+			bdall->veg_endOfYear();
+		}
 	}
-
-	getBd4allveg_monthly();      // integrating the monthly pfts' 'bd' to allveg 'bdall'
-   	bdall->veg_endOfMonth(dinmcurr);    // yearly data accumulation and daily data assignment
-	if(currmind==11){
-		bdall->veg_endOfYear();
-	}
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 	// soil BGC module calling at daily time-step
     bdall->soil_beginOfMonth();   // initialize monthly mean/cumulative variables
-	for(int id =0; id<dinmcurr; id++){
 
-		cd.day = id+1;
-
-		// refresh daily env data for driving soil bgc (note: in soil bgc, edall is used)
-        edall->cd->d_snow = cd.d_snow;
-        edall->cd->d_soil = cd.d_soil;
-        edall->cd->d_veg  = cd.d_veg;
-        edall->cd->d_vegd = cd.d_vegd;
-
-        edall->d_atms = outbuffer.envoddlyall[id].env_atms;
-        edall->d_vegs = outbuffer.envoddlyall[id].env_vegs;
-        edall->d_snws = outbuffer.envoddlyall[id].env_snws;
-        edall->d_sois = outbuffer.envoddlyall[id].env_sois;
-
-        edall->d_atmd = outbuffer.envoddlyall[id].env_atmd;
-        edall->d_vegd = outbuffer.envoddlyall[id].env_vegd;
-        edall->d_snwd = outbuffer.envoddlyall[id].env_snwd;
-        edall->d_soid = outbuffer.envoddlyall[id].env_soid;
-
-        edall->d_l2a = outbuffer.envoddlyall[id].env_l2a;
-        edall->d_a2l = outbuffer.envoddlyall[id].env_a2l;
-        edall->d_a2v = outbuffer.envoddlyall[id].env_a2v;
-        edall->d_v2a = outbuffer.envoddlyall[id].env_v2a;
-        edall->d_v2g = outbuffer.envoddlyall[id].env_v2g;
-        edall->d_soi2l = outbuffer.envoddlyall[id].env_soi2l;
-        edall->d_soi2a = outbuffer.envoddlyall[id].env_soi2a;
-        edall->d_snw2a = outbuffer.envoddlyall[id].env_snw2a;
-        edall->d_snw2soi = outbuffer.envoddlyall[id].env_snw2soi;
-
+		// note: in soil bgc, edall is used (i.e., not pft individually)
         // call the ODE for soil bgc
 		soilbgc.prepareIntegration(md->nfeed, md->avlnflg, md->baseline);
 		solintegrator.updateDailySbgc(MAX_SOI_LAY);
 		soilbgc.afterIntegration();
 
+		// monthly data updating
 		bdall->soil_endOfDay(dinmcurr);
 
-		if (id==dinmcurr-1) {
-
-			bdall->soil_endOfMonth();   // yearly data accumulation
+		// yearly data accumulation
+		if (currdinm==dinmcurr) {
+			bdall->soil_endOfMonth();
 			bdall->land_endOfMonth();
-
-			assignSoilBd2pfts_monthly();      //sharing the 'ground' portion in 'bdall' with each pft 'bd'
 		}
-	}
+
+		assignSoilBd2pfts();      //sharing the 'ground' portion in 'bdall' with each pft 'bd'
+
 };
 
 //fire disturbance module calling
 /////////////////////////////////////////////////////////////////////////////////
-void Cohort::updateMonthly_Fir(const int & yrind, const int & currmind){
+void Cohort::updateFir(const int & yrind, const int & currmind){
 
 	if(currmind ==0){
 		fd->beginOfYear();
@@ -670,7 +643,7 @@ void Cohort::updateMonthly_Fir(const int & yrind, const int & currmind){
 		soilbgc.assignCarbonLayer2Bd();
 
 		// update all other pft's 'bd'
-		assignSoilBd2pfts_monthly();
+		assignSoilBd2pfts();
 
 		// update 'cd'
 		cd.yrsdist = 0.;
@@ -679,49 +652,56 @@ void Cohort::updateMonthly_Fir(const int & yrind, const int & currmind){
 		cd.d_soil = cd.m_soil;
 		cd.y_soil = cd.m_soil;
 
- 		getSoilFineRootFrac_Monthly();
+ 		getSoilFineRootFrac();
   	}
 
 };
 
 /////////////////////////////////////////////////////////////////////////////////
-//   Dynamical Vegetation Module (DVM) calling
+//   Dynamical Vegetation Module (DVM) calling (currrently at monthly timestep)
 ////////////////////////////////////////////////////////////////////////////////
-void Cohort::updateMonthly_DIMveg(const int & currmind, const bool & dvmmodule){
+void Cohort::updateDIMveg(const int & currmind, const int & currdinm, const bool & dvmmodule){
+	// currmind: zero-based, currdinm: day in the month (1 based)
 
-	//switch for using LAI read-in (false) or dynamically with vegC
-    // the read-in LAI is through the 'chtlu->envlai[12]', i.e., a 12 monthly-LAI
-	if (dvmmodule) {
-		veg.updateLAI5vegc = md->updatelai;
-	} else {
-		veg.updateLAI5vegc = false;
+    //
+	int dinmcurr = DINM[currmind];
+	if (currdinm == dinmcurr) { // last day of the month
+
+		//switch for using LAI read-in (false) or dynamically with vegC
+		// the read-in LAI is through the 'chtlu->envlai[12]', i.e., a 12 monthly-LAI
+		if (dvmmodule) {
+			veg.updateLAI5vegc = md->updatelai;
+		} else {
+			veg.updateLAI5vegc = false;
+		}
+
+		// vegetation standing age
+		// tentatively set to a common age from 'ysf' - year since fire - should have more varability based on PFT types
+		for (int ip=0; ip<NUM_PFT; ip++){
+			if (cd.m_veg.vegcov[ip]>0.){
+				cd.m_veg.vegage[ip] = cd.yrsdist;
+				if (cd.m_veg.vegage[ip]<=0) cd.m_vegd.foliagemx[ip] = 0.;
+			}
+		}
+
+		// update monthly phenological variables (factors used for GPP), and LAI
+		veg.phenology(currmind);
+		veg.updateLai(currmind);    // this must be done after phenology
+
+		// LAI updated above for each PFT, but FPC (foliage percent cover) may need adjustment
+		veg.updateFpc();
+		veg.updateVegcov();
+
+		veg.updateFrootfrac();
 	}
-
-	// vegetation standing age
-	// tentatively set to a common age from 'ysf' - year since fire - should have more varability based on PFT types
-	for (int ip=0; ip<NUM_PFT; ip++){
-    	if (cd.m_veg.vegcov[ip]>0.){
-    		cd.m_veg.vegage[ip] = cd.yrsdist;
-    		if (cd.m_veg.vegage[ip]<=0) cd.m_vegd.foliagemx[ip] = 0.;
-    	}
-	}
-
-	// update monthly phenological variables (factors used for GPP), and LAI
-	veg.phenology(currmind);
-	veg.updateLai(currmind);    // this must be done after phenology
-
-    // LAI updated above for each PFT, but FPC (foliage percent cover) may need adjustment
-	veg.updateFpc();
-	veg.updateVegcov();
-
-	veg.updateFrootfrac();
-
 };
 
 /////////////////////////////////////////////////////////////////////////////////
 //   Dynamical Soil Layer Module (DSL)
 ////////////////////////////////////////////////////////////////////////////////
-void Cohort::updateMonthly_DIMgrd(const int & currmind, const bool & dslmodule){
+void Cohort::updateDIMgrd(const int & currmind, const int & currdinm, const bool & dslmodule){
+	// currmind: zero-based, currdinm: day in the month (1 based)
+	int dinmcurr = DINM[currmind];
 
 	// re-call the 'bdall' soil C contents and assign them to the double-linked layer matrix
 	soilbgc.assignCarbonBd2Layer();
@@ -751,19 +731,21 @@ void Cohort::updateMonthly_DIMgrd(const int & currmind, const bool & dslmodule){
 
 	}
 
-	// update soil dimension
-	ground.retrieveSoilDimension(&cd.m_soil);
-	getSoilFineRootFrac_Monthly();
-	cd.d_soil = cd.m_soil;      //soil dimension remains constant in a month
+	// update soil dimension, especially here the root fraction which updated monthly
+	if (currdinm == 1) { // first day of the month
+		ground.retrieveSoilDimension(&cd.m_soil);
+		getSoilFineRootFrac();
+		cd.d_soil = cd.m_soil;      //soil dimension remains constant in a month
+	}
 
 	// update all soil 'bd' to each pft
-	assignSoilBd2pfts_monthly();
+	assignSoilBd2pfts();
 
 }
 
 //////////////////////////////////////////////////////////////////////////////////////
 // adjusting fine root fraction in soil
-void Cohort::getSoilFineRootFrac_Monthly(){
+void Cohort::getSoilFineRootFrac(){
 
 	double mossthick = cd.m_soil.mossthick;
 	double totfrootc = 0.;   //fine root C summed for all PFTs
@@ -1018,10 +1000,19 @@ void Cohort::getEd4land_daily(){
 }
 
 // assign 'ground' portion in 'bdall' to each PFT's 'bd'
-void Cohort::assignSoilBd2pfts_monthly(){
+void Cohort::assignSoilBd2pfts(){
 
 	for (int ip=0; ip<NUM_PFT; ip++){
-    	if (cd.m_veg.vegcov[ip]>0.){
+    	if (cd.d_veg.vegcov[ip]>0. ||
+    		cd.m_veg.vegcov[ip]>0. ||
+    		cd.y_veg.vegcov[ip]>0.){
+
+    		bd[ip].d_sois   = bdall->d_sois;
+    		bd[ip].d_soid   = bdall->d_soid;
+    		bd[ip].d_soi2l  = bdall->d_soi2l;
+    		bd[ip].d_soi2a  = bdall->d_soi2a;
+    		bd[ip].d_a2soi  = bdall->d_a2soi;
+    		bd[ip].d_soi2soi= bdall->d_soi2soi;
 
     		bd[ip].m_sois   = bdall->m_sois;
     		bd[ip].m_soid   = bdall->m_soid;
@@ -1030,7 +1021,6 @@ void Cohort::assignSoilBd2pfts_monthly(){
     		bd[ip].m_a2soi  = bdall->m_a2soi;
     		bd[ip].m_soi2soi= bdall->m_soi2soi;
 
-    		// monthly update annual accumulators
     		bd[ip].y_sois   = bdall->y_sois;
     		bd[ip].y_soid   = bdall->y_soid;
     		bd[ip].y_soi2l  = bdall->y_soi2l;
@@ -1047,7 +1037,7 @@ void Cohort::assignSoilBd2pfts_monthly(){
 }
 
 // integrating (vegfrac weighted) 'veg' portion in 'bdall' to all PFT's 'bd'
-void Cohort::getBd4allveg_monthly(){
+void Cohort::getBd4allveg(){
 
 	for (int i=0; i<NUM_PFT_PART; i++){
 		bdall->m_vegs.c[i]    = 0.;

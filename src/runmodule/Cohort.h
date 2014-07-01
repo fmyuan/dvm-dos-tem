@@ -66,7 +66,7 @@
 
             WildFire fire;
 
-            // output
+            // output data buffer
             OutRetrive outbuffer;
 
 		// data
@@ -94,23 +94,22 @@
  		    void initStatePar();
  		    void prepareAllDrivingData();
  	        void prepareDayDrivingData(const int & yrcnt, const int &usedatmyr);
- 		    void updateMonthly(const int & yrcnt, const int & currmind, const int & dinmcurr);
+ 		    void updateOneTimestep(const int & yrcnt, const int & currmind, const int & dinmcurr);
 
 	private:
 
             Integrator vegintegrator[NUM_PFT];
             Integrator solintegrator;
 
+     	    void updateDIMveg(const int & currmind, const int & currdinm, const bool & dvmmodule);
+     	    void updateDIMgrd(const int & currmind, const int & currdinm, const bool & dslmodule);
 
-     	    void updateMonthly_DIMveg(const int & currmind, const bool & dvmmodule);
-     	    void updateMonthly_DIMgrd(const int & currmind, const bool & dslmodule);
-
-     	    void updateMonthly_Env(const int & currmind, const int & dinmcurr);
- 	 	    void updateMonthly_Bgc(const int & currmind, const int & dinmcurr);
-     	    void updateMonthly_Fir(const int & yrcnt, const int & currmind);
+     	    void updateEnv(const int & currmind, const int & currdinm);
+ 	 	    void updateBgc(const int & currmind, const int & currdinm);
+     	    void updateFir(const int & yrcnt, const int & currmind);
 
 		    // update root distribution
-		    void getSoilFineRootFrac_Monthly();
+		    void getSoilFineRootFrac();
 		    double assignSoilLayerRootFrac(const double & topz, const double & botz,
 		           const double csumrootfrac[MAX_ROT_LAY], const double dzrotlay[MAX_ROT_LAY]);
 
@@ -121,8 +120,9 @@
 		   void getEd4allveg_daily();
      	   void getEd4land_daily();
 
-     	   void assignSoilBd2pfts_monthly();
-     	   void getBd4allveg_monthly();
+     	   //
+     	   void assignSoilBd2pfts();
+     	   void getBd4allveg();
 
 };
 #endif /*COHORT_H_*/

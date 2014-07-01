@@ -143,7 +143,7 @@ void BgcOutputer::init(string & dirfile){
 
 }
 
-void BgcOutputer::outputCohortBgcVars_dly(const int &ipft, CohortData *cd, onebgc *bd, const int &calyr,
+void BgcOutputer::outputCohortBgcVars_dly(const int &ipft, CohortData *cd, BgcData *bd, const int &calyr,
 		const int &calday, const int &calmon, const int & tstepcnt){
  	NcError err(NcError::verbose_nonfatal);
 
@@ -154,187 +154,187 @@ void BgcOutputer::outputCohortBgcVars_dly(const int &ipft, CohortData *cd, onebg
 		dayV->put_rec(&calday, tstepcnt);
 
 		// soil C/N state variables for all PFTs
-   		wdebriscV->put_rec(&bd->bgc_sois.wdebrisc, tstepcnt);
-   		wdebrisnV->put_rec(&bd->bgc_sois.wdebrisn, tstepcnt);
-   		rawcV->put_rec(&bd->bgc_sois.rawc[0], tstepcnt);
-   		somaV->put_rec(&bd->bgc_sois.soma[0], tstepcnt);
-   		somprV->put_rec(&bd->bgc_sois.sompr[0], tstepcnt);
-   		somcrV->put_rec(&bd->bgc_sois.somcr[0], tstepcnt);
-   		orgnV->put_rec(&bd->bgc_sois.orgn[0], tstepcnt);
-   		avlnV->put_rec(&bd->bgc_sois.avln[0], tstepcnt);
+   		wdebriscV->put_rec(&bd->d_sois.wdebrisc, tstepcnt);
+   		wdebrisnV->put_rec(&bd->d_sois.wdebrisn, tstepcnt);
+   		rawcV->put_rec(&bd->d_sois.rawc[0], tstepcnt);
+   		somaV->put_rec(&bd->d_sois.soma[0], tstepcnt);
+   		somprV->put_rec(&bd->d_sois.sompr[0], tstepcnt);
+   		somcrV->put_rec(&bd->d_sois.somcr[0], tstepcnt);
+   		orgnV->put_rec(&bd->d_sois.orgn[0], tstepcnt);
+   		avlnV->put_rec(&bd->d_sois.avln[0], tstepcnt);
 
-   		shlwcV->put_rec(&bd->bgc_soid.shlwc, tstepcnt);
-   		deepcV->put_rec(&bd->bgc_soid.deepc, tstepcnt);
-   		mineacV->put_rec(&bd->bgc_soid.mineac, tstepcnt);
-   		minebcV->put_rec(&bd->bgc_soid.minebc, tstepcnt);
-   		mineccV->put_rec(&bd->bgc_soid.minecc, tstepcnt);
-   		rawcsumV->put_rec(&bd->bgc_soid.rawcsum, tstepcnt);
-   		somasumV->put_rec(&bd->bgc_soid.somasum, tstepcnt);
-   		somprsumV->put_rec(&bd->bgc_soid.somprsum, tstepcnt);
-   		somcrsumV->put_rec(&bd->bgc_soid.somcrsum, tstepcnt);
-   		orgnsumV->put_rec(&bd->bgc_soid.orgnsum, tstepcnt);
-   		avlnsumV->put_rec(&bd->bgc_soid.avlnsum, tstepcnt);
+   		shlwcV->put_rec(&bd->d_soid.shlwc, tstepcnt);
+   		deepcV->put_rec(&bd->d_soid.deepc, tstepcnt);
+   		mineacV->put_rec(&bd->d_soid.mineac, tstepcnt);
+   		minebcV->put_rec(&bd->d_soid.minebc, tstepcnt);
+   		mineccV->put_rec(&bd->d_soid.minecc, tstepcnt);
+   		rawcsumV->put_rec(&bd->d_soid.rawcsum, tstepcnt);
+   		somasumV->put_rec(&bd->d_soid.somasum, tstepcnt);
+   		somprsumV->put_rec(&bd->d_soid.somprsum, tstepcnt);
+   		somcrsumV->put_rec(&bd->d_soid.somcrsum, tstepcnt);
+   		orgnsumV->put_rec(&bd->d_soid.orgnsum, tstepcnt);
+   		avlnsumV->put_rec(&bd->d_soid.avlnsum, tstepcnt);
 
    		//soil C/N fluxes
 
-   	 	rhV->put_rec(&bd->bgc_soi2a.rhtot, tstepcnt);
-		knmoistV->put_rec(&bd->bgc_soid.knmoist[0], tstepcnt);
-   		rhmoistV->put_rec(&bd->bgc_soid.rhmoist[0], tstepcnt);
+   	 	rhV->put_rec(&bd->d_soi2a.rhtot, tstepcnt);
+		knmoistV->put_rec(&bd->d_soid.knmoist[0], tstepcnt);
+   		rhmoistV->put_rec(&bd->d_soid.rhmoist[0], tstepcnt);
 
-   		rhq10V->put_rec(&bd->bgc_soid.rhq10[0], tstepcnt);
-   		soilltrfcnV->put_rec(&bd->bgc_soid.ltrfcn[0], tstepcnt);
+   		rhq10V->put_rec(&bd->d_soid.rhq10[0], tstepcnt);
+   		soilltrfcnV->put_rec(&bd->d_soid.ltrfcn[0], tstepcnt);
 
-   		nepV->put_rec(&bd->bgc_a2soi.orgcinput, tstepcnt);
-   		orgninputV->put_rec(&bd->bgc_a2soi.orgninput, tstepcnt);
-   		avlninputV->put_rec(&bd->bgc_a2soi.avlninput, tstepcnt);
+   		nepV->put_rec(&bd->d_a2soi.orgcinput, tstepcnt);
+   		orgninputV->put_rec(&bd->d_a2soi.orgninput, tstepcnt);
+   		avlninputV->put_rec(&bd->d_a2soi.avlninput, tstepcnt);
 
-   		doclostV->put_rec(&bd->bgc_soi2l.doclost, tstepcnt);      //DOC lost
-   		avlnlostV->put_rec(&bd->bgc_soi2l.avlnlost, tstepcnt);     // N leaching
-   		orgnlostV->put_rec(&bd->bgc_soi2l.orgnlost, tstepcnt);     // DON loss
+   		doclostV->put_rec(&bd->d_soi2l.doclost, tstepcnt);      //DOC lost
+   		avlnlostV->put_rec(&bd->d_soi2l.avlnlost, tstepcnt);     // N leaching
+   		orgnlostV->put_rec(&bd->d_soi2l.orgnlost, tstepcnt);     // DON loss
 
    		//methane
-   		ch4V->put_rec(&bd->bgc_sois.ch4[0], tstepcnt);
-   		totch4fluxV->put_rec(&bd->bgc_soi2a.totCH4Flux_m, tstepcnt);
-   		totch4flux2AV->put_rec(&bd->bgc_soi2a.totFlux2A_m, tstepcnt);
-   		totch4flux2PV->put_rec(&bd->bgc_soi2a.totPlant_m, tstepcnt);
-   		totch4flux2EV->put_rec(&bd->bgc_soi2a.totEbul_m, tstepcnt);
+   		ch4V->put_rec(&bd->d_sois.ch4[0], tstepcnt);
+   		totch4fluxV->put_rec(&bd->d_soi2a.totCH4Flux_m, tstepcnt);
+   		totch4flux2AV->put_rec(&bd->d_soi2a.totFlux2A_m, tstepcnt);
+   		totch4flux2PV->put_rec(&bd->d_soi2a.totPlant_m, tstepcnt);
+   		totch4flux2EV->put_rec(&bd->d_soi2a.totEbul_m, tstepcnt);
 
-   		totch4prodV->put_rec(&bd->bgc_soi2a.totProd_m, tstepcnt);
-  		ch4prodV->put_rec(&bd->bgc_soi2a.Prod_m[0], tstepcnt); //[MAX_SOI_LAY];
-   		totch4oxidV->put_rec(&bd->bgc_soi2a.totOxid_m, tstepcnt);
-  		ch4oxidV->put_rec(&bd->bgc_soi2a.Oxid_m[0], tstepcnt); //[MAX_SOI_LAY];
+   		totch4prodV->put_rec(&bd->d_soi2a.totProd_m, tstepcnt);
+  		ch4prodV->put_rec(&bd->d_soi2a.Prod_m[0], tstepcnt); //[MAX_SOI_LAY];
+   		totch4oxidV->put_rec(&bd->d_soi2a.totOxid_m, tstepcnt);
+  		ch4oxidV->put_rec(&bd->d_soi2a.Oxid_m[0], tstepcnt); //[MAX_SOI_LAY];
 
 	//}
 
  	if (ipft>=0) {
  		// veg C/N state variables - output for each PFT
  		callV->set_cur(tstepcnt, ipft);
- 		callV->put(&bd->bgc_vegs.call, 1, 1);
+ 		callV->put(&bd->d_vegs.call, 1, 1);
 
  		cV->set_cur(tstepcnt, ipft, 0);
- 		cV->put(&bd->bgc_vegs.c[0], 1, 1, NUM_PFT_PART);
+ 		cV->put(&bd->d_vegs.c[0], 1, 1, NUM_PFT_PART);
 
  		nallV->set_cur(tstepcnt, ipft);
- 		nallV->put(&bd->bgc_vegs.nall, 1, 1);
+ 		nallV->put(&bd->d_vegs.nall, 1, 1);
 
  		labnV->set_cur(tstepcnt, ipft);
- 		labnV->put(&bd->bgc_vegs.labn, 1, 1);
+ 		labnV->put(&bd->d_vegs.labn, 1, 1);
 
  		strnallV->set_cur(tstepcnt, ipft);
- 		strnallV->put(&bd->bgc_vegs.strnall, 1, 1);
+ 		strnallV->put(&bd->d_vegs.strnall, 1, 1);
 
  		strnV->set_cur(tstepcnt, ipft, 0);
- 		strnV->put(&bd->bgc_vegs.strn[0], 1, 1, NUM_PFT_PART);
+ 		strnV->put(&bd->d_vegs.strn[0], 1, 1, NUM_PFT_PART);
 
  		deadcV->set_cur(tstepcnt, ipft);
- 		deadcV->put(&bd->bgc_vegs.deadc, 1, 1);
+ 		deadcV->put(&bd->d_vegs.deadc, 1, 1);
 
  		callV->set_cur(tstepcnt, ipft);
- 		deadnV->put(&bd->bgc_vegs.deadn, 1, 1);
+ 		deadnV->put(&bd->d_vegs.deadn, 1, 1);
 
  		//veg C/N fluxes for each PFT
  		gppftV->set_cur(tstepcnt, ipft);
- 		gppftV->put(&bd->bgc_vegd.ftemp, 1, 1);
+ 		gppftV->put(&bd->d_vegd.ftemp, 1, 1);
 
  		gppgvV->set_cur(tstepcnt, ipft);
- 		gppgvV->put(&bd->bgc_vegd.gv, 1, 1);
+ 		gppgvV->put(&bd->d_vegd.gv, 1, 1);
 
  		gppfnaV->set_cur(tstepcnt, ipft);
- 		gppfnaV->put(&bd->bgc_vegd.fna, 1, 1);
+ 		gppfnaV->put(&bd->d_vegd.fna, 1, 1);
 
  		gppfcaV->set_cur(tstepcnt, ipft);
- 		gppfcaV->put(&bd->bgc_vegd.fca, 1, 1);
+ 		gppfcaV->put(&bd->d_vegd.fca, 1, 1);
 
  		raq10V->set_cur(tstepcnt, ipft);
- 		raq10V->put(&bd->bgc_vegd.raq10, 1, 1);
+ 		raq10V->put(&bd->d_vegd.raq10, 1, 1);
 
  		rmkrV->set_cur(tstepcnt, ipft, 0);
- 		rmkrV->put(&bd->bgc_vegd.kr[0], 1, 1, NUM_PFT_PART);
+ 		rmkrV->put(&bd->d_vegd.kr[0], 1, 1, NUM_PFT_PART);
 
  		// C/N fluxes
  		ingppallV->set_cur(tstepcnt, ipft);
- 		ingppallV->put(&bd->bgc_a2v.ingppall, 1, 1);
+ 		ingppallV->put(&bd->d_a2v.ingppall, 1, 1);
 
  		ingppV->set_cur(tstepcnt, ipft, 0);
- 		ingppV->put(&bd->bgc_a2v.ingpp[0], 1, 1, NUM_PFT_PART);
+ 		ingppV->put(&bd->d_a2v.ingpp[0], 1, 1, NUM_PFT_PART);
 
  		innppallV->set_cur(tstepcnt, ipft);
- 		innppallV->put(&bd->bgc_a2v.innppall, 1, 1);
+ 		innppallV->put(&bd->d_a2v.innppall, 1, 1);
 
  		innppV->set_cur(tstepcnt, ipft, 0);
- 		innppV->put(&bd->bgc_a2v.innpp[0], 1, 1, NUM_PFT_PART);
+ 		innppV->put(&bd->d_a2v.innpp[0], 1, 1, NUM_PFT_PART);
 
  		gppallV->set_cur(tstepcnt, ipft);
- 		gppallV->put(&bd->bgc_a2v.gppall, 1, 1);
+ 		gppallV->put(&bd->d_a2v.gppall, 1, 1);
 
  		gppV->set_cur(tstepcnt, ipft, 0);
- 		gppV->put(&bd->bgc_a2v.gpp[0], 1, 1, NUM_PFT_PART);
+ 		gppV->put(&bd->d_a2v.gpp[0], 1, 1, NUM_PFT_PART);
 
  		nppallV->set_cur(tstepcnt, ipft);
- 		nppallV->put(&bd->bgc_a2v.nppall, 1, 1);
+ 		nppallV->put(&bd->d_a2v.nppall, 1, 1);
 
  		nppV->set_cur(tstepcnt, ipft, 0);
- 		nppV->put(&bd->bgc_a2v.npp[0], 1, 1, NUM_PFT_PART);
+ 		nppV->put(&bd->d_a2v.npp[0], 1, 1, NUM_PFT_PART);
 
  		rmallV->set_cur(tstepcnt, ipft);
- 		rmallV->put(&bd->bgc_v2a.rmall,  1, 1);
+ 		rmallV->put(&bd->d_v2a.rmall,  1, 1);
 
  		rmV->set_cur(tstepcnt, ipft, 0);
- 		rmV->put(&bd->bgc_v2a.rm[0], 1, 1, NUM_PFT_PART);
+ 		rmV->put(&bd->d_v2a.rm[0], 1, 1, NUM_PFT_PART);
 
  		rgallV->set_cur(tstepcnt, ipft);
-		rgallV->put(&bd->bgc_v2a.rgall,  1, 1);
+		rgallV->put(&bd->d_v2a.rgall,  1, 1);
 
  		rgV->set_cur(tstepcnt, ipft, 0);
- 		rgV->put(&bd->bgc_v2a.rg[0], 1, 1, NUM_PFT_PART);
+ 		rgV->put(&bd->d_v2a.rg[0], 1, 1, NUM_PFT_PART);
 
  		ltrfalcallV->set_cur(tstepcnt, ipft);
  		if (&cd->m_veg.nonvascular[ipft]>0) {
- 			ltrfalcallV->put(&bd->bgc_v2soi.mossdeathc,  1, 1);
+ 			ltrfalcallV->put(&bd->d_v2soi.mossdeathc,  1, 1);
  		} else {
- 			ltrfalcallV->put(&bd->bgc_v2soi.ltrfalcall,  1, 1);
+ 			ltrfalcallV->put(&bd->d_v2soi.ltrfalcall,  1, 1);
  		}
 
 		ltrfalcV->set_cur(tstepcnt, ipft, 0);
-		ltrfalcV->put(&bd->bgc_v2soi.ltrfalc[0], 1, 1, NUM_PFT_PART);
+		ltrfalcV->put(&bd->d_v2soi.ltrfalc[0], 1, 1, NUM_PFT_PART);
 
 		//
  		ltrfalnallV->set_cur(tstepcnt, ipft);
  		if (&cd->m_veg.nonvascular[ipft]>0) {
- 			ltrfalnallV->put(&bd->bgc_v2soi.mossdeathn,  1, 1);
+ 			ltrfalnallV->put(&bd->d_v2soi.mossdeathn,  1, 1);
  		} else {
- 			ltrfalnallV->put(&bd->bgc_v2soi.ltrfalnall,  1, 1);
+ 			ltrfalnallV->put(&bd->d_v2soi.ltrfalnall,  1, 1);
  		}
 
 		ltrfalnV->set_cur(tstepcnt, ipft, 0);
-		ltrfalnV->put(&bd->bgc_v2soi.ltrfaln[0], 1, 1, NUM_PFT_PART);
+		ltrfalnV->put(&bd->d_v2soi.ltrfaln[0], 1, 1, NUM_PFT_PART);
 
 		innuptakeV->set_cur(tstepcnt, ipft);
-		innuptakeV->put(&bd->bgc_soi2v.innuptake,  1, 1);
+		innuptakeV->put(&bd->d_soi2v.innuptake,  1, 1);
 
 		nrootextractV->set_cur(tstepcnt, ipft, 0);
-		nrootextractV->put(&bd->bgc_soi2v.nextract[0], 1, 1, MAX_SOI_LAY);
+		nrootextractV->put(&bd->d_soi2v.nextract[0], 1, 1, MAX_SOI_LAY);
 
 		luptakeV->set_cur(tstepcnt, ipft);
-		luptakeV->put(&bd->bgc_soi2v.lnuptake,  1, 1);
+		luptakeV->put(&bd->d_soi2v.lnuptake,  1, 1);
 
 		suptakeallV->set_cur(tstepcnt, ipft);
-		suptakeallV->put(&bd->bgc_soi2v.snuptakeall,  1, 1);
+		suptakeallV->put(&bd->d_soi2v.snuptakeall,  1, 1);
 
 		suptakeV->set_cur(tstepcnt, ipft);
-		suptakeV->put(&bd->bgc_soi2v.snuptake[0], 1, 1, NUM_PFT_PART);
+		suptakeV->put(&bd->d_soi2v.snuptake[0], 1, 1, NUM_PFT_PART);
 
 		nmobilallV->set_cur(tstepcnt, ipft);
-		nmobilallV->put(&bd->bgc_v2v.nmobilall, 1, 1);
+		nmobilallV->put(&bd->d_v2v.nmobilall, 1, 1);
 
 		nmobilV->set_cur(tstepcnt, ipft);
-		nmobilV->put(&bd->bgc_v2v.nmobil[0], 1, 1, NUM_PFT_PART);
+		nmobilV->put(&bd->d_v2v.nmobil[0], 1, 1, NUM_PFT_PART);
 
 		nresorballV->set_cur(tstepcnt, ipft);
-		nresorballV->put(&bd->bgc_v2v.nresorball, 1, 1);
+		nresorballV->put(&bd->d_v2v.nresorball, 1, 1);
 
 		nresorbV->set_cur(tstepcnt, ipft);
-		nresorbV->put(&bd->bgc_v2v.nresorb[0], 1, 1, NUM_PFT_PART);
+		nresorbV->put(&bd->d_v2v.nresorb[0], 1, 1, NUM_PFT_PART);
 
  	}
 }

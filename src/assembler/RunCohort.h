@@ -95,7 +95,7 @@ class RunCohort {
 
      	void run_cohortly();
 
-		void run_monthly();
+		void run_OneTimestep();
 
 	private :
  	  		 	 

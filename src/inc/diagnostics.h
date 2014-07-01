@@ -137,6 +137,18 @@ struct soidiag_bgc{
     double minebc;
     double minecc;
 
+  	double shlworgn;
+    double deeporgn;
+    double mineaorgn;
+    double mineborgn;
+    double minecorgn;
+
+  	double shlwavln;
+    double deepavln;
+    double mineaavln;
+    double minebavln;
+    double minecavln;
+
     double rawcsum;
    	double somasum;
    	double somprsum;
@@ -144,6 +156,8 @@ struct soidiag_bgc{
 
    	double orgnsum;
    	double avlnsum;
+
+   	double ch4avg;
 
 };
 

@@ -13,7 +13,6 @@
 
 #include "../data/BgcData.h"
 #include "../data/FirData.h"
-#include "../data/onebgc.h"
 
 using namespace std;
 
@@ -23,7 +22,7 @@ class BgcOutputer{
 		~BgcOutputer();
 				
 		void init(string & dirfile);
-		void outputCohortBgcVars_dly(const int &ipft, CohortData *cd, onebgc *bgcod, const int & calyr, const int & calmon, const int & calday, const int & recordcnt);
+		void outputCohortBgcVars_dly(const int &ipft, CohortData *cd, BgcData *bgcod, const int & calyr, const int & calmon, const int & calday, const int & recordcnt);
 		void outputCohortBgcVars_mly(const int &ipft, BgcData *bgcod, FirData *fod, const int & calyr, const int & calmon, const int & recordcnt);
 		void outputCohortBgcVars_yly(const int &ipft, BgcData *bgcod, FirData *fod, const int & calyr, const int & recordcnt);
 

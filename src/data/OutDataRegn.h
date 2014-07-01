@@ -6,6 +6,9 @@
  *  rather than cohort by cohort - Yuan
  */
 
+#include <vector>
+using namespace std;
+
 #include "../inc/errorcode.h"
 #include "../inc/timeconst.h"
 #include "../inc/cohortconst.h"
@@ -47,123 +50,123 @@ class OutDataRegn{
 		~OutDataRegn();
 
 	 	int chtid;
-	  	int status[DINY];
 		int year;
-		int month[MINY];
-		int doy[DINY];
    		int yrsdist;
-
    		int outvarlist[I_outvarno];
 
+   		vector<int> status;
+		vector<int> month;
+		vector<int> doy;
+
    		// after update the following vars, please update the list and enum above
-   		int growstart[DINY][NUM_PFT];
-   		int growend[DINY][NUM_PFT];
-   		double vegcov[DINY][NUM_PFT];
-   		double vegage[DINY][NUM_PFT];
+   		vector<int> growstart[NUM_PFT];
+   		vector<int> growend[NUM_PFT];
+   		vector<double> vegcov[NUM_PFT];
+   		vector<double> vegage[NUM_PFT];
 
-   		double lai[DINY][NUM_PFT];
-   		double vegc[DINY][NUM_PFT];
-   		double leafc[DINY][NUM_PFT];
-   		double stemc[DINY][NUM_PFT];
-   		double rootc[DINY][NUM_PFT];
-   		double vegn[DINY][NUM_PFT];
-   		double labn[DINY][NUM_PFT];
-   		double leafn[DINY][NUM_PFT];
-  		double stemn[DINY][NUM_PFT];
-  		double rootn[DINY][NUM_PFT];
+   		vector<double> lai[NUM_PFT];
+   		vector<double> vegc[NUM_PFT];
+   		vector<double> leafc[NUM_PFT];
+   		vector<double> stemc[NUM_PFT];
+   		vector<double> rootc[NUM_PFT];
+   		vector<double> vegn[NUM_PFT];
+   		vector<double> labn[NUM_PFT];
+   		vector<double> leafn[NUM_PFT];
+  		vector<double> stemn[NUM_PFT];
+  		vector<double> rootn[NUM_PFT];
 
-   		double gpp[DINY][NUM_PFT];
-   		double npp[DINY][NUM_PFT];
+   		vector<double> gpp[NUM_PFT];
+   		vector<double> npp[NUM_PFT];
 
-        double ltrfalc[DINY][NUM_PFT];
-        double ltrfaln[DINY][NUM_PFT];
+        vector<double> ltrfalc[NUM_PFT];
+        vector<double> ltrfaln[NUM_PFT];
 
-        double nuptake[DINY][NUM_PFT];
+        vector<double> nuptake[NUM_PFT];
 
         //
-   		int permafrost[DINY];
+   		vector<int> permafrost;
 
-   		double mossdz[DINY];
-   		double oshlwdz[DINY];
-   		double odeepdz[DINY];
-   		double mineadz[DINY];
-   		double minebdz[DINY];
-   		double minecdz[DINY];
+   		vector<double> mossdz;
+   		vector<double> oshlwdz;
+   		vector<double> odeepdz;
+   		vector<double> mineadz;
+   		vector<double> minebdz;
+   		vector<double> minecdz;
 
-   		double oshlwc[DINY];
-   		double odeepc[DINY];
-   		double mineac[DINY];
-   		double minebc[DINY];
-   		double minecc[DINY];
+   		vector<double> oshlwc;
+   		vector<double> odeepc;
+   		vector<double> mineac;
+   		vector<double> minebc;
+   		vector<double> minecc;
 
-   		double orgn[DINY];
-   		double avln[DINY];
-   		double ch4[DINY];
+   		vector<double> orgn;
+   		vector<double> avln;
+   		vector<double> ch4;
 
-   		double rh[DINY];
-   		double ch4prod[DINY];
-   		double ch4oxid[DINY];
-   		double ch4flux[DINY];
-   		double ch4flux2a[DINY];
-   		double ch4flux2p[DINY];
-   		double ch4flux2b[DINY];
-   		double netnmin[DINY];
+   		vector<double> rh;
+   		vector<double> ch4prod;
+   		vector<double> ch4oxid;
+   		vector<double> ch4flux;
+   		vector<double> ch4flux2a;
+   		vector<double> ch4flux2p;
+   		vector<double> ch4flux2b;
+   		vector<double> netnmin;
 
-   		double orgninput[DINY];
-   		double avlninput[DINY];
+   		vector<double> orgninput;
+   		vector<double> avlninput;
 
-      	double doclost[DINY];
-      	double orgnlost[DINY];
-      	double avlnlost[DINY];
+      	vector<double> doclost;
+      	vector<double> orgnlost;
+      	vector<double> avlnlost;
 
       	//
-      	double eet[DINY];
-   		double pet[DINY];
-   		double qinfl[DINY];
-   		double qdrain[DINY];
-      	double qrunoff[DINY];
+      	vector<double> eet;
+   		vector<double> pet;
+   		vector<double> qinfl;
+   		vector<double> qdrain;
+      	vector<double> qrunoff;
 
-      	double snwthick[DINY];
-      	double swe[DINY];
+      	vector<double> snwthick;
+      	vector<double> swe;
 
-   		double wtd[DINY];
-   		double alc[DINY];
-      	double ald[DINY];
+   		vector<double> wtd;
+   		vector<double> alc;
+      	vector<double> ald;
 
-   		double vwcshlw[DINY];
-   		double vwcdeep[DINY];
-   		double vwcminea[DINY];
-      	double vwcmineb[DINY];
-      	double vwcminec[DINY];
+   		vector<double> vwcshlw;
+   		vector<double> vwcdeep;
+   		vector<double> vwcminea;
+      	vector<double> vwcmineb;
+      	vector<double> vwcminec;
 
-   		double tshlw[DINY];
-   		double tdeep[DINY];
-   		double tminea[DINY];
-   		double tmineb[DINY];
-   		double tminec[DINY];
+   		vector<double> tshlw;
+   		vector<double> tdeep;
+   		vector<double> tminea;
+   		vector<double> tmineb;
+   		vector<double> tminec;
 
-   		double hkshlw[DINY];
-   		double hkdeep[DINY];
-   		double hkminea[DINY];
-   		double hkmineb[DINY];
-   		double hkminec[DINY];
+   		vector<double> hkshlw;
+   		vector<double> hkdeep;
+   		vector<double> hkminea;
+   		vector<double> hkmineb;
+   		vector<double> hkminec;
 
-   		double tcshlw[DINY];
-   		double tcdeep[DINY];
-   		double tcminea[DINY];
-   		double tcmineb[DINY];
-   		double tcminec[DINY];
+   		vector<double> tcshlw;
+   		vector<double> tcdeep;
+   		vector<double> tcminea;
+   		vector<double> tcmineb;
+   		vector<double> tcminec;
 
-   		double tbotrock[DINY];
+   		vector<double> tbotrock;
 
    		//
-   		double burnthick[DINY];
-   		double burnsoic[DINY];
-   		double burnvegc[DINY];
-   		double burnsoin[DINY];
-   		double burnvegn[DINY];
-   		double burnretainc[DINY];
-   		double burnretainn[DINY];
+   		vector<double> burnthick;
+   		vector<double> burnsoic;
+   		vector<double> burnvegc;
+   		vector<double> burnsoin;
+   		vector<double> burnvegn;
+   		vector<double> burnretainc;
+   		vector<double> burnretainn;
 	 
 };
 
