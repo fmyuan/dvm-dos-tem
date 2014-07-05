@@ -248,7 +248,7 @@ int RunCohort::reinit(){
 };
 
 // run one cohort for a period of time
-void RunCohort::run_cohortly(){
+void RunCohort::run_OneCohort(){
 
 	    //
 	    cht.timer->reset();

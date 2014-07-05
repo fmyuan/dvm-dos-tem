@@ -1,6 +1,9 @@
 #ifndef TIMECONST_H_
 #define TIMECONST_H_
 
+	const int MONTHLY=1;
+	const int DAILY  =2;
+
 	const int DINY =365;
 	const int MINY =12;
 	const int DINM[MINY]      = {31,  28,  31,  30,  31,  30,  31,  31,  30,  31,  30,  31};

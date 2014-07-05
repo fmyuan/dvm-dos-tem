@@ -1958,8 +1958,8 @@ void Ground::checkWaterValidity(){
 			}
 
 			if (currl->frozen==1) {
-				if (currl->liq>0.) {
-					string msg = "frozen layer shall NOT have liquid water";
+				if (currl->liq>currl->minliq) {
+					string msg = "frozen layer shall NOT have more than residue liquid water";
 					cout << msg + ":: in Layer "<<currl->indl<< "\n";
 				}
 

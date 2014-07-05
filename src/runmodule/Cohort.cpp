@@ -52,7 +52,6 @@ void Cohort::initSubmodules(){
  		vegenv[i].setCohortLookup(&chtlu);
  		vegenv[i].setEnvData(&ed[i]);
  		vegenv[i].setCohortData(&cd);
- 		vegenv[i].setFirData(fd);
 
  		vegbgc[i].setCohortLookup(&chtlu);
  		vegbgc[i].setCohortData(&cd);
@@ -324,18 +323,19 @@ void Cohort::updateOneTimestep(const int & yrcnt, const int & currmind, const in
 	int dinmcurr = DINM[currmind];
 	int doy = DOYINDFST[currmind]+DINM[currmind];
 
+	cd.beginOfDay();
 	if(currmind==0) cd.beginOfYear();
 	if(currdinm==1) cd.beginOfMonth();
 
-  	// first, update the water/thermal process to get (bio)physical conditions
- 	if(md->envmodule){
-  		updateEnv(currmind, currdinm);
-  	}
-
- 	// secondly, update the current dimension/structure of veg-snow/soil column (domain)
+ 	// first, update the current dimension/structure of veg-snow/soil column (domain)
    	updateDIMveg(currmind, currdinm, md->dvmmodule);
 
    	updateDIMgrd(currmind, currdinm, md->dslmodule);
+
+   	// secondly, update the water/thermal process to get (bio)physical conditions
+ 	if(md->envmodule){
+  		updateEnv(currmind, currdinm);
+  	}
 
    	//thirdly, update the BGC process to get the C/N states and fluxes
   	if(md->bgcmodule){
@@ -431,14 +431,13 @@ void Cohort::updateEnv(const int & currmind, const int & currdinm){
 		atm.updateDailyAtm(currmind, currdinm);
 
 		//Initialize some daily variables for 'ground'
-		cd.beginOfDay();
 		edall->grnd_beginOfDay();
 
 		//'edall' in 'atm' must be assgined to that in 'ed' for each PFT
 		assignAtmEd2pfts_daily();
 		for (int ip=0; ip<NUM_PFT; ip++){
 			if (cd.d_veg.vegcov[ip]>0.){
-				if (cd.d_veg.nonvascular<=0) {   // for vascular plants
+				if (cd.d_veg.nonvascular[ip]<=0) {   // for vascular plants
 					// get the soil moisture controling factor on plant transpiration
 					double frootfr[MAX_SOI_LAY];
 					for (int i=0; i<MAX_SOI_LAY; i++){
@@ -531,7 +530,6 @@ void Cohort::updateBgc(const int & currmind, const int & currdinm){
 
 	// currmind: zero-based, currdinm: day in the month (1 based)
 	int dinmcurr = DINM[currmind];
-	int doy =timer->getDOYIndex(currmind, currdinm);
 
 	// initializing accumulators
 	if(currmind==0){		
@@ -665,7 +663,6 @@ void Cohort::updateDIMveg(const int & currmind, const int & currdinm, const bool
 
     //
 	int dinmcurr = DINM[currmind];
-	if (currdinm == dinmcurr) { // last day of the month
 
 		//switch for using LAI read-in (false) or dynamically with vegC
 		// the read-in LAI is through the 'chtlu->envlai[12]', i.e., a 12 monthly-LAI
@@ -678,22 +675,25 @@ void Cohort::updateDIMveg(const int & currmind, const int & currdinm, const bool
 		// vegetation standing age
 		// tentatively set to a common age from 'ysf' - year since fire - should have more varability based on PFT types
 		for (int ip=0; ip<NUM_PFT; ip++){
-			if (cd.m_veg.vegcov[ip]>0.){
-				cd.m_veg.vegage[ip] = cd.yrsdist;
-				if (cd.m_veg.vegage[ip]<=0) cd.m_vegd.foliagemx[ip] = 0.;
+			if (cd.d_veg.vegcov[ip]>0.){
+				cd.d_veg.vegage[ip] = cd.yrsdist;
+				if (cd.d_veg.vegage[ip]<=0) cd.d_vegd.foliagemx[ip] = 0.;
 			}
 		}
 
 		// update monthly phenological variables (factors used for GPP), and LAI
-		veg.phenology(currmind);
-		veg.updateLai(currmind);    // this must be done after phenology
+		veg.phenology(currmind, currdinm);
+		veg.updateLai(currmind, currdinm);    // this must be done after phenology
 
 		// LAI updated above for each PFT, but FPC (foliage percent cover) may need adjustment
 		veg.updateFpc();
 		veg.updateVegcov();
 
 		veg.updateFrootfrac();
-	}
+
+		if (currdinm == dinmcurr){
+			cd.m_veg = cd.d_veg;
+		}
 };
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -701,7 +701,6 @@ void Cohort::updateDIMveg(const int & currmind, const int & currdinm, const bool
 ////////////////////////////////////////////////////////////////////////////////
 void Cohort::updateDIMgrd(const int & currmind, const int & currdinm, const bool & dslmodule){
 	// currmind: zero-based, currdinm: day in the month (1 based)
-	int dinmcurr = DINM[currmind];
 
 	// re-call the 'bdall' soil C contents and assign them to the double-linked layer matrix
 	soilbgc.assignCarbonBd2Layer();
@@ -883,9 +882,6 @@ void Cohort::assignGroundEd2pfts_daily(){
     		ed[ip].d_snw2a  = edall->d_snw2a;
     		ed[ip].d_snw2soi= edall->d_snw2soi;
 
-    		ed[ip].monthsfrozen  = edall->monthsfrozen;
-    		ed[ip].rtfrozendays  = edall->rtfrozendays;
-    		ed[ip].rtunfrozendays= edall->rtunfrozendays;
     	}
 
 	}

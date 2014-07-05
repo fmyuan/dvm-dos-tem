@@ -1,7 +1,7 @@
 #include "ModelData.h"
 
 ModelData::ModelData(){
-  	consoledebug = true;
+  	consoledebug = false;
   	runmode = 1;
 
   	runeq = false;
@@ -9,7 +9,8 @@ ModelData::ModelData(){
   	runtr = false;
   	runsc = false;
 
-  	initmode =-1;
+  	initmode = 1;
+  	timestep = 1; // MONTHLY (default)
 
   	changeclimate= 0;
   	changeco2    = 0;
@@ -28,6 +29,11 @@ ModelData::ModelData(){
  	friderived= false;
 	dvmmodule = false;
 
+	// N module switches
+    nfeed   = false;
+    avlnflg = false;
+    baseline= false;
+
 	// the data record numbers of all input datasets
 	act_gridno = 0;
     act_drainno= 0;
@@ -36,16 +42,28 @@ ModelData::ModelData(){
 
 	act_chtno    = 0;
 	act_initchtno= 0;
+
+	act_clmstep  = 0;
 	act_clmno    = 0;
 	act_clmyr_beg= 0;
 	act_clmyr_end= 0;
 	act_clmyr    = 0;
+
 	act_vegno    = 0;
 	act_vegset   = 0;
+
+	fsizeno      = 0;
+	fseasonno    = 0;
 	act_fireno   = 0;
 	act_fireset  = 0;
 
-
+	// output switches
+	outstartyr   = -9999;
+	outSiteDay   = false;
+	outSiteMonth = false;
+	outSiteYear  = false;
+	outRegn      = false;
+	outSoilClm   = false;
 };
 
 ModelData::~ModelData(){

@@ -22,8 +22,11 @@
    			Vegetation_Bgc();
    			~Vegetation_Bgc();
   	
-  			int ipft;
+  			int tstepmode;
+   			int ipft;
     		bool nfeed;
+    		bool avlnflg;
+    		bool baseline;
 
  			vegpar_cal calpar;
 			vegpar_bgc bgcpar;
@@ -58,17 +61,37 @@
   		private:
 
 			double fracnuptake[MAX_SOI_LAY];  //fraction of N extraction in each soil layer for current PFT
-			double fltrfall;                  //season fraction of max. monthly litterfalling fraction
-			double dleafc;                    // C requirement of foliage growth at current timestep
+			double fltrfall;                  //season fraction of max. monthly litter-falling fraction
+			double dleafc;                    // C requirement of foliage growth at current time-step
 		    double d2wdebrisc;
 		    double d2wdebrisn;
-			double totrzavln;     			  // root zone avaliable N content for N uptake
+			double totrzavln;     			  // root zone available N content for N uptake
 
   			CohortLookup * chtlu;
 
-  			CohortData * cd;
-    		EnvData * ed;
-   			BgcData * bd;
+  			CohortData *cd;
+  			RegionData * rd;
+  			vegstate_dim *cd_vegs;
+  			vegdiag_dim *cd_vegd;
+  			soistate_dim *cd_sois;
+
+  			atmstate_env *ed_atms;
+  			atmstate_env *edyly_atms;
+  			atm2lnd_env *ed_a2l;
+  			lnd2atm_env *ed_l2a;
+  			lnd2atm_env *edyly_l2a;
+  			soistate_env *ed_sois;
+  			soidiag_env *ed_soid;
+
+  			vegstate_bgc *bd_vegs;
+  			vegdiag_bgc *bd_vegd;
+  			atm2veg_bgc *bd_a2v;
+  			veg2atm_bgc *bd_v2a;
+  			veg2veg_bgc *bd_v2v;
+  			soistate_bgc *bd_sois;
+  			soidiag_bgc *bd_soid;
+  			veg2soi_bgc *bd_v2soi;
+  			soi2veg_bgc *bd_soi2v;
 
    			void updateCNeven(const double & yreet,const double & yrpet, const double & initco2,const double & currentco2 );
 

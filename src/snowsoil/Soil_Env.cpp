@@ -26,10 +26,26 @@
 #include "Soil_Env.h"
 
 Soil_Env::Soil_Env(){
-	ground = NULL;
-	ed     = NULL;
-	cd     = NULL;
+	tstepmode = DAILY;
 	chtlu  = NULL;
+	ground = NULL;
+	gd     = NULL;
+    cd_vegd = NULL;
+    cd_soil = NULL;
+	ed_atms = NULL;
+	ed_atmd = NULL;
+	ed_a2l  = NULL;
+	ed_v2a  = NULL;
+	ed_v2g  = NULL;
+	ed_snws = NULL;
+	ed_snwd = NULL;
+	ed_snw2a  = NULL;
+	ed_snw2soi= NULL;
+	ed_sois = NULL;
+	ed_soid = NULL;
+	ed_soi2a= NULL;
+	ed_soi2l= NULL;
+
 };
 
 Soil_Env::~Soil_Env(){
@@ -125,7 +141,7 @@ void Soil_Env::initializeState(){
 		Layer* currl = ground->fstsoill;
 		while(currl!=NULL){
 			if(currl->isSoil){
-				double ts  = ed->d_atms.ta;
+				double ts  = ed_atms->ta;
 				double psifc = -2.e6;  // filed capacity of -2MPsi
 				psifc /=currl->psisat;
 			  	double vwc = pow(abs(psifc), -1.0/currl->bsw);
@@ -167,7 +183,7 @@ void Soil_Env::initializeState(){
  	ground->frontstype.clear();
 	int frontFT[MAX_NUM_FNT];
 	double frontZ[MAX_NUM_FNT];
-	std::fill_n(frontFT, MAX_NUM_FNT, -9999);
+	std::fill_n(frontFT, MAX_NUM_FNT, -9999.0);
 	std::fill_n(frontZ, MAX_NUM_FNT, -9999.0);
 
 	Layer* currl = ground->toplayer;
@@ -193,10 +209,10 @@ void Soil_Env::initializeState(){
 	ground->setFstLstFrontLayers();
 
 	//misc. items
-	ed->d_atms.dsr     = 0;
-	ed->monthsfrozen   = 0;
-	ed->rtfrozendays   = 0;
-	ed->rtunfrozendays = 0;
+	ed_atms->dsr     = 0;
+	ed_sois->monthsfrozen   = 0;
+	ed_sois->rtfrozendays   = 0;
+	ed_sois->rtunfrozendays = 0;
 
 	//
 	ground->checkWaterValidity();
@@ -238,11 +254,11 @@ void Soil_Env::initializeState5restart(RestartData* resin){
 	}
 
 	//
-	ed->d_atms.dsr     = resin->dsr;
-	ed->monthsfrozen   = resin->monthsfrozen;
-	ed->rtfrozendays   = resin->rtfrozendays;
-	ed->rtunfrozendays = resin->rtunfrozendays;
-	ed->d_soid.rtdpgdd = resin->growingttime[0];
+	ed_atms->dsr     = resin->dsr;
+	ed_sois->monthsfrozen   = resin->monthsfrozen;
+	ed_sois->rtfrozendays   = resin->rtfrozendays;
+	ed_sois->rtunfrozendays = resin->rtunfrozendays;
+	ed_soid->rtdpgdd = resin->growingttime[0];
 
 };
 
@@ -250,12 +266,12 @@ void Soil_Env::initializeState5restart(RestartData* resin){
 void Soil_Env::updateDailyGroundT(const double & tdrv, const double & dayl){
 
 	double tsurface;
-	tsurface = tdrv *ed->d_soid.nfactor;
+	tsurface = tdrv *ed_soid->nfactor;
 
 	if(ground->toplayer->isSoil){
 		updateDailySurfFlux(ground->toplayer, dayl);
-		ed->d_snw2a.swrefl = 0.;
-		ed->d_snw2a.sublim = 0.;
+		ed_snw2a->swrefl = 0.;
+		ed_snw2a->sublim = 0.;
 	}
 
     // solution for snow-soil column thermal process
@@ -273,7 +289,7 @@ void Soil_Env::updateDailyGroundT(const double & tdrv, const double & dayl){
 
      double timestep=86400.0/nstep;
      bool meltsnow =false;
-     if (ed->d_snw2soi.melt>0.) meltsnow = true;  //So, 'snow melting in snow water process' must be done prior to this
+     if (ed_snw2soi->melt>0.) meltsnow = true;  //So, 'snow melting in snow water process' must be done prior to this
 
      stefan.initpce();
      for (int i=0; i<nstep ;i++){
@@ -316,13 +332,13 @@ void Soil_Env::updateDailySurfFlux(Layer* toplayer, const double & dayl){
 	double albvis = dynamic_cast<SoilLayer*>(toplayer)->getAlbedoVis();
 	double albnir = dynamic_cast<SoilLayer*>(toplayer)->getAlbedoNir();
 
-	double insw =  ed->d_v2g.swthfl * cd->m_vegd.fpcsum
-			      + ed->d_a2l.nirr * (1.- cd->m_vegd.fpcsum);
+	double insw =  ed_v2g->swthfl * cd_vegd->fpcsum
+			      + ed_a2l->nirr * (1.- cd_vegd->fpcsum);
 
-	ed->d_soi2a.swrefl = insw *0.5 * albvis + insw *0.5*albnir;
+	ed_soi2a->swrefl = insw *0.5 * albvis + insw *0.5*albnir;
 
 	// soil evaporation
-	double rad = insw-ed->d_soi2a.swrefl;
+	double rad = insw-ed_soi2a->swrefl;
 	double availliq =0;
 
 	double totthick =0.10; // assuming occurred only from top 10 cm soil
@@ -352,9 +368,9 @@ void Soil_Env::updateDailySurfFlux(Layer* toplayer, const double & dayl){
 	double evap =0.;
 	if(availliq>0 && toplayer->frozen==-1 && toplayer->isSoil){
 		evap = getEvaporation(dayl, rad);
-		ed->d_soi2a.evap = fmin(availliq,evap);
+		ed_soi2a->evap = fmin(availliq,evap);
 	}else{
-	    ed->d_soi2a.evap = 0.;
+	    ed_soi2a->evap = 0.;
 	}
 
 };
@@ -399,21 +415,20 @@ void Soil_Env::updateDailySoilThermal4Growth(Layer* fstsoill, const double &tsur
 	}
 
 	if (toprtdep > 0.) {
-		ed->d_soid.rtdpts = toptsrtdep/toprtdep;
+		ed_soid->rtdpts = toptsrtdep/toprtdep;
 	} else {
-		ed->d_soid.rtdpts = MISSING_D;
+		ed_soid->rtdpts = MISSING_D;
 	}
 
-	//if(unfrzrtdep>=envpar.rtdp4growpct){  // Apparently this will not consistent with 'tsrtdp' (because if tsrt>0., not whole toprtzone unfrozen)
-	if (ed->d_soid.rtdpts!=MISSING_D) {
-		if(ed->d_soid.rtdpts>=0.10 ){
-			ed->d_soid.rtdpthawpct =1.;
+	if (ed_soid->rtdpts!=MISSING_D) {
+		if(ed_soid->rtdpts>=0.10 ){
+			ed_soid->rtdpthawpct =1.;
 		}else{
-			ed->d_soid.rtdpthawpct =0.;
+			ed_soid->rtdpthawpct =0.;
 		}
 
 	} else {
-		ed->d_soid.rtdpthawpct = MISSING_D;
+		ed_soid->rtdpthawpct = MISSING_D;
 	}
 
 
@@ -435,58 +450,58 @@ void Soil_Env::updateLayerStateAfterThermal(Layer* fstsoill, Layer *lstsoill, La
 	  currl = currl->nextl;
 	}
 
-	ed->d_soid.unfrzcolumn = unfrzcolumn;
-	ed->d_soid.tbotrock = botlayer->tem;
+	ed_soid->unfrzcolumn = unfrzcolumn;
+	ed_soid->tbotrock = botlayer->tem;
 
 	if(lstsoill->frozen==-1){        //Yuan: -1 should be unfrozen
-		ed->d_soid.permafrost =0;
+		ed_soid->permafrost =0;
 	}else{
-		ed->d_soid.permafrost =1;
+		ed_soid->permafrost =1;
 	}
 
 }
 
 void Soil_Env::retrieveDailyFronts(){
    for (int il=0; il<MAX_NUM_FNT; il++){
-	   ed->d_sois.frontsz[il]   = MISSING_D;
-	   ed->d_sois.frontstype[il]= MISSING_I;
+	   ed_sois->frontsz[il]   = MISSING_D;
+	   ed_sois->frontstype[il]= MISSING_I;
    }
 
    int frntnum = ground->frontsz.size();
    for(int il=0; il<frntnum; il++){
-	   ed->d_sois.frontsz[il]   = ground->frontsz[il];
-	   ed->d_sois.frontstype[il]= ground->frontstype[il];
+	   ed_sois->frontsz[il]   = ground->frontsz[il];
+	   ed_sois->frontstype[il]= ground->frontstype[il];
    }
 
    // determine the deepth of daily active layer depth (seasonal or permafrost)
-   ed->d_soid.ald = MISSING_D;
+   ed_soid->ald = MISSING_D;
     for (int il =0; il<MAX_NUM_FNT; il++){
-	   if (il==0 && ed->d_soid.unfrzcolumn<=0.) {
-		   ed->d_soid.ald = 0.;
+	   if (il==0 && ed_soid->unfrzcolumn<=0.) {
+		   ed_soid->ald = 0.;
 		   break;
-	   } else if (il==0 && ed->d_soid.unfrzcolumn>=cd->d_soil.totthick) {
-		   ed->d_soid.ald = cd->d_soil.totthick;
+	   } else if (il==0 && ed_soid->unfrzcolumn>=cd_soil->totthick) {
+		   ed_soid->ald = cd_soil->totthick;
 		   break;
-	   } else if(ed->d_sois.frontsz[il]>0. && ed->d_sois.frontstype[il]==-1){
-		   if(ed->d_soid.ald < ed->d_sois.frontsz[il]){    // assuming the deepest thawing front
-			   ed->d_soid.ald = ed->d_sois.frontsz[il];
+	   } else if(ed_sois->frontsz[il]>0. && ed_sois->frontstype[il]==-1){
+		   if(ed_soid->ald < ed_sois->frontsz[il]){    // assuming the deepest thawing front
+			   ed_soid->ald = ed_sois->frontsz[il];
 		   }
 	  }
 
 	}
 
    // determine the top deepth of daily active layer (seasonal)
-    ed->d_soid.alc = 0.;
+    ed_soid->alc = 0.;
 	for (int il =0; il<MAX_NUM_FNT; il++){
-		  if (il==0 && ed->d_soid.unfrzcolumn==0.) {
-			  ed->d_soid.alc = 0.;
+		  if (il==0 && ed_soid->unfrzcolumn==0.) {
+			  ed_soid->alc = 0.;
 			  break;
-		  } else if (il==0 && ed->d_soid.unfrzcolumn>=cd->d_soil.totthick) {
-			  ed->d_soid.alc = cd->d_soil.totthick;
+		  } else if (il==0 && ed_soid->unfrzcolumn>=cd_soil->totthick) {
+			  ed_soid->alc = cd_soil->totthick;
 			  break;
-		  } else if(ed->d_sois.frontsz[il]>0. && ed->d_sois.frontstype[il]==1){
-		  	 if(ed->d_soid.alc < ed->d_sois.frontsz[il]){    // assuming the deepest freezing front
-		  	 	ed->d_soid.alc = ed->d_sois.frontsz[il];
+		  } else if(ed_sois->frontsz[il]>0. && ed_sois->frontstype[il]==1){
+		  	 if(ed_soid->alc < ed_sois->frontsz[il]){    // assuming the deepest freezing front
+		  	 	ed_soid->alc = ed_sois->frontsz[il];
 		  	 }
 		  }
 	}
@@ -506,27 +521,27 @@ void Soil_Env::updateDailySM(){
 	double trans[MAX_SOI_LAY], melt, evap, rnth;
 
 	for (int i=0; i<MAX_SOI_LAY; i++) {
-		trans[i] = ed->d_v2a.tran*ed->d_soid.fbtran[i];  //mm/day: summed for all Vegetations
+		trans[i] = ed_v2a->tran*ed_soid->fbtran[i];  //mm/day: summed for all Vegetations
 	}
-    evap  = ed->d_soi2a.evap; //mm/day: summed for soil evaporation
-    rnth  = (ed->d_v2g.rthfl +ed->d_v2g.rdrip)   // note: rthfl and rdrip are already fpc adjusted
-    		+(1.- cd->m_vegd.fpcsum)*ed->d_a2l.rnfl; //mm/day
+    evap  = ed_soi2a->evap; //mm/day: summed for soil evaporation
+    rnth  = (ed_v2g->rthfl +ed_v2g->rdrip)   // note: rthfl and rdrip are already fpc adjusted
+    		+(1.- cd_vegd->fpcsum)*ed_a2l->rnfl; //mm/day
 
-    melt  = ed->d_snw2soi.melt; //mm/day
+    melt  = ed_snw2soi->melt; //mm/day
 
 	// 1) calculate the surface runoff and infiltration
-    ed->d_soi2l.qover  = 0.;
-    ed->d_soi2l.qdrain = 0.;
+    ed_soi2l->qover  = 0.;
+    ed_soi2l->qdrain = 0.;
 
-    ed->d_sois.watertab = getWaterTable(lstsoill);
+    ed_sois->watertab = getWaterTable(lstsoill);
     if(rnth+melt>0){
-       	ed->d_soi2l.qover  = getRunoff(fstsoill, drainl, rnth, melt); //mm/day
+       	ed_soi2l->qover  = getRunoff(fstsoill, drainl, rnth, melt); //mm/day
     }else{
-       	ed->d_soi2l.qover  = 0.;
+       	ed_soi2l->qover  = 0.;
     }
 
-    double infil = rnth+melt-ed->d_soi2l.qover;
-    ed->d_soi2l.qinfl = infil;
+    double infil = rnth+melt-ed_soi2l->qover;
+    ed_soi2l->qinfl = infil;
 
     // 2) Then soil water dynamics at daily time step
 
@@ -540,12 +555,12 @@ void Soil_Env::updateDailySM(){
 
  	// water drainage condition
 	double baseflow = 1.;    //fraction of bottom drainage (free) into water system: 0 - 1 upon drainage condition
-    if(cd->gd->drgtype==1){  //0: well-drained; 1: poorly-drained
+    if(gd->drgtype==1){  //0: well-drained; 1: poorly-drained
  		baseflow = 0.;
   	}
 
    	richards.update(fstsoill, drainl, draindepth, baseflow, trans, evap, infil, sinday);
-   	ed->d_soi2l.qdrain  += richards.qdrain;
+   	ed_soi2l->qdrain  += richards.qdrain;
 
    	//
    	ground->checkWaterValidity();
@@ -588,8 +603,8 @@ double Soil_Env::getEvaporation(const double & dayl, const double &rad){
 	//dayl , dayl length  , hour
 	//rad, radiation pass through vegetation, MJ/m2day
 	double evap=0.;
-	double tair = ed->d_atms.ta;
-	double vpdpa = ed->d_atmd.vpd;
+	double tair = ed_atms->ta;
+	double vpdpa = ed_atmd->vpd;
 	double daylsec = dayl*3600;
 	if (daylsec < 0.1) { // 0.1 sec for mathmatical purpose, otherwise 'daytimerad' below will be 'inf'
 		return (0.);
@@ -602,13 +617,13 @@ double Soil_Env::getEvaporation(const double & dayl, const double &rad){
 	double rbl = 107 * rcorr;
 	
 	double pmet = getPenMonET( tair, vpdpa, daytimerad,rbl, rbl);
-	double dsr = ed->d_atms.dsr;
+	double dsr = ed_atms->dsr;
 	if (dsr<=1.0) dsr=1.0;
 	double ratiomin =envpar.evapmin;
  
 	evap = pmet *  daylsec;
 	
-	if(ed->d_v2g.rdrip + ed->d_v2g.rthfl+ ed->d_snw2soi.melt >= evap){
+	if(ed_v2g->rdrip + ed_v2g->rthfl+ ed_snw2soi->melt >= evap){
         evap *=0.6;
 	}else{
 		/* calculate the realized proportion of potential evaporation
@@ -644,7 +659,7 @@ double Soil_Env::getWaterTable(Layer* lstsoill){
 			thetal = currl->getVolLiq();
 			thetal = fmin(por-thetai, thetal);
 
-			s= thetal/(por-thetai);
+			s= (thetal+thetai)/fmax(por,0.01);
 			if (bottomsat) {    //if bottom-layer saturated
 				if (s>0.999) {   //
 					sums = ztot;
@@ -751,7 +766,7 @@ void Soil_Env::getSoilTransFactor(double btran[MAX_SOI_LAY], Layer* fstsoill, co
 	}
 
 	if (sumbtran>1.) {
-		for (int il=0; il<cd->d_soil.numsl; il++) {
+		for (int il=0; il<cd_soil->numsl; il++) {
 			btran[sind] /=sumbtran;
 		}
 
@@ -764,33 +779,33 @@ void Soil_Env::retrieveDailyTM(Layer* toplayer, Layer *lstsoill){
 	
 	//first empty the 'ed' arrays: the reason is that NOT ALL will be refreshed below (e.g., layer is melted or burned)
 	for (int i=0; i<MAX_SNW_LAY ; i++){
-	    ed->d_snws.tsnw[i]  = MISSING_D;
-	    ed->d_snws.snwice[i]= MISSING_D;
-	    ed->d_snws.snwliq[i]= MISSING_D;
-	    ed->d_snwd.tcond[i] = MISSING_D;
+	    ed_snws->tsnw[i]  = MISSING_D;
+	    ed_snws->snwice[i]= MISSING_D;
+	    ed_snws->snwliq[i]= MISSING_D;
+	    ed_snwd->tcond[i] = MISSING_D;
 	}
 	for(int il =0; il<MAX_SOI_LAY; il++){
-		ed->d_sois.frozen[il]     = MISSING_I;
-		ed->d_sois.frozenfrac[il] = MISSING_D;
-		ed->d_sois.ts[il]  = MISSING_D;
-		ed->d_sois.liq[il] = MISSING_D;
-		ed->d_sois.ice[il] = MISSING_D;
+		ed_sois->frozen[il]     = MISSING_I;
+		ed_sois->frozenfrac[il] = MISSING_D;
+		ed_sois->ts[il]  = MISSING_D;
+		ed_sois->liq[il] = MISSING_D;
+		ed_sois->ice[il] = MISSING_D;
 
-		ed->d_soid.vwc[il] = MISSING_D;
-		ed->d_soid.lwc[il] = MISSING_D;
-		ed->d_soid.iwc[il] = MISSING_D;
-		ed->d_soid.sws[il] = MISSING_D;
-		ed->d_soid.aws[il] = MISSING_D;
+		ed_soid->vwc[il] = MISSING_D;
+		ed_soid->lwc[il] = MISSING_D;
+		ed_soid->iwc[il] = MISSING_D;
+		ed_soid->sws[il] = MISSING_D;
+		ed_soid->aws[il] = MISSING_D;
 
-		ed->d_soid.tcond[il] = MISSING_D;
-		ed->d_soid.hcond[il] = MISSING_D;
+		ed_soid->tcond[il] = MISSING_D;
+		ed_soid->hcond[il] = MISSING_D;
 	}
 	for (int i=0; i<MAX_ROC_LAY ; i++){
-	    ed->d_sois.trock[i]  = MISSING_D;
+	    ed_sois->trock[i]  = MISSING_D;
 	}
 	for (int i=0; i<MAX_NUM_FNT ; i++){
-	    ed->d_sois.frontstype[i]  = MISSING_I;
-	    ed->d_sois.frontsz[i]     = MISSING_D;
+	    ed_sois->frontstype[i]  = MISSING_I;
+	    ed_sois->frontsz[i]     = MISSING_D;
 	}
 
 	//
@@ -811,21 +826,21 @@ void Soil_Env::retrieveDailyTM(Layer* toplayer, Layer *lstsoill){
 	while(curr2!=NULL){
 	  if(curr2->isSoil){
 	  	
-		  ed->d_sois.frozen[soilind] = curr2->frozen;
-		  ed->d_sois.frozenfrac[soilind] = curr2->frozenfrac;
-		  ed->d_sois.ts[soilind]  = curr2->tem;
-		  ed->d_sois.liq[soilind] = curr2->liq;
-		  ed->d_sois.ice[soilind] = curr2->ice;
+		  ed_sois->frozen[soilind] = curr2->frozen;
+		  ed_sois->frozenfrac[soilind] = curr2->frozenfrac;
+		  ed_sois->ts[soilind]  = curr2->tem;
+		  ed_sois->liq[soilind] = curr2->liq;
+		  ed_sois->ice[soilind] = curr2->ice;
 
-		  ed->d_soid.vwc[soilind]= curr2->getVolWater();
-	  	  ed->d_soid.iwc[soilind]= curr2->getVolIce();
-	  	  ed->d_soid.lwc[soilind]= curr2->getVolLiq();
+		  ed_soid->vwc[soilind]= curr2->getVolWater();
+	  	  ed_soid->iwc[soilind]= curr2->getVolIce();
+	  	  ed_soid->lwc[soilind]= curr2->getVolLiq();
 	  	  	
-	  	  ed->d_soid.sws[soilind]= curr2->getVolLiq()/curr2->poro;
-	  	  ed->d_soid.aws[soilind]= curr2->getVolLiq()/(curr2->poro-curr2->getVolIce());
+	  	  ed_soid->sws[soilind]= curr2->getVolLiq()/curr2->poro;
+	  	  ed_soid->aws[soilind]= curr2->getVolLiq()/(curr2->poro-curr2->getVolIce());
 
-	  	  ed->d_soid.tcond[soilind] = curr2->tcond;
-	  	  ed->d_soid.hcond[soilind] = curr2->hcond;
+	  	  ed_soid->tcond[soilind] = curr2->tcond;
+	  	  ed_soid->hcond[soilind] = curr2->hcond;
 
 	  	  // some cumulative variables for whole soil column
 	  	  soldep   += curr2->dz;
@@ -837,10 +852,10 @@ void Soil_Env::retrieveDailyTM(Layer* toplayer, Layer *lstsoill){
 	  	
 	  } else if (curr2->isSnow) {
 
-		  ed->d_snwd.tcond[snwind] = curr2->tcond;
-		  ed->d_snws.tsnw[snwind]  = curr2->tem;
-		  ed->d_snws.snwliq[snwind]= curr2->liq;
-		  ed->d_snws.snwice[snwind]= curr2->ice;
+		  ed_snwd->tcond[snwind] = curr2->tcond;
+		  ed_snws->tsnw[snwind]  = curr2->tem;
+		  ed_snws->snwliq[snwind]= curr2->liq;
+		  ed_snws->snwice[snwind]= curr2->ice;
 
 		  snwdep  += curr2->dz;
 		  snwtave += curr2->tem*curr2->dz;
@@ -849,8 +864,8 @@ void Soil_Env::retrieveDailyTM(Layer* toplayer, Layer *lstsoill){
 
 	  } else if (curr2->isRock) {
 
-		  ed->d_sois.trock[rockind] = curr2->tem;
-		  ed->d_soid.tbotrock = curr2->tem;
+		  ed_sois->trock[rockind] = curr2->tem;
+		  ed_soid->tbotrock = curr2->tem;
 		  rockind++;
 	  }
 
@@ -859,13 +874,13 @@ void Soil_Env::retrieveDailyTM(Layer* toplayer, Layer *lstsoill){
 
 	}	
 	
-	if (soldep > 0.) ed->d_soid.tsave = soltave/soldep;
-	ed->d_soid.liqsum = solliqsum;
-	ed->d_soid.icesum = solicesum;
+	if (soldep > 0.) ed_soid->tsave = soltave/soldep;
+	ed_soid->liqsum = solliqsum;
+	ed_soid->icesum = solicesum;
 
-	if (snwdep > 0.) ed->d_snws.tsnwave = snwtave/snwdep;
+	if (snwdep > 0.) ed_snws->tsnwave = snwtave/snwdep;
 
-	ed->d_sois.draindepth = ground->draindepth;
+	ed_sois->draindepth = ground->draindepth;
 
 }
 
@@ -880,11 +895,46 @@ void Soil_Env::setCohortLookup(CohortLookup * chtlup){
 };
 
 void Soil_Env::setCohortData(CohortData* cdp){
-	cd = cdp;
+	gd = cdp->gd;
+	if(tstepmode==MONTHLY) {
+		cd_vegd = &cdp->m_vegd;
+		cd_soil = &cdp->m_soil;
+	}else if(tstepmode==DAILY) {
+		cd_vegd = &cdp->d_vegd;
+		cd_soil = &cdp->d_soil;
+	}
 };
 
 void Soil_Env::setEnvData(EnvData* edp){
-	ed = edp;
+	if(tstepmode==MONTHLY) {
+	 ed_atms = &edp->m_atms;
+	 ed_atmd = &edp->m_atmd;
+	 ed_a2l  = &edp->m_a2l;
+	 ed_v2a  = &edp->m_v2a;
+	 ed_v2g  = &edp->m_v2g;
+	 ed_snws = &edp->m_snws;
+	 ed_snwd = &edp->m_snwd;
+	 ed_snw2a  = &edp->m_snw2a;
+	 ed_snw2soi= &edp->m_snw2soi;
+	 ed_sois = &edp->m_sois;
+	 ed_soid = &edp->m_soid;
+	 ed_soi2a = &edp->m_soi2a;
+	 ed_soi2l = &edp->m_soi2l;
+	}else if(tstepmode==DAILY) {
+	 ed_atms = &edp->d_atms;
+	 ed_atmd = &edp->d_atmd;
+	 ed_a2l  = &edp->d_a2l;
+	 ed_v2a  = &edp->d_v2a;
+	 ed_v2g  = &edp->d_v2g;
+	 ed_snws = &edp->d_snws;
+	 ed_snwd = &edp->d_snwd;
+	 ed_snw2a  = &edp->d_snw2a;
+	 ed_snw2soi= &edp->d_snw2soi;
+	 ed_sois = &edp->d_sois;
+	 ed_soid = &edp->d_soid;
+	 ed_soi2a = &edp->d_soi2a;
+	 ed_soi2l = &edp->d_soi2l;
+	}
 };
 
 /////////////////////////////////////////////////////////////////////////

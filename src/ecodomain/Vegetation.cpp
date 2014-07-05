@@ -18,8 +18,11 @@
 
 Vegetation::Vegetation(){
 	updateLAI5vegc = false;
-	cd = NULL;
+	tsmode = MONTHLY;
 	chtlu = NULL;
+	cd = NULL;
+	cd_vegd = NULL;
+	cd_vegs = NULL;
 };
 
 Vegetation::~Vegetation(){
@@ -62,7 +65,7 @@ void Vegetation::initializeState(){
 
 	//
 	for (int i=0; i<NUM_PFT; i++){
-		cd->m_veg.vegage[i]  = 0;
+		cd_vegs->vegage[i]  = 0;
 	}
 
 	// from 'lookup'
@@ -70,27 +73,27 @@ void Vegetation::initializeState(){
 
     for (int i=0; i<NUM_PFT; i++) {
     	if (chtlu->vegcov[i] > 0.){
-    		cd->m_veg.vegcov[i]      = chtlu->vegcov[i];
+    		cd_vegs->vegcov[i]      = chtlu->vegcov[i];
 
-    		cd->m_veg.ifwoody[i]     = chtlu->ifwoody[i];
-    		cd->m_veg.ifdeciwoody[i] = chtlu->ifdeciwoody[i];
-    		cd->m_veg.ifperenial[i]  = chtlu->ifperenial[i];
+    		cd_vegs->ifwoody[i]     = chtlu->ifwoody[i];
+    		cd_vegs->ifdeciwoody[i] = chtlu->ifdeciwoody[i];
+    		cd_vegs->ifperenial[i]  = chtlu->ifperenial[i];
 
-    		cd->m_veg.nonvascular[i] = chtlu->nonvascular[i];
-    		if (cd->m_veg.nonvascular[i]>0) {  //checking and resetting
-        		cd->m_veg.ifwoody[i]     = 0;
-        		cd->m_veg.ifdeciwoody[i] = 0;
-        		cd->m_veg.ifperenial[i]  = 0;
+    		cd_vegs->nonvascular[i] = chtlu->nonvascular[i];
+    		if (cd_vegs->nonvascular[i]>0) {  //checking and resetting
+        		cd_vegs->ifwoody[i]     = 0;
+        		cd_vegs->ifdeciwoody[i] = 0;
+        		cd_vegs->ifperenial[i]  = 0;
     		}
 
-    		if (cd->m_veg.nonvascular[i] > 0) cd->hasnonvascular = true;
+    		if (cd_vegs->nonvascular[i] > 0) cd->hasnonvascular = true;
 
-    		cd->m_veg.lai[i]         = chtlu->lai[i];
+    		cd_vegs->lai[i]         = chtlu->lai[i];
 
-    		cd->m_veg.aerenchyma[i]  = chtlu->aerenchyma[i];
+    		cd_vegs->aerenchyma[i]  = chtlu->aerenchyma[i];
 
     		for (int il=0; il<MAX_ROT_LAY; il++) {
-    			cd->m_veg.frootfrac[il][i] = chtlu->frootfrac[il][i]/100.;   //chtlu - in %
+    			cd_vegs->frootfrac[il][i] = chtlu->frootfrac[il][i]/100.;   //chtlu - in %
     		}
 
     	}
@@ -107,25 +110,25 @@ void Vegetation::initializeState(){
 void Vegetation::initializeState5restart(RestartData *resin){
 
     for (int ip=0; ip<NUM_PFT; ip++) {
-   		cd->m_veg.vegage[ip]      = resin->vegage[ip];
+   		cd_vegs->vegage[ip]      = resin->vegage[ip];
 
-    	cd->m_veg.vegcov[ip]      = resin->vegcov[ip];
-    	cd->m_veg.ifwoody[ip]     = resin->ifwoody[ip];
-    	cd->m_veg.ifdeciwoody[ip] = resin->ifdeciwoody[ip];
-    	cd->m_veg.ifperenial[ip]  = resin->ifperenial[ip];
-    	cd->m_veg.nonvascular[ip] = resin->nonvascular[ip];
-    	cd->m_veg.lai[ip]         = resin->lai[ip];
-    	cd->m_veg.aerenchyma[ip]  = resin->aerenchyma[ip];
+    	cd_vegs->vegcov[ip]      = resin->vegcov[ip];
+    	cd_vegs->ifwoody[ip]     = resin->ifwoody[ip];
+    	cd_vegs->ifdeciwoody[ip] = resin->ifdeciwoody[ip];
+    	cd_vegs->ifperenial[ip]  = resin->ifperenial[ip];
+    	cd_vegs->nonvascular[ip] = resin->nonvascular[ip];
+    	cd_vegs->lai[ip]         = resin->lai[ip];
+    	cd_vegs->aerenchyma[ip]  = resin->aerenchyma[ip];
 
     	for (int il=0; il<MAX_ROT_LAY; il++) {
-          cd->m_veg.frootfrac[il][ip] = resin->rootfrac[il][ip];
+          cd_vegs->frootfrac[il][ip] = resin->rootfrac[il][ip];
     	}
 
-    	cd->m_vegd.eetmx[ip]        = resin->eetmx[ip];
-    	cd->m_vegd.unnormleafmx[ip] = resin->unnormleafmx[ip];
-    	cd->m_vegd.growingttime[ip] = resin->growingttime[ip];
-    	cd->m_vegd.topt[ip]         = resin->topt[ip];
-    	cd->m_vegd.foliagemx[ip]    = resin->foliagemx[ip];
+    	cd_vegd->eetmx[ip]        = resin->eetmx[ip];
+    	cd_vegd->unnormleafmx[ip] = resin->unnormleafmx[ip];
+    	cd_vegd->growingttime[ip] = resin->growingttime[ip];
+    	cd_vegd->topt[ip]         = resin->topt[ip];
+    	cd_vegd->foliagemx[ip]    = resin->foliagemx[ip];
 
    		cd->prveetmxque[ip].clear();
        	for(int i=0; i<10; i++){
@@ -169,18 +172,18 @@ void Vegetation::initializeState5restart(RestartData *resin){
 };
 
 // must be called after 'foliage' and 'leaf' updated
-void Vegetation::updateLai(const int &currmind){
+void Vegetation::updateLai(const int &currmind, const int &currdinm){
 	for(int ip=0; ip<NUM_PFT; ip++)	{
-    	if (cd->m_veg.vegcov[ip]>0.){
+    	if (cd_vegs->vegcov[ip]>0.){
     		if(!updateLAI5vegc){
-    			cd->m_veg.lai[ip] = chtlu->envlai[currmind][ip];     //So, this will give a portal for input LAI
+    			cd_vegs->lai[ip] = chtlu->envlai[currmind][ip];     //So, this will give a portal for input LAI
 
     		}else {
-    			if (bd[ip]->m_vegs.c[I_leaf] > 0.) {
-    				cd->m_veg.lai[ip] = vegdimpar.sla[ip] * bd[ip]->m_vegs.c[I_leaf];
+    			if (bd_vegs[ip]->c[I_leaf] > 0.) {
+    				cd_vegs->lai[ip] = vegdimpar.sla[ip] * bd_vegs[ip]->c[I_leaf];
     			} else {
-    				if (ed[ip]->m_soid.rtdpgrowstart>0 && ed[ip]->m_soid.rtdpgrowend<0) {
-    					cd->m_veg.lai[ip] = 0.001;   // this is needed for leaf emerging
+    				if (ed_soid[ip]->rtdpgrowstart>0 && ed_soid[ip]->rtdpgrowend<0) {
+    					cd_vegs->lai[ip] = 0.001;   // this is needed for leaf emerging
     				}
     			}
     		}
@@ -195,28 +198,28 @@ void Vegetation::updateFpc(){
 	double fpc[NUM_PFT];
 	for(int ip=0; ip<NUM_PFT; ip++)	{
 
-		if (cd->m_veg.vegcov[ip]>0.){
+		if (cd_vegs->vegcov[ip]>0.){
 
-			double ilai = cd->m_veg.lai[ip];
+			double ilai = cd_vegs->lai[ip];
 			fpc[ip] = 1.0 - exp(-vegdimpar.klai[ip] * ilai);
 			if (fpc[ip]>fpcmx) {
 				fpcmx = fpc[ip];
 			}
 			fpcsum +=fpc[ip];
-			cd->m_veg.fpc[ip] = fpc[ip];
+			cd_vegs->fpc[ip] = fpc[ip];
     	}
 
 	}
 
 	if (fpcsum > 1.0) {
 		for(int ip=0; ip<NUM_PFT; ip++)	{
-	    	if (cd->m_veg.vegcov[ip]>0.){
-	    		cd->m_veg.fpc[ip] /= fpcsum;
+	    	if (cd_vegs->vegcov[ip]>0.){
+	    		cd_vegs->fpc[ip] /= fpcsum;
 	    	}
 		}
 		fpcsum = 1.0;
 	}
-	cd->m_vegd.fpcsum = fpcsum;
+	cd_vegd->fpcsum = fpcsum;
 
 };
 
@@ -227,30 +230,30 @@ void Vegetation::updateVegcov(){
 	double foliagecov = 0.;
 	cd->hasnonvascular = false;
 	for(int ip=0; ip<NUM_PFT; ip++)	{
-		double ilai = cd->m_veg.lai[ip];
+		double ilai = cd_vegs->lai[ip];
 		foliagecov = 1.0 - exp(-vegdimpar.klai[ip] * ilai);
-		if (cd->m_veg.vegcov[ip]<foliagecov) {
-			cd->m_veg.vegcov[ip]=foliagecov;
+		if (cd_vegs->vegcov[ip]<foliagecov) {
+			cd_vegs->vegcov[ip]=foliagecov;
 		}
 
-		if (cd->m_veg.vegcov[ip]>1.e-5) {
-			cd->m_veg.ifwoody[ip]     = chtlu->ifwoody[ip];
-			cd->m_veg.ifdeciwoody[ip] = chtlu->ifdeciwoody[ip];
-			cd->m_veg.ifperenial[ip]  = chtlu->ifperenial[ip];
-			cd->m_veg.nonvascular[ip] = chtlu->nonvascular[ip];
+		if (cd_vegs->vegcov[ip]>1.e-5) {
+			cd_vegs->ifwoody[ip]     = chtlu->ifwoody[ip];
+			cd_vegs->ifdeciwoody[ip] = chtlu->ifdeciwoody[ip];
+			cd_vegs->ifperenial[ip]  = chtlu->ifperenial[ip];
+			cd_vegs->nonvascular[ip] = chtlu->nonvascular[ip];
 
-			if (cd->m_veg.nonvascular[ip] > 0) cd->hasnonvascular = true;
+			if (cd_vegs->nonvascular[ip] > 0) cd->hasnonvascular = true;
 		}
 	}
 
 };
 
 //leaf phenology - moved from 'Vegetation_Bgc.cpp' for easy modification, if needed in the future
-void Vegetation::phenology(const int &currmind){
+void Vegetation::phenology(const int &currmind, const int &currdinm){
 
 	for(int ip=0; ip<NUM_PFT; ip++)	{
 
-		if (cd->m_veg.vegcov[ip]>0.){
+		if (cd_vegs->vegcov[ip]>0.){
 
 			double prvunnormleafmx = 0.;   // previous 10 years' average as below
 			deque <double> prvdeque = cd->prvunnormleafmxque[ip];
@@ -268,52 +271,53 @@ void Vegetation::phenology(const int &currmind){
 
 			// 1) current EET and previous max. EET controlled
 			double tempunnormleaf = 0.;;
-			double eet = ed[ip]->m_v2a.tran;  //originally it's using 'l2a.eet', which includes soil/veg evaporation - that may not relate to leaf phenology
-			tempunnormleaf = getUnnormleaf(ip, prveetmx, eet, cd->m_vegd.unnormleaf[ip]);
-			cd->m_vegd.unnormleaf[ip] = tempunnormleaf;  // prior to here, the 'unnormleaf[ip]' is from the previous month
+			double eet = ed_v2a[ip]->tran;  //originally it's using 'l2a.eet', which includes soil/veg evaporation - that may not relate to leaf phenology
+			tempunnormleaf = getUnnormleaf(ip, prveetmx, eet, cd_vegd->unnormleaf[ip]);
+			cd_vegd->unnormleaf[ip] = tempunnormleaf;  // prior to here, the 'unnormleaf[ip]' is from the previous month
 
 			double fleaf = getFleaf(ip, tempunnormleaf, prvunnormleafmx);
-			if (cd->m_veg.lai[ip]<=0.) fleaf = 0.;
-			cd->m_vegd.fleaf[ip] = fleaf;
+			if (cd_vegs->lai[ip]<=0.) fleaf = 0.;
+			cd_vegd->fleaf[ip] = fleaf;
 
 			// set the phenological variables of the year
-			if (currmind == 0) {
-				cd->m_vegd.eetmx[ip] = eet;
-				cd->m_vegd.unnormleafmx[ip] = tempunnormleaf;
-				cd->m_vegd.growingttime[ip] = ed[ip]->m_soid.rtdpgdd;
-				cd->m_vegd.topt[ip] = ed[ip]->m_atms.ta;
+			if (currmind == 0 && currdinm == 1) {
+				cd_vegd->eetmx[ip] = eet;
+				cd_vegd->unnormleafmx[ip] = tempunnormleaf;
+				cd_vegd->growingttime[ip] = ed_soid[ip]->rtdpgdd;
+				cd_vegd->topt[ip] = ed_atms[ip]->ta;
 
-				cd->m_vegd.maxleafc[ip] = getYearlyMaxLAI(ip)/vegdimpar.sla[ip];
+				cd_vegd->maxleafc[ip] = getYearlyMaxLAI(ip)/vegdimpar.sla[ip];
 			} else {
-		    	if (eet>cd->m_vegd.eetmx[ip]) {
-		    		cd->m_vegd.eetmx[ip] = eet;
+		    	if (eet>cd_vegd->eetmx[ip]) {
+		    		cd_vegd->eetmx[ip] = eet;
 		    	}
 
-		    	if (cd->m_vegd.unnormleafmx[ip] < tempunnormleaf) {
-					cd->m_vegd.unnormleafmx[ip] = tempunnormleaf;
-					cd->m_vegd.topt[ip] = ed[ip]->m_atms.ta;   // it's updating monthly for current year and then update the 'deque', but not used in 'GPP' estimation
+		    	if (cd_vegd->unnormleafmx[ip] < tempunnormleaf) {
+					cd_vegd->unnormleafmx[ip] = tempunnormleaf;
+					cd_vegd->topt[ip] = ed_atms[ip]->ta;   // it's updating monthly for current year and then update the 'deque', but not used in 'GPP' estimation
 				}
 
-				if (cd->m_vegd.growingttime[ip]<ed[ip]->m_soid.rtdpgdd) {  // here, we take the top root zone degree-days since growing started
-					cd->m_vegd.growingttime[ip]=ed[ip]->m_soid.rtdpgdd;
+				if (cd_vegd->growingttime[ip]<ed_soid[ip]->rtdpgdd) {  // here, we take the top root zone degree-days since growing started
+					cd_vegd->growingttime[ip]=ed_soid[ip]->rtdpgdd;
 				}
 			}
 
 			// 2) plant size (biomass C) or age controlled foliage fraction rative to the max. leaf C
-			cd->m_vegd.ffoliage[ip] = getFfoliage(ip, cd->m_veg.ifwoody[ip], cd->m_veg.ifperenial[ip], bd[ip]->m_vegs.call);
+			cd_vegd->ffoliage[ip] = getFfoliage(ip, cd_vegs->ifwoody[ip],
+					cd_vegs->ifperenial[ip], bd_vegs[ip]->call);
 
 		} else { // 'vegcov' is 0
-			cd->m_vegd.unnormleaf[ip] = MISSING_D;
-			cd->m_vegd.fleaf[ip]      = MISSING_D;
+			cd_vegd->unnormleaf[ip] = MISSING_D;
+			cd_vegd->fleaf[ip]      = MISSING_D;
 
-			cd->m_vegd.eetmx[ip]        = MISSING_D;
-			cd->m_vegd.unnormleafmx[ip] = MISSING_D;
-			cd->m_vegd.topt[ip]         = MISSING_D;
-			cd->m_vegd.maxleafc[ip]     = MISSING_D;
+			cd_vegd->eetmx[ip]        = MISSING_D;
+			cd_vegd->unnormleafmx[ip] = MISSING_D;
+			cd_vegd->topt[ip]         = MISSING_D;
+			cd_vegd->maxleafc[ip]     = MISSING_D;
 
-			cd->m_vegd.growingttime[ip] = MISSING_D;
+			cd_vegd->growingttime[ip] = MISSING_D;
 
-			cd->m_vegd.ffoliage[ip] = MISSING_D;
+			cd_vegd->ffoliage[ip] = MISSING_D;
 		}
 
 	}
@@ -390,10 +394,10 @@ double Vegetation::getFfoliage(const int &ipft, const bool & ifwoody, const bool
 	}
 
     //it is assumed that foliage will not go down during a growth cycle
-  	if(ffoliage>cd->m_vegd.foliagemx[ipft]){
-  		cd->m_vegd.foliagemx[ipft] = ffoliage;
+  	if(ffoliage>cd_vegd->foliagemx[ipft]){
+  		cd_vegd->foliagemx[ipft] = ffoliage;
   	}else{
- 		ffoliage = cd->m_vegd.foliagemx[ipft];
+ 		ffoliage = cd_vegd->foliagemx[ipft];
   	}
 
   	return (ffoliage);
@@ -404,11 +408,11 @@ double Vegetation::getYearlyMaxLAI(const int &ipft){
 
 	double laimax = 0.;
 
-	for (int im=0; im<12; im++) {   // taking the max. of input 'envlai[12]' adjusted by 'vegcov'
-		double covlai = chtlu->envlai[im][ipft]*cd->m_veg.vegcov[ipft];
+	for (int im=0; im<MINY; im++) {   // taking the max. of input 'envlai[12]' adjusted by 'vegcov'
+		double covlai = chtlu->envlai[im][ipft]*cd_vegs->vegcov[ipft];
 		if (laimax<=covlai) laimax = covlai;
 	}
-	laimax *= cd->m_vegd.ffoliage[ipft];
+	laimax *= cd_vegd->foliagemx[ipft];
 
   	return (laimax);
 };
@@ -419,24 +423,24 @@ double Vegetation::getYearlyMaxLAI(const int &ipft){
 void Vegetation::updateFrootfrac(){
 
 	for (int ip=0; ip<NUM_PFT; ip++){
-    	if (cd->m_veg.vegcov[ip]>0.){
+    	if (cd_vegs->vegcov[ip]>0.){
 
     		double totrootfrac = 0.;
     		for (int il=0; il<MAX_ROT_LAY; il++){
-    			if (cd->m_veg.frootfrac[il][ip]>0.) {
-    				totrootfrac+=cd->m_veg.frootfrac[il][ip];
+    			if (cd_vegs->frootfrac[il][ip]>0.) {
+    				totrootfrac+=cd_vegs->frootfrac[il][ip];
     			}
     		}
 
 		//
     		if (totrootfrac>0.) {
     			for (int il=0; il<MAX_ROT_LAY; il++){
-    				cd->m_veg.frootfrac[il][ip] /= totrootfrac;
+    				cd_vegs->frootfrac[il][ip] /= totrootfrac;
     			}
 
     		} else {
     			for (int il=1; il<MAX_ROT_LAY; il++){
-    				cd->m_veg.frootfrac[il][ip] = 0.;
+    				cd_vegs->frootfrac[il][ip] = 0.;
     			}
 
     		}
@@ -448,17 +452,44 @@ void Vegetation::updateFrootfrac(){
 
 
 void Vegetation::setCohortLookup(CohortLookup* chtlup){
-  	 chtlu = chtlup;
+  	chtlu = chtlup;
 };
 
 void Vegetation::setCohortData(CohortData* cdp){
-  	 cd = cdp;
+ 	cd = cdp;
+	if (tsmode==MONTHLY) {
+ 		cd_vegs = &cdp->m_veg;
+ 		cd_vegd = &cdp->m_vegd;
+ 	}else if(tsmode==DAILY){
+ 		cd_vegs = &cdp->d_veg;
+ 		cd_vegd = &cdp->d_vegd;
+ 	}
 };
 
 void Vegetation::setEnvData(const int &ip, EnvData* edp){
-  	 ed[ip] = edp;
+  	// ed[ip] = edp;
+ 	if (tsmode==MONTHLY) {
+  		ed_vegs[ip] = &edp->m_vegs;
+  		ed_vegd[ip] = &edp->m_vegd;
+  		ed_soid[ip] = &edp->m_soid;
+        ed_v2a[ip]  = &edp->m_v2a;
+        ed_atms[ip] = &edp->m_atms;
+  	}else if(tsmode==DAILY){
+  		ed_vegs[ip] = &edp->d_vegs;
+  		ed_vegd[ip] = &edp->d_vegd;
+  		ed_soid[ip] = &edp->d_soid;
+        ed_v2a[ip]  = &edp->d_v2a;
+        ed_atms[ip] = &edp->d_atms;
+  	}
 };
 
 void Vegetation::setBgcData(const int &ip, BgcData* bdp){
-	 bd[ip] = bdp;
+	 //bd[ip] = bdp;
+ 	if (tsmode==MONTHLY) {
+  		bd_vegs[ip] = &bdp->m_vegs;
+  		bd_vegd[ip] = &bdp->m_vegd;
+  	}else if(tsmode==DAILY){
+  		bd_vegs[ip] = &bdp->d_vegs;
+  		bd_vegd[ip] = &bdp->d_vegd;
+  	}
 };

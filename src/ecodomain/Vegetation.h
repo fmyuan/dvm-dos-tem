@@ -20,21 +20,21 @@
    			vegpar_dim vegdimpar;
 
    			bool updateLAI5vegc;
+   			int tsmode;
 
    			void initializeParameter();
     		void initializeState();
     		void initializeState5restart(RestartData *resin);
     
-    		void updateLai(const int & currmind);
+    		void updateLai(const int & currmind, const int &currdinm);
     		void updateFpc();
     		void updateVegcov();
 			void updateFrootfrac();
 
-			void phenology(const int &currmind);
+			void phenology(const int &currmind, const int &currdinm);
 
 			void setCohortLookup(CohortLookup* chtlup);
 			void setCohortData(CohortData * cdp);
-
 			void setEnvData(const int &ip, EnvData * edp);
 			void setBgcData(const int &ip, BgcData * bdp);
 
@@ -42,8 +42,17 @@
   			CohortLookup * chtlu;
   			CohortData * cd;
 
-  			EnvData * ed[NUM_PFT];
-  			BgcData * bd[NUM_PFT];
+  			vegstate_dim *cd_vegs;
+  			vegdiag_dim *cd_vegd;
+
+  			vegstate_env *ed_vegs[NUM_PFT];
+  			vegdiag_env *ed_vegd[NUM_PFT];
+  			soidiag_env *ed_soid[NUM_PFT];
+            veg2atm_env *ed_v2a[NUM_PFT];
+            atmstate_env *ed_atms[NUM_PFT];
+
+  			vegstate_bgc *bd_vegs[NUM_PFT];
+  			vegdiag_bgc *bd_vegd[NUM_PFT];
 
 			double getFleaf(const int &ipft, const double & unnormleaf, const double &prvunnormleafmx);
    			double getUnnormleaf(const int& ipft, double &prveetmx, const double & eet, const double & prvunleaf);

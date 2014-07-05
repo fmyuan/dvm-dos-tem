@@ -8,6 +8,9 @@
 
 class SoilParent_Env{
 	public:
+
+		int tstepmode;
+
 		SoilParent_Env();
 
 		void initializeState();
@@ -20,7 +23,7 @@ class SoilParent_Env{
 
 	private:
 		Ground *ground;
-		EnvData *ed;
+		soistate_env *ed_sois;
 
 };
 

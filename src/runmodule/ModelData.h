@@ -17,7 +17,7 @@
     		int myid;            // these two are for parallel model run (NOT USED)
     		int numprocs;
 
-    		int runmode;  //1: site; 2: region - time-series; 3: region - spatially
+    		int runmode;         //1: site; 2: region - time-series; 3: region - spatially
     		bool consoledebug;   // more info will display when running
 
     		// the following 5 switches will allow modules on/off -
@@ -41,7 +41,8 @@
     		bool runsp;
     		bool runtr;
     		bool runsc;
-     		int initmode;
+     		int initmode;   // 1: default; 2: restart; 3: site-in (not-yet available)
+            int timestep;   // 1: monthly(default); 2: daily
 
    			string casename;
   			string configdir;

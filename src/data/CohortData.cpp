@@ -66,12 +66,12 @@ void CohortData::clear(){
 //accumulators for yearly-averaged/-summed variables from the monthly ones
 void CohortData::beginOfYear(){
 
-	// At first, we set the yealy to the monthly,
+	// At first, we set the yealy to the monthly/daily,
 	// so that if not varies within a year, set them same as the monthly all the time
-	// this will avoid non-data just in case, although essentiall all data operating is at monthly
-	// ALSO be sure the initialization was done on monthly data sets (i.e., m_veg, m_snow, m_soil)
+	// this will avoid non-data just in case, although essentially all data operating is at monthly
+	// ALSO be sure the initialization was done on monthly/daily data sets (i.e., m_veg, d_snow, m_soil)
 	y_veg  = m_veg;
-	y_snow = m_snow;
+	y_snow = d_snow;
 	y_soil = m_soil;
 
 	// then, initialize the accumulators ONLY for those varies within a year
@@ -144,7 +144,7 @@ void CohortData::beginOfDay(){
 
 	d_veg  = m_veg;       // daily veg dimension will not change within a month, and 'm_veg' will be always set-up or updated
 	d_soil = m_soil;      // daily soil dimension will not change within a month, and 'm_soil' will be always set-up or updated
-
+    // but 'd_snow' will update daily
 }
 
 // accumulating monthly variables from the daily ones after the daily process is done

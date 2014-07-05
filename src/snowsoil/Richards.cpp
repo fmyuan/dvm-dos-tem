@@ -467,7 +467,7 @@ int Richards::updateOneIteration(const double &fbaseflow){
         
     //check the iteration result to determine if need to continue
     for(int il=indx0al; il<indx0al+numal; il++){
-/* // the '-1' and '-2' status appear causing yearly unstablitity - so removed
+/* // the '-1' and '-2' status appear causing yearly instablitity - so removed
     	if(liqit[il]<0.0){
      		return (-1);    // apparently slow down the iteration very much during drying
     	}

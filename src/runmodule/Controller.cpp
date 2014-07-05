@@ -28,6 +28,7 @@ void Controller::ctrl4run(ModelData *md){
   	fctr >> md->grdinputdir;  getline(fctr,comments);
   	fctr >> md->chtinputdir;  getline(fctr,comments);
   
+  	fctr >> md->timestep;    getline(fctr,comments);
   	fctr >> md->runstages;    getline(fctr,comments);
   	fctr >> md->initmodes;    getline(fctr,comments);
   	fctr >> md->initialfile;  getline(fctr,comments);
@@ -45,6 +46,8 @@ void Controller::ctrl4run(ModelData *md){
 		fctr >> md->outSiteYear;     getline(fctr,comments);
 		fctr >> md->outRegn;     getline(fctr,comments);
 	}
+
+	if (md->timestep!=1 || md->timestep!=2) md->timestep = 1;
 
   	fctr.close();
 

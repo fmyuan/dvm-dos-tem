@@ -22,7 +22,6 @@ SOURCES=$(SRCDIR)/TEM.o \
 		$(SRCDIR)/data/BgcData.o \
 		$(SRCDIR)/data/CohortData.o \
 		$(SRCDIR)/data/EnvData.o \
-		$(SRCDIR)/data/EnvDataDly.o \
 		$(SRCDIR)/data/FirData.o \
 		$(SRCDIR)/data/GridData.o \
 		$(SRCDIR)/data/OutDataRegn.o \
@@ -84,7 +83,6 @@ OBJECTS = \
 		BgcData.o \
 		CohortData.o \
 		EnvData.o \
-		EnvDataDly.o \
 		FirData.o \
 		GridData.o \
 		OutDataRegn.o \

@@ -74,9 +74,9 @@ void EnvData::clear(){
     y_snw2soi = snw2soi_env();
 
     //
-    monthsfrozen  = 0.;
-	rtfrozendays  = 0;
-	rtunfrozendays= 0;
+    y_sois.monthsfrozen  = 0.;
+    y_sois.rtfrozendays  = 0;
+    y_sois.rtunfrozendays= 0;
 
 	cd->clear();
 };
@@ -577,11 +577,11 @@ void EnvData::grnd_endOfDay(const int & dinm, const int & doy){
     // determine if a permafrost or not
     if (d_soid.permafrost==0){    // d_soid.permafrost is ONLY for indicating if the soil frozen, not really a permafrost
     	m_soid.permafrost = 0;    // if no frozen soil, set both monthly permafrost to NO
-    	monthsfrozen = 0;         // and, reset the frozen-soil-month counts to zero
+    	m_sois.monthsfrozen = 0;         // and, reset the frozen-soil-month counts to zero
     } else {
-    	monthsfrozen +=1./dinm;
+    	m_sois.monthsfrozen +=1./dinm;
 
-    	if (monthsfrozen>=24.) {  // permafrost is frozen soil for at least 24 months
+    	if (m_sois.monthsfrozen>=24.) {  // permafrost is frozen soil for at least 24 months
     		m_soid.permafrost = 1;
     	} else {
     		m_soid.permafrost = 0;
@@ -606,15 +606,15 @@ void EnvData::grnd_endOfDay(const int & dinm, const int & doy){
     m_soid.rtdpts   += d_soid.rtdpts/dinm;
 
 	if(d_soid.rtdpthawpct<=0){
-		rtunfrozendays = 0;
-		rtfrozendays += 1;
+		d_sois.rtunfrozendays = 0;
+		d_sois.rtfrozendays += 1;
 	} else {
-		rtfrozendays = 0;
-		rtunfrozendays += 1;
+		d_sois.rtfrozendays = 0;
+		d_sois.rtunfrozendays += 1;
 	}
 
 	if (d_soid.rtdpgrowstart <= 0){
-	    if(rtunfrozendays >= 5){    //top soil root zone is unfrozen for continuous 5 days, marking the begining of growing
+	    if(d_sois.rtunfrozendays >= 5){    //top soil root zone is unfrozen for continuous 5 days, marking the begining of growing
 	      d_soid.rtdpgrowstart = doy;
 	      m_soid.rtdpgrowstart = doy;
 	      y_soid.rtdpgrowstart = doy;
@@ -629,7 +629,7 @@ void EnvData::grnd_endOfDay(const int & dinm, const int & doy){
 
 	} else if (d_soid.rtdpgrowend <= 0){
 
-		if (rtfrozendays>=5) {    //top soil root zone is frozen for continuous 5 days, marking the end of growing
+		if (d_sois.rtfrozendays>=5) {    //top soil root zone is frozen for continuous 5 days, marking the end of growing
 			d_soid.rtdpgrowend = doy;
 			m_soid.rtdpgrowend = doy;
 			y_soid.rtdpgrowend = doy;

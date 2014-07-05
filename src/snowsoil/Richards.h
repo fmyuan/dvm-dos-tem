@@ -8,9 +8,6 @@
 #include <cmath>
 #include <limits>
 
-#include "../data/CohortData.h"
-#include "../data/EnvData.h"
-
 #include "../ecodomain/layer/Layer.h"
 #include "../ecodomain/layer/SoilLayer.h"
 #include "../util/CrankNicholson.h"
@@ -30,9 +27,6 @@ class Richards{
 	
 		void update(Layer *fstsoill, Layer* bdrainl, const double & bdraindepth, const double & fbaseflow,
 		 	       double trans[MAX_SOI_LAY], const double & evap, const double & infil, const double &ts);
-
-		void setCohortData(CohortData* cdp);
-		void setEnvData(EnvData* edp);
 
 		CrankNicholson cn;
 	
@@ -90,7 +84,7 @@ class Richards{
 		double TSTEPMAX;  // max. fraction of one timestep
 		double TSTEPORG;  // the original time step
 
-	 	 double mindzlay; // min. layer thickness (meters) for stable Richards' solution
+	 	double mindzlay; // min. layer thickness (meters) for stable Richards' solution
 
  
 };

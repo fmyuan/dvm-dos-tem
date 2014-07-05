@@ -844,9 +844,9 @@ void OutRetrive::updateRestartOutputBuffer(){
  		
  	    //ground-soil
  	    resod->numsl  = cd->d_soil.numsl;     //actual number of soil layers
- 	    resod->monthsfrozen   = edall->monthsfrozen;
- 	    resod->rtfrozendays   = edall->rtfrozendays;
- 	    resod->rtunfrozendays = edall->rtunfrozendays;
+ 	    resod->monthsfrozen   = edall->d_sois.monthsfrozen;
+ 	    resod->rtfrozendays   = edall->d_sois.rtfrozendays;
+ 	    resod->rtunfrozendays = edall->d_sois.rtunfrozendays;
  	    resod->watertab   = edall->d_sois.watertab;
  		for(int il =0;il<cd->d_soil.numsl; il++){
  			resod->DZsoil[il]   = cd->d_soil.dz[il];

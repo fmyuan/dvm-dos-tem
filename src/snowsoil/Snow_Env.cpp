@@ -1,7 +1,19 @@
 #include "Snow_Env.h"
 
 Snow_Env::Snow_Env(){
-//
+	tstepmode = DAILY;
+	chtlu  = NULL;
+	ground = NULL;
+    cd_vegd = NULL;
+	ed_a2l  = NULL;
+	ed_v2g  = NULL;
+	ed_snws = NULL;
+	ed_snwd = NULL;
+	ed_snw2a  = NULL;
+	ed_snw2soi= NULL;
+	ed_soid = NULL;
+	ed_soi2a= NULL;
+	ed_soi2l= NULL;
 };
 
 Snow_Env::~Snow_Env(){
@@ -12,16 +24,16 @@ void Snow_Env::updateDailyM(const double & tdrv){
 
     //update tsurface with nfactor
 	double tsurface;
-	tsurface = tdrv *ed->d_soid.nfactor;
+	tsurface = tdrv *ed_soid->nfactor;
 
     // dsmass is the total snowfall during one timestep:
-    double dsmass = ed->d_v2g.sthfl + ed->d_v2g.sdrip   //these 2 items has already been adjusted by FPC
-    		        + (1.- cd->m_vegd.fpcsum)* ed->d_a2l.snfl;
+    double dsmass = ed_v2g->sthfl + ed_v2g->sdrip   //these 2 items has already been adjusted by FPC
+    		        + (1.- cd_vegd->fpcsum)* ed_a2l->snfl;
      //Note unit converstion: 1 mm H2O = 1 kgH2O/m2
 
 	bool slchg1 = false;
 	if (!ground->toplayer->isSnow && ground->toplayer->tem>0.01) {   //melting all snowfalling ('dsmass')
-    	ed->d_snw2soi.melt = dsmass;
+    	ed_snw2soi->melt = dsmass;
     	ground->snow.extramass = 0.;
     } else {    // otherwise, construct a new snow layer, if any
     	slchg1 = ground->constructSnowLayers(dsmass, tsurface);  //add a new snow layer as the new toplayer
@@ -39,10 +51,10 @@ void Snow_Env::updateDailyM(const double & tdrv){
 	 	updateDailySurfFlux(ground->toplayer, tsurface);
 
 	 	// melting below snow layers, if any
- 		ed->d_snw2soi.melt = meltSnowLayersAfterT(ground->toplayer);
+ 		ed_snw2soi->melt = meltSnowLayersAfterT(ground->toplayer);
 
     }
-	dsmass=ed->d_snw2a.sublim+ed->d_snw2soi.melt;   // here 'dsmass' is for snow-melting and sublimating
+	dsmass=ed_snw2a->sublim+ed_snw2soi->melt;   // here 'dsmass' is for snow-melting and sublimating
     //Note unit converstion: 1 mm H2O = 1 kgH2O/m2
 
 	slchg2 = ground->constructSnowLayers(-dsmass, tsurface);  // removal of melted snow layers
@@ -76,13 +88,13 @@ void Snow_Env::updateDailySurfFlux( Layer* toplayer, const double & tdrv){
 		double albnir = getAlbedoNir(toplayer->tem);
 		double albvis = getAlbedoVis(toplayer->tem);
 	
-		double insw =  ed->d_v2g.swthfl * cd->m_vegd.fpcsum
-			     + ed->d_a2l.nirr *(1.- cd->m_vegd.fpcsum);
+		double insw =  ed_v2g->swthfl * cd_vegd->fpcsum
+			     + ed_a2l->nirr *(1.- cd_vegd->fpcsum);
 
-		ed->d_snw2a.swrefl = insw *0.5 * albnir + insw *0.5 * albvis;
+		ed_snw2a->swrefl = insw *0.5 * albnir + insw *0.5 * albvis;
 	 
-		double rn = insw- ed->d_snw2a.swrefl;
-		double sublim = getSublimation(rn, ed->d_snws.swesum, tdrv); //mm SWE/day, or kgSW/day
+		double rn = insw- ed_snw2a->swrefl;
+		double sublim = getSublimation(rn, ed_snws->swesum, tdrv); //mm SWE/day, or kgSW/day
 
 		Layer * currl=toplayer;
 		double actsub = 0.;
@@ -99,32 +111,13 @@ void Snow_Env::updateDailySurfFlux( Layer* toplayer, const double & tdrv){
 			currl = currl->nextl;
 		}
 
-		ed->d_snw2a.sublim = actsub;
+		ed_snw2a->sublim = actsub;
 
 	}
-
-/*  // the following will cause confusion OR duplicated snowmelting process
-    //see Zhuang et al., 2004 D4 not sure whether equation D8 is right, when compared with the one from
-    //Brubaker et al., 1996
-   // double melt = 2.99*rn/0.2388 *86400/10000.+2.0*tdrv; //mm/day
-    double melt =0.26*rn +2.0*tdrv;//mm/day
-    
-    if(melt>0 && melt<=sublim){
-    	 ed->d_snw2soi.melt = melt;
-    	 ed->d_snw2a.sublim = sublim-melt;
-    	 
-    }else if(melt<=0){
-         ed->d_snw2soi.melt = 0.;
-         ed->d_snw2a.sublim = sublim;
-    }else if (melt>sublim){
-         ed->d_snw2a.sublim = 0.;
-     	 ed->d_snw2soi.melt = sublim;
-    }
-*/
     
 };
 
-// get albedo of visible radition on snow
+// get albedo of visible radiation on snow
 double Snow_Env::getAlbedoVis(const double & tem){
     double vis;
 
@@ -139,7 +132,7 @@ double Snow_Env::getAlbedoVis(const double & tem){
     return (vis);
 };
 
-// get albedo of invisible radition
+// get albedo of invisible radiation
 double Snow_Env::getAlbedoNir(const double & tem){
     double nir;
     nir = getAlbedoVis(tem);
@@ -187,34 +180,34 @@ double  Snow_Env::meltSnowLayersAfterT(Layer* toplayer){
 
 // assign double-linked snow horizon data to 'ed'
 void Snow_Env::updateSnowEd(Layer *toplayer){
-	ed->d_snws.swesum = 0.;
+	ed_snws->swesum = 0.;
 	Layer* currl=toplayer;
 	int snowind = 0;
 	while(currl!=NULL){
 	  	if(currl->isSnow){
-	  		ed->d_snws.snwice[snowind] = currl->ice;
-	  		ed->d_snws.snwliq[snowind] = currl->liq;
+	  		ed_snws->snwice[snowind] = currl->ice;
+	  		ed_snws->snwliq[snowind] = currl->liq;
 
-	  		ed->d_snws.swe[snowind] = currl->ice;
-	  		ed->d_snws.swesum += currl->ice;
+	  		ed_snws->swe[snowind] = currl->ice;
+	  		ed_snws->swesum += currl->ice;
 			currl=currl->nextl;
 	  	}else{
 	  		if (snowind>=MAX_SNW_LAY) break;
-	  		ed->d_snws.swe[snowind] = MISSING_D;        // in this way, 'swe' will be refreshed for all
-	  		ed->d_snws.snwice[snowind] = MISSING_D;        // in this way, 'swe' will be refreshed for all
-	  		ed->d_snws.snwliq[snowind] = MISSING_D;        // in this way, 'swe' will be refreshed for all
+	  		ed_snws->swe[snowind] = MISSING_D;        // in this way, 'swe' will be refreshed for all
+	  		ed_snws->snwice[snowind] = MISSING_D;        // in this way, 'swe' will be refreshed for all
+	  		ed_snws->snwliq[snowind] = MISSING_D;        // in this way, 'swe' will be refreshed for all
 	  	}
   		snowind++;
 	}
 
-	ed->d_snws.extraswe= ground->snow.extramass;
-	ed->d_snws.swesum += ground->snow.extramass;
+	ed_snws->extraswe= ground->snow.extramass;
+	ed_snws->swesum += ground->snow.extramass;
 
-	if (ed->d_snws.swesum>0.){
+	if (ed_snws->swesum>0.){
 		// assuming no evap and reflection from soil surface, if snow layer still exists or is constructed
-		ed->d_soi2a.evap   = 0.;  // Yuan: these might not be needed? but no harmless here to do so
-		ed->d_soi2a.swrefl = 0.;
-		ed->d_soi2l.qover  = 0.;
+		ed_soi2a->evap   = 0.;  // Yuan: these might not be needed? but no harmless here to do so
+		ed_soi2a->swrefl = 0.;
+		ed_soi2l->qover  = 0.;
 	}
 
 };
@@ -259,7 +252,7 @@ void Snow_Env::initializeState5restart(RestartData* resin){
 	Layer* currl = ground->toplayer;
 	
 	int snind =-1;
-	ed->d_snws.swesum=0;
+	ed_snws->swesum=0;
 	while(currl!=NULL){
 		if(currl->isSnow){
 		  snind ++;
@@ -340,11 +333,35 @@ void Snow_Env::setCohortLookup(CohortLookup* chtlup){
 };
 
 void Snow_Env::setCohortData(CohortData* cdp){
-	cd = cdp;
+	if(tstepmode==MONTHLY) {
+		cd_vegd = &cdp->m_vegd;
+	}else if(tstepmode==DAILY) {
+		cd_vegd = &cdp->d_vegd;
+	}
 };
 
 void Snow_Env::setEnvData(EnvData* edp){
-	ed = edp;
+	if(tstepmode==MONTHLY) {
+	 ed_a2l  = &edp->m_a2l;
+	 ed_v2g  = &edp->m_v2g;
+	 ed_snws = &edp->m_snws;
+	 ed_snwd = &edp->m_snwd;
+	 ed_snw2a  = &edp->m_snw2a;
+	 ed_snw2soi= &edp->m_snw2soi;
+	 ed_soid = &edp->m_soid;
+	 ed_soi2a = &edp->m_soi2a;
+	 ed_soi2l = &edp->m_soi2l;
+	}else if(tstepmode==DAILY) {
+	 ed_a2l  = &edp->d_a2l;
+	 ed_v2g  = &edp->d_v2g;
+	 ed_snws = &edp->d_snws;
+	 ed_snwd = &edp->d_snwd;
+	 ed_snw2a  = &edp->d_snw2a;
+	 ed_snw2soi= &edp->d_snw2soi;
+	 ed_soid = &edp->d_soid;
+	 ed_soi2a = &edp->d_soi2a;
+	 ed_soi2l = &edp->d_soi2l;
+	}
 };
 
 
