@@ -87,11 +87,7 @@ class EnvData{
     soi2atm_env y_soi2a;
     snw2atm_env y_snw2a;
     snw2soi_env y_snw2soi;
-    
-    double monthsfrozen;      // months since bottom soil frozen started - 24 months is the criterial for permafrost
-	int rtfrozendays;         // soil top rootzone continously frozen days
-	int rtunfrozendays;       // soil top rootzone continously unfrozen days
-     
+
 	CohortData * cd;
 
 	// initializing yearly/monthly accumulators

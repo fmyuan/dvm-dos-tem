@@ -22,11 +22,19 @@
 
 Vegetation_Env::Vegetation_Env(){
 	ipft = MISSING_I;
+	tstepmode = MONTHLY;
 
-	chtlu = NULL;
-	cd = NULL;
-	fd = NULL;
-	ed = NULL;
+	chtlu   = NULL;
+	cd_vegs = NULL;
+	ed_atms = NULL;
+	ed_atmd = NULL;
+	ed_a2v  = NULL;
+	ed_a2l  = NULL;
+	ed_vegs = NULL;
+	ed_vegd = NULL;
+	ed_v2a = NULL;
+	ed_v2g = NULL;
+
 };
 
 Vegetation_Env::~Vegetation_Env(){
@@ -54,15 +62,15 @@ void Vegetation_Env::initializeParameter(){
 // set the intial monthly LAI from 'CohortLookup'
 void Vegetation_Env::initializeState(){
 
-	ed->d_vegs.rwater = chtlu->initvegwater[ipft];
-	ed->d_vegs.snow   = chtlu->initvegsnow[ipft];
+	ed_vegs->rwater = chtlu->initvegwater[ipft];
+	ed_vegs->snow   = chtlu->initvegsnow[ipft];
 
 };
 
 void Vegetation_Env::initializeState5restart(RestartData* resin){
 	
-	ed->d_vegs.rwater = resin->vegwater[ipft];
-	ed->d_vegs.snow   = resin->vegsnow[ipft];
+	ed_vegs->rwater = resin->vegwater[ipft];
+	ed_vegs->snow   = resin->vegsnow[ipft];
 	
 };
 
@@ -70,68 +78,68 @@ void Vegetation_Env::initializeState5restart(RestartData* resin){
 void Vegetation_Env::updateRadiation(){
 
 	//lai/fpc from 'cd'
-	double envlai = cd->m_veg.lai[ipft];
-	double fpc = cd->m_veg.fpc[ipft];
+	double envlai = cd_vegs->lai[ipft];
+	double fpc = cd_vegs->fpc[ipft];
 
 	//some constants
 	double EPAR = 4.55 ;   //an average energy for PAR photon (umol/J)
 
 	// solar radiation and its energy balance
-	ed->d_v2a.swrefl = (ed->d_a2l.nirr*fpc) *envpar.albvisnir; // unit W/m2 (FPC adjusted)
-	ed->d_a2v.swdown = (ed->d_a2l.nirr*fpc) - ed->d_v2a.swrefl;
+	ed_v2a->swrefl = (ed_a2l->nirr*fpc) *envpar.albvisnir; // unit W/m2 (FPC adjusted)
+	ed_a2v->swdown = (ed_a2l->nirr*fpc) - ed_v2a->swrefl;
 
-	ed->d_v2g.swthfl  = ed->d_a2v.swdown * exp(-envpar.er * envlai);
-	ed->d_a2v.swinter = ed->d_a2v.swdown - ed->d_v2g.swthfl;
+	ed_v2g->swthfl  = ed_a2v->swdown * exp(-envpar.er * envlai);
+	ed_a2v->swinter = ed_a2v->swdown - ed_v2g->swthfl;
 
 	// PAR and its absorption by canopy
-	double par = ed->d_a2l.par*fpc;   // fpc adjusted here
+	double par = ed_a2l->par*fpc;   // fpc adjusted here
 	
-	ed->d_a2v.pardown    = par*(1.0 - envpar.albvisnir);
-	ed->d_a2v.parabsorb  = ed->d_a2v.pardown*(1.0-exp(-envpar.er * envlai)) ;// absorbed PAR: W/m2
+	ed_a2v->pardown    = par*(1.0 - envpar.albvisnir);
+	ed_a2v->parabsorb  = ed_a2v->pardown*(1.0-exp(-envpar.er * envlai)) ;// absorbed PAR: W/m2
 	
 	double ppfd50  = envpar.ppfd50 ;//mumol/m2s, ppfd for 0.5 stomatal closure
-	ed->d_vegd.m_ppfd = ed->d_a2v.pardown*EPAR/(ed->d_a2v.pardown*EPAR + ppfd50) ;//
+	ed_vegd->m_ppfd = ed_a2v->pardown*EPAR/(ed_a2v->pardown*EPAR + ppfd50) ;//
 };
 	
 //VEGETATION DAILY WATER BALANCE CALCULATION
 void Vegetation_Env::updateWaterBalance(const double & daylhr){
 
 	//lai/fpc from 'cd'
-	double envlai = cd->m_veg.lai[ipft];
-	double fpc = cd->m_veg.fpc[ipft];
+	double envlai = cd_vegs->lai[ipft];
+	double fpc = cd_vegs->fpc[ipft];
 
 	//
 	double daylsec = daylhr* 3600.;// from hour to sec
 	double EPAR = 4.55 ;           //an average energy for PAR photon (umol/J)
 	
 	// variables calculated in 'atmosphere.cpp'
-   	double vpd  = ed->d_atmd.vpd;
-   	double ta   = ed->d_atms.ta;
-   	double snfl = ed->d_a2l.snfl;  // this is the total atm to land
-   	double rnfl = ed->d_a2l.rnfl;
-	ed->d_a2v.snfl = snfl*fpc;   //note: FPC adjusted here
-	ed->d_a2v.rnfl = rnfl*fpc;
+   	double vpd  = ed_atmd->vpd;
+   	double ta   = ed_atms->ta;
+   	double snfl = ed_a2l->snfl;  // this is the total atm to land
+   	double rnfl = ed_a2l->rnfl;
+	ed_a2v->snfl = snfl*fpc;   //note: FPC adjusted here
+	ed_a2v->rnfl = rnfl*fpc;
 
-   	double downpar = ed->d_a2v.pardown;   //note: already FPC adjusted
+   	double downpar = ed_a2v->pardown;   //note: already FPC adjusted
 
 	if(envlai >0){
 
 		//precipitation interception and throughfall
-		ed->d_a2v.rinter = getRainInterception(ed->d_a2v.rnfl, envlai);
-		ed->d_a2v.sinter = getSnowInterception(ed->d_a2v.snfl, envlai);
+		ed_a2v->rinter = getRainInterception(ed_a2v->rnfl, envlai);
+		ed_a2v->sinter = getSnowInterception(ed_a2v->snfl, envlai);
 
-		ed->d_v2g.rthfl = ed->d_a2v.rnfl- ed->d_a2v.rinter;
-		ed->d_v2g.sthfl = ed->d_a2v.snfl -ed->d_a2v.sinter;
+		ed_v2g->rthfl = ed_a2v->rnfl- ed_a2v->rinter;
+		ed_v2g->sthfl = ed_a2v->snfl -ed_a2v->sinter;
 	
 		//evaportranspiration
 		//temperature and pressure correction factor for conductances
 		double gcorr = 1.; //pow( (atmsd->ta +273.15)/293.15, 1.75); // * 101300/pa;
 		double gl_st = 0.;
-		ed->d_vegd.m_vpd=0.;
+		ed_vegd->m_vpd=0.;
 		
-		if(ed->d_vegd.btran>0){
-     		gl_st = getLeafStomaCond(ta,downpar*EPAR, vpd, ed->d_vegd.btran,
-					ed->d_vegd.m_ppfd, ed->d_vegd.m_vpd);
+		if(ed_vegd->btran>0){
+     		gl_st = getLeafStomaCond(ta,downpar*EPAR, vpd, ed_vegd->btran,
+					ed_vegd->m_ppfd, ed_vegd->m_vpd);
 		}
 		
 		gl_st *= gcorr; 
@@ -151,14 +159,14 @@ void Vegetation_Env::updateWaterBalance(const double & daylhr){
 		double gc_e_wv_pet = gl_e_wv_pet * envlai;
 		double gc_sh_pet =gl_sh_pet * envlai;
 	
-		double sw =ed->d_a2v.swinter;
+		double sw =ed_a2v->swinter;
 		double daytimesw = sw;
 		double rainsw = sw;
 		double rv, rh;
 		double rv_pet, rh_pet;
 		double vpdpa = vpd; //Pa
 	
-		if(ed->d_a2v.rinter>0.){
+		if(ed_a2v->rinter>0.){
 		
 			rv = 1./gc_e_wv;
 			rh = 1./gc_sh;
@@ -167,99 +175,99 @@ void Vegetation_Env::updateWaterBalance(const double & daylhr){
 		
 			double et1 = getPenMonET(ta,vpdpa, rainsw, rv, rh);
 			double et1_pet= getPenMonET(ta,vpdpa, rainsw, rv_pet, rh_pet);
-			double dayl1 = ed->d_a2v.rinter/et1;
+			double dayl1 = ed_a2v->rinter/et1;
 			
 			if(dayl1>daylsec){
 		  		if(daylsec>0.){
-		  			ed->d_v2a.tran = 0.;
-		  			ed->d_v2a.evap = et1 *daylsec;
+		  			ed_v2a->tran = 0.;
+		  			ed_v2a->evap = et1 *daylsec;
 		  		} else{
-		  			ed->d_v2a.tran=0.;
-		  			ed->d_v2a.evap=0.;
+		  			ed_v2a->tran=0.;
+		  			ed_v2a->evap=0.;
 		  		}
 			} else {
-		  		ed->d_v2a.evap = ed->d_a2v.rinter;
+		  		ed_v2a->evap = ed_a2v->rinter;
 		  		daylsec -= dayl1;
 		  		rv = 1.0/gl_t_wv;
 		  		rh =1.0/gl_sh;
 		  		double et2= getPenMonET(ta, vpdpa, rainsw, rv, rh);
-		  		ed->d_v2a.tran = et2 * daylsec;
+		  		ed_v2a->tran = et2 * daylsec;
 			}
 		
-			double dayl1_pet = ed->d_a2v.rinter/et1_pet;
+			double dayl1_pet = ed_a2v->rinter/et1_pet;
 			if(dayl1_pet>daylsec){
 		  		if(daylsec>0.){
-		  			ed->d_v2a.tran_pet = 0.;
-		  			ed->d_v2a.evap_pet = ed->d_v2a.evap;
+		  			ed_v2a->tran_pet = 0.;
+		  			ed_v2a->evap_pet = ed_v2a->evap;
 		  		} else {
-		  			ed->d_v2a.tran_pet = 0.;
-		  			ed->d_v2a.evap_pet = 0.;
+		  			ed_v2a->tran_pet = 0.;
+		  			ed_v2a->evap_pet = 0.;
 		  		}
 			} else {
-		  		ed->d_v2a.evap_pet = ed->d_a2v.rinter;
+		  		ed_v2a->evap_pet = ed_a2v->rinter;
 		  		daylsec -= dayl1_pet;
 		  		rv_pet = 1.0/gl_t_wv_pet;
 		  		rh_pet =1.0/gl_sh_pet;
 		  		double et2_pet= getPenMonET(ta,vpdpa, rainsw, rv_pet, rh_pet);
-		  		ed->d_v2a.tran_pet = et2_pet * daylsec;
+		  		ed_v2a->tran_pet = et2_pet * daylsec;
 			}
 	
 		} else { // no interception
 		  
-		  	ed->d_v2a.evap = 0.;
+		  	ed_v2a->evap = 0.;
 		  	rv = 1.0/gl_t_wv;
 		  	rh =1.0/gl_sh;
 		  	double et3= getPenMonET(ta, vpdpa, daytimesw, rv, rh);
-		  	ed->d_v2a.tran = et3 * daylsec;
+		  	ed_v2a->tran = et3 * daylsec;
 
-		  	ed->d_v2a.evap_pet = 0.;
+		  	ed_v2a->evap_pet = 0.;
 		  	rv_pet = 1.0/gl_t_wv_pet;
 		  	rh_pet =1.0/gl_sh_pet;
 		  	double et3_pet= getPenMonET(ta, vpdpa, daytimesw, rv_pet, rh_pet);
-		  	ed->d_v2a.tran_pet = et3_pet * daylsec;
+		  	ed_v2a->tran_pet = et3_pet * daylsec;
 		  
 		} 
 	
-		ed->d_v2a.sublim = getCanopySubl(ed->d_a2v.swdown,ed->d_a2v.sinter, envlai);
-		ed->d_vegd.cc = gc_e_wv;
-		ed->d_vegd.rc = 1./ed->d_vegd.cc;
+		ed_v2a->sublim = getCanopySubl(ed_a2v->swdown,ed_a2v->sinter, envlai);
+		ed_vegd->cc = gc_e_wv;
+		ed_vegd->rc = 1./ed_vegd->cc;
 
-	 	ed->d_vegs.snow  += (ed->d_a2v.sinter - ed->d_v2a.sublim);
-	 	ed->d_vegs.rwater+= (ed->d_a2v.rinter - ed->d_v2a.evap);
+	 	ed_vegs->snow  += (ed_a2v->sinter - ed_v2a->sublim);
+	 	ed_vegs->rwater+= (ed_a2v->rinter - ed_v2a->evap);
 
-	 	ed->d_v2g.sdrip = 0.0;
+	 	ed_v2g->sdrip = 0.0;
 	 	double maxvegsnow = 0.10*envlai;   // that 0.10 LAI mm snow on vegetation is arbitrary - needs more mechanism to do this
-	 	if (ed->d_vegs.snow>maxvegsnow) {
-		 	ed->d_v2g.sdrip = ed->d_vegs.snow - maxvegsnow;
+	 	if (ed_vegs->snow>maxvegsnow) {
+		 	ed_v2g->sdrip = ed_vegs->snow - maxvegsnow;
 	 	}
-	 	ed->d_vegs.snow -= ed->d_v2g.sdrip;
+	 	ed_vegs->snow -= ed_v2g->sdrip;
 
-	 	ed->d_v2g.rdrip = 0.0;
+	 	ed_v2g->rdrip = 0.0;
 	 	double maxvegrain = 0.05*envlai;   // that 0.05 LAI mm rain storage is arbitrary - needs more mechanism to do this
-	 	if (ed->d_vegs.rwater>maxvegrain) {
-		 	ed->d_v2g.rdrip = ed->d_vegs.rwater - maxvegrain;
+	 	if (ed_vegs->rwater>maxvegrain) {
+		 	ed_v2g->rdrip = ed_vegs->rwater - maxvegrain;
 	 	}
-	 	ed->d_vegs.rwater -= ed->d_v2g.rdrip;
+	 	ed_vegs->rwater -= ed_v2g->rdrip;
 	 
 	} else {   //envlai <=0, i.e., no vegetation?
-		ed->d_vegd.cc =0.;
-		ed->d_vegd.rc =0.;
-		ed->d_a2v.rinter =0.;
-		ed->d_a2v.sinter =0.;
-		ed->d_v2a.sublim =0.;
-		ed->d_v2a.tran   =0.;
-		ed->d_v2a.evap   =0.;
+		ed_vegd->cc =0.;
+		ed_vegd->rc =0.;
+		ed_a2v->rinter =0.;
+		ed_a2v->sinter =0.;
+		ed_v2a->sublim =0.;
+		ed_v2a->tran   =0.;
+		ed_v2a->evap   =0.;
 		
-		ed->d_v2a.tran_pet =0.;
-		ed->d_v2a.evap_pet =0.;
+		ed_v2a->tran_pet =0.;
+		ed_v2a->evap_pet =0.;
 		
-		ed->d_v2a.sublim =0.;
-	    ed->d_v2g.rdrip = 0;
-	    ed->d_v2g.sdrip = 0;
-	    ed->d_v2g.rthfl = rnfl;
-	    ed->d_v2g.sthfl = snfl ;
-	    ed->d_vegs.snow  =0.;
-	    ed->d_vegs.rwater=0.;
+		ed_v2a->sublim =0.;
+	    ed_v2g->rdrip = 0.;
+	    ed_v2g->sdrip = 0.;
+	    ed_v2g->rthfl = rnfl;
+	    ed_v2g->sthfl = snfl ;
+	    ed_vegs->snow  =0.;
+	    ed_vegs->rwater=0.;
 	    	
 	}
  	         
@@ -414,13 +422,32 @@ void Vegetation_Env::setCohortLookup(CohortLookup * chtlup){
 };
 
 void Vegetation_Env::setCohortData(CohortData* cdp){
-	cd = cdp;
+	if (tstepmode == MONTHLY) {
+		cd_vegs = &cdp->m_veg;
+	} else if (tstepmode == DAILY) {
+		cd_vegs = &cdp->d_veg;
+	}
 };
 
-void Vegetation_Env::setEnvData(EnvData* edatap){
-	ed = edatap;	
-};
+void Vegetation_Env::setEnvData(EnvData* edp){
+	if (tstepmode == MONTHLY) {
+		ed_atms = &edp->m_atms;
+		ed_atmd = &edp->m_atmd;
+		ed_a2v = &edp->m_a2v;
+		ed_a2l = &edp->m_a2l;
+		ed_vegs = &edp->m_vegs;
+		ed_vegd = &edp->m_vegd;
+		ed_v2a = &edp->m_v2a;
+		ed_v2g = &edp->m_v2g;
+	} else if(tstepmode == DAILY) {
+		ed_atms = &edp->d_atms;
+		ed_atmd = &edp->d_atmd;
+		ed_a2v = &edp->d_a2v;
+		ed_a2l = &edp->d_a2l;
+		ed_vegs = &edp->d_vegs;
+		ed_vegd = &edp->d_vegd;
+		ed_v2a = &edp->d_v2a;
+		ed_v2g = &edp->d_v2g;
+	}
 
-void Vegetation_Env::setFirData(FirData* fdp){
-  	fd =fdp;
 };

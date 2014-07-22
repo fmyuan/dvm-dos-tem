@@ -93,7 +93,7 @@ class RunCohort {
 	    int readData();
 	    int reinit();
 
-     	void run_cohortly();
+     	void run_OneCohort();
 
 		void run_OneTimestep();
 

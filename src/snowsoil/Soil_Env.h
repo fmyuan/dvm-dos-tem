@@ -23,6 +23,8 @@ class Soil_Env{
 		Soil_Env();
 		~Soil_Env();
 
+		int tstepmode;
+
 		soipar_env envpar;
 	
 		Richards richards;
@@ -49,10 +51,26 @@ class Soil_Env{
 
 	private:
 
-		 Ground * ground;
-		 CohortData * cd;
-		 EnvData * ed;
 		 CohortLookup* chtlu;
+		 Ground * ground;
+
+		 GridData *gd;
+		 vegdiag_dim *cd_vegd;
+		 soistate_dim *cd_soil;
+
+		 atmstate_env *ed_atms;
+		 atmdiag_env *ed_atmd;
+		 atm2lnd_env *ed_a2l;
+		 veg2atm_env *ed_v2a;
+		 veg2gnd_env *ed_v2g;
+		 snwstate_env *ed_snws;
+		 snwdiag_env *ed_snwd;
+		 snw2atm_env *ed_snw2a;
+		 snw2soi_env *ed_snw2soi;
+		 soistate_env *ed_sois;
+		 soidiag_env *ed_soid;
+		 soi2atm_env *ed_soi2a;
+		 soi2lnd_env *ed_soi2l;
   
 		 void updateDailySurfFlux(Layer* frontl, const double & dayl);
 		 void updateDailySoilThermal4Growth(Layer* fstsoill, const double &tsurface);

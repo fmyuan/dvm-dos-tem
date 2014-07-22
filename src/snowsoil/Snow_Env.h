@@ -13,6 +13,8 @@ class Snow_Env{
 		Snow_Env();
 		~Snow_Env();
 
+		int tstepmode;
+
 	    // parameters for snow physics
 	    snwpar_env snowenvpar;
 
@@ -32,8 +34,18 @@ class Snow_Env{
   private:
 
 	    CohortLookup * chtlu;
-	    CohortData * cd;
-	    EnvData * ed;
+
+	    vegdiag_dim *cd_vegd;
+
+	    atm2lnd_env *ed_a2l;
+		veg2gnd_env *ed_v2g;
+		snwstate_env *ed_snws;
+		snwdiag_env *ed_snwd;
+		snw2atm_env *ed_snw2a;
+		snw2soi_env *ed_snw2soi;
+		soidiag_env *ed_soid;
+		soi2atm_env *ed_soi2a;
+		soi2lnd_env *ed_soi2l;
 
 	    Ground * ground;
 

@@ -1,6 +1,9 @@
 #include "SoilParent_Env.h"
 
 SoilParent_Env::SoilParent_Env(){
+	tstepmode = DAILY;
+	ground = NULL;
+	ed_sois= NULL;
 
 }
 
@@ -66,7 +69,7 @@ void SoilParent_Env::retrieveDailyTM(Layer* lstsoill){
 	while (currl!=NULL) {
 		if (currl->isRock) {
 			rcind++;
-			ed->d_sois.trock[rcind] = trock;
+			ed_sois->trock[rcind] = trock;
 		}
 		currl = currl->nextl;
 	}
@@ -74,7 +77,11 @@ void SoilParent_Env::retrieveDailyTM(Layer* lstsoill){
 }
 
 void SoilParent_Env::setEnvData(EnvData *edp) {
-	ed = edp;
+	if(tstepmode==MONTHLY){
+		ed_sois = &edp->m_sois;
+	}else if(tstepmode==DAILY){
+		ed_sois = &edp->d_sois;
+	}
 }
 
 void SoilParent_Env::setGround(Ground *groundp) {

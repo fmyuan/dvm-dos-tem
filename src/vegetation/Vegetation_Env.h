@@ -20,12 +20,13 @@ class Vegetation_Env{
 		~Vegetation_Env();
 
 		int ipft;
+		int tstepmode;
 
 		vegpar_env envpar;
 	
 		void setCohortLookup(CohortLookup * chtlup);
 		void setCohortData(CohortData* cdp);
-		void setEnvData(EnvData* edatap);
+		void setEnvData(EnvData* edp);
 		void setFirData(FirData* fdp);
     
 		void initializeParameter();
@@ -37,10 +38,18 @@ class Vegetation_Env{
 
    private:
 
-		CohortData * cd;
-		EnvData * ed;
-		FirData * fd;
 		CohortLookup * chtlu;
+
+		vegstate_dim *cd_vegs;
+
+		atmstate_env *ed_atms;
+		atmdiag_env *ed_atmd;
+		atm2veg_env *ed_a2v;
+		atm2lnd_env *ed_a2l;
+		vegstate_env *ed_vegs;
+		vegdiag_env *ed_vegd;
+		veg2atm_env *ed_v2a;
+		veg2gnd_env *ed_v2g;
 
 		//function
 		double getRainInterception(const double & rain, const double & lai);

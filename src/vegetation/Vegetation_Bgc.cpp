@@ -23,24 +23,47 @@
 #include "Vegetation_Bgc.h"
 
 Vegetation_Bgc::Vegetation_Bgc(){
+	tstepmode = MONTHLY;
+	ipft      = 0;
+	nfeed     = false;
+	avlnflg   = false;
+	baseline  = false;
+
 	bgcpar.dc2n = 0.000519;
 	//increase of c:n = 0.176 if the nitrogen of veg is decreased by 15% per doubling of co2
 	//proportional change in c:n per change co2
 	//0.15 increase in C:N with double co2
 	
 	chtlu = NULL;
-	bd    = NULL;
 	cd    = NULL;
-	ed    = NULL;
+	rd    = NULL;
+	cd_vegs = NULL;
+	cd_vegd = NULL;
+	cd_sois = NULL;
+
+	bd_vegs = NULL;
+	bd_vegd = NULL;
+	bd_a2v = NULL;
+	bd_v2a = NULL;
+	bd_v2v = NULL;
+	bd_sois = NULL;
+	bd_soid = NULL;
+	bd_v2soi = NULL;
+	bd_soi2v = NULL;
+
+	edyly_atms = NULL;
+	edyly_l2a  = NULL;
+	ed_atms = NULL;
+	ed_a2l  = NULL;
+	ed_l2a  = NULL;
+	ed_sois = NULL;
+	ed_soid = NULL;
 
 	d2wdebrisc = 0.0;
 	d2wdebrisn = 0.0;
 	dleafc     = 0.0;
 	fltrfall   = 0.0;
 	totrzavln  = 0.0;
-
-	ipft = 0;
-	nfeed= false;
 
 };
 
@@ -98,26 +121,26 @@ void Vegetation_Bgc::initializeState(){
 	
 	double totvegn = 0.;
 	for (int i=0; i<NUM_PFT_PART; i++){
-		bd->m_vegs.c[i]    = chtlu->initvegc[i][ipft];
-		bd->m_vegs.strn[i] = chtlu->initvegn[i][ipft]*0.95;
+		bd_vegs->c[i]    = chtlu->initvegc[i][ipft];
+		bd_vegs->strn[i] = chtlu->initvegn[i][ipft]*0.95;
 
 		totvegn += chtlu->initvegn[i][ipft];
 	}
-	bd->m_vegs.labn  = totvegn*0.05;
+	bd_vegs->labn  = totvegn*0.05;
 
-	bd->m_vegs.deadc = chtlu->initdeadc[ipft];
-	bd->m_vegs.deadn = chtlu->initdeadn[ipft];
+	bd_vegs->deadc = chtlu->initdeadc[ipft];
+	bd_vegs->deadn = chtlu->initdeadn[ipft];
 
 	//
-	bd->m_vegs.call    = 0.;
-	bd->m_vegs.strnall = 0.;
+	bd_vegs->call    = 0.;
+	bd_vegs->strnall = 0.;
 	for (int i=0; i<NUM_PFT_PART; i++) {
-		bd->m_vegs.call += bd->m_vegs.c[i];
+		bd_vegs->call += bd_vegs->c[i];
 		if(nfeed) {
-			bd->m_vegs.strnall += bd->m_vegs.strn[i];
+			bd_vegs->strnall += bd_vegs->strn[i];
 		}
 	}
-	if (nfeed) bd->m_vegs.nall = bd->m_vegs.strnall + bd->m_vegs.labn;
+	if (nfeed) bd_vegs->nall = bd_vegs->strnall + bd_vegs->labn;
 
 };
 
@@ -125,24 +148,24 @@ void Vegetation_Bgc::initializeState(){
 void Vegetation_Bgc::initializeState5restart(RestartData *resin){
 
 	for (int i=0; i<NUM_PFT_PART; i++){
-	  bd->m_vegs.c[i]    = resin->vegc[i][ipft];
-	  bd->m_vegs.strn[i] = resin->strn[i][ipft];
+	  bd_vegs->c[i]    = resin->vegc[i][ipft];
+	  bd_vegs->strn[i] = resin->strn[i][ipft];
 	}
-	bd->m_vegs.labn = resin->labn[ipft];
+	bd_vegs->labn = resin->labn[ipft];
 
-	bd->m_vegs.deadc = resin->deadc[ipft];
-	bd->m_vegs.deadn = resin->deadn[ipft];
+	bd_vegs->deadc = resin->deadc[ipft];
+	bd_vegs->deadn = resin->deadn[ipft];
  	
 	//
-	bd->m_vegs.call    = 0.;
-	bd->m_vegs.strnall = 0.;
+	bd_vegs->call    = 0.;
+	bd_vegs->strnall = 0.;
 	for (int i=0; i<NUM_PFT_PART; i++) {
-		bd->m_vegs.call += bd->m_vegs.c[i];
+		bd_vegs->call += bd_vegs->c[i];
 		if(nfeed) {
-			bd->m_vegs.strnall += bd->m_vegs.strn[i];
+			bd_vegs->strnall += bd_vegs->strn[i];
 		}
 	}
-	if (nfeed) bd->m_vegs.nall = bd->m_vegs.strnall + bd->m_vegs.labn;
+	if (nfeed) bd_vegs->nall = bd_vegs->strnall + bd_vegs->labn;
 
 };
 
@@ -153,10 +176,10 @@ void Vegetation_Bgc::prepareIntegration(const bool &nfeedback){
 	nfeed = nfeedback;
 
 	//canopy conductance for GPP
-	double pet = ed->m_l2a.pet;    //
+	double pet = ed_l2a->pet;    //
    	if (pet<=0.0) pet = 0.0001;
-    double eet = ed->m_l2a.eet;    //
-	bd->m_vegd.gv = getGV(eet,  pet);
+    double eet = ed_l2a->eet;    //
+	bd_vegd->gv = getGV(eet,  pet);
 
 	// previous 'topt' is the average of previous 10 years
 	// which is used as Topt in GPP tfactor AND updated every year in 'phenology'
@@ -172,14 +195,14 @@ void Vegetation_Bgc::prepareIntegration(const bool &nfeedback){
 	}
 
 	// temperature factor for GPP
-	bd->m_vegd.ftemp = getTempFactor4GPP(ed->m_atms.ta, prvtopt);
+	bd_vegd->ftemp = getTempFactor4GPP(ed_atms->ta, prvtopt);
 
 	// temperature factor for plant respiration
-	bd->m_vegd.raq10 = getRaq10(ed->m_atms.ta);
+	bd_vegd->raq10 = getRaq10(ed_atms->ta);
 
 	// leaf C requirement for growth, used to dynamically determine C allocation
-	dleafc = cd->m_vegd.maxleafc[ipft]*cd->m_vegd.fleaf[ipft];  //yearly max. leaf C, adjusted by seasonal foliage growth index 'fleaf'
-	dleafc -= bd->m_vegs.c[I_leaf];   // C requirement of foliage growth at current timestep
+	dleafc = cd_vegd->maxleafc[ipft]*cd_vegd->fleaf[ipft];  //yearly max. leaf C, adjusted by seasonal foliage growth index 'fleaf'
+	dleafc -= bd_vegs->c[I_leaf];   // C requirement of foliage growth at current timestep
 	dleafc = fmax(0., dleafc);
 
 	// litter-falling seasonal adjustment
@@ -198,48 +221,48 @@ void Vegetation_Bgc::prepareIntegration(const bool &nfeedback){
 		// assuming 'calpar.cfall' is the max. monthly fraction, we need to modify them for specific PFT types
 		double ncfall = 1.; // n:c ratio of litter-falling: 0 - 1.0, which determines N resorption
 		if (calpar.cfall[i]>0.) ncfall = fmin(1.0, calpar.nfall[i]/calpar.cfall[i]);
-		if (cd->m_veg.ifdeciwoody[ipft]) {
+		if (cd_vegs->ifdeciwoody[ipft]) {
 			calpar.cfall[I_leaf] = 1.0;     // for deciduous woody species, leaf max. falling fraction is 1.0; stem/root will take the calibrated.
 		}
-		if (!cd->m_veg.ifperenial[ipft]) {
+		if (!cd_vegs->ifperenial[ipft]) {
 			calpar.cfall[i] = 1.0;     // for annual species, leaf/stem/root max. falling/dying fraction is 1.0, no matter what calibrated
 		}
 		calpar.nfall[i] = ncfall*calpar.cfall[i]; // this will limit nfall not greater than cfall.
  	}
 	// assuming 'calpar.cfall' is the max. monthly fraction, and allowing the following seasonal variation
 	fltrfall = 1.;              // non-growing season, max. litterfall assumed
-	if (cd->m_vegd.growingttime[ipft]>0. && prvttime>0.) {
-		fltrfall = fmin(1., cd->m_vegd.growingttime[ipft]/prvttime);
+	if (cd_vegd->growingttime[ipft]>0. && prvttime>0.) {
+		fltrfall = fmin(1., cd_vegd->growingttime[ipft]/prvttime);
 	}
 
 	// dead standing C falling
     if(cd->yrsdist<9.){
- 		if(bd->m_vegs.deadc>0){
- 			d2wdebrisc = bd->m_vegs.deadc/9./12.;
- 			if (nfeed==1) d2wdebrisn = bd->m_vegs.deadn/9./12.;
+ 		if(bd_vegs->deadc>0){
+ 			d2wdebrisc = bd_vegs->deadc/9./12.;
+ 			if (nfeed==1) d2wdebrisn = bd_vegs->deadn/9./12.;
  		}
  	 }else{
- 		bd->m_vegs.deadc =0.;
- 		if (nfeed==1) bd->m_vegs.deadn =0.;
+ 		bd_vegs->deadc =0.;
+ 		if (nfeed==1) bd_vegs->deadn =0.;
  	 }
 
 	//assign states to temporary state variable
-    tmp_vegs.deadc            = bd->m_vegs.deadc;
-    if (nfeed) tmp_vegs.deadn = bd->m_vegs.deadn;
+    tmp_vegs.deadc            = bd_vegs->deadc;
+    if (nfeed) tmp_vegs.deadn = bd_vegs->deadn;
 	tmp_vegs.call    = 0.;
 	if (nfeed) tmp_vegs.strnall = 0.;
 	for (int i=0; i<NUM_PFT_PART; i++){
-		tmp_vegs.c[i]    = bd->m_vegs.c[i];
-		tmp_vegs.call   += bd->m_vegs.c[i];
+		tmp_vegs.c[i]    = bd_vegs->c[i];
+		tmp_vegs.call   += bd_vegs->c[i];
 
 		if (nfeed) {
-			tmp_vegs.strn[i] = bd->m_vegs.strn[i];
-			tmp_vegs.strnall+= bd->m_vegs.strn[i];
+			tmp_vegs.strn[i] = bd_vegs->strn[i];
+			tmp_vegs.strnall+= bd_vegs->strn[i];
 		}
 	}
 	if (nfeed) {
-		tmp_vegs.labn = bd->m_vegs.labn;
-		tmp_vegs.nall = bd->m_vegs.labn+bd->m_vegs.strnall;
+		tmp_vegs.labn = bd_vegs->labn;
+		tmp_vegs.nall = bd_vegs->labn+bd_vegs->strnall;
 	}
 
 };
@@ -248,26 +271,26 @@ void Vegetation_Bgc::prepareIntegration(const bool &nfeedback){
 void Vegetation_Bgc::delta(){
 
 	/// some environment variables
-	double co2 = ed->m_atms.co2;
-	double par = ed->m_a2l.par;
+	double co2 = ed_atms->co2;
+	double par = ed_a2l->par;
 
 	//leaf phenology
 	// 1) current EET and previous max. EET controlled
-  	double fleaf = cd->m_vegd.fleaf[ipft];
+  	double fleaf = cd_vegd->fleaf[ipft];
   
   	// 2) plant size (biomass C) or age controlled
- 	double ffoliage = cd->m_vegd.ffoliage[ipft];
+ 	double ffoliage = cd_vegd->ffoliage[ipft];
 
   	//GPP without N limitation
   	double ingppall = getGPP(co2, par, fleaf, ffoliage,
-  			        bd->m_vegd.ftemp, bd->m_vegd.gv);
+  			        bd_vegd->ftemp, bd_vegd->gv);
 
   	// maintainence respiration first estimation
   	double rm = 0.;
 	for (int i=0; i<NUM_PFT_PART; i++){
 		if (tmp_vegs.c[i]>0.) {
-			bd->m_vegd.kr[i] = getKr(tmp_vegs.c[i], i);
-			del_v2a.rm[i]    = getRm(tmp_vegs.c[i], bd->m_vegd.raq10, bd->m_vegd.kr[i]);
+			bd_vegd->kr[i] = getKr(tmp_vegs.c[i], i);
+			del_v2a.rm[i]    = getRm(tmp_vegs.c[i], bd_vegd->raq10, bd_vegd->kr[i]);
 		} else {
 			del_v2a.rm[i]    = 0.;
 		}
@@ -326,11 +349,11 @@ void Vegetation_Bgc::deltanfeed(){
 	if(nfeed){
 
 		// max. N uptake determined by plant f(foliage), air temperature, and soil conditions
-		if (cd->m_veg.nonvascular[ipft]==0) {
-			del_soi2v.innuptake = getNuptake(cd->m_vegd.ffoliage[ipft], bd->m_vegd.raq10,
+		if (cd_vegs->nonvascular[ipft]==0) {
+			del_soi2v.innuptake = getNuptake(cd_vegd->ffoliage[ipft], bd_vegd->raq10,
 	  			                             bgcpar.knuptake, calpar.nmax);
 		} else {
-			del_soi2v.innuptake = calpar.nmax * cd->m_vegd.ffoliage[ipft];    //need more mechanism algorithm for non-vascular plants:
+			del_soi2v.innuptake = calpar.nmax * cd_vegd->ffoliage[ipft];    //need more mechanism algorithm for non-vascular plants:
 			                                                       // they absorb N mainly from wet-deposition, and could from substrate (soil) through co-existed plants, or from biofixation
 		}
 	  	if (del_soi2v.innuptake < 0.0) del_soi2v.innuptake = 0.0;
@@ -552,70 +575,70 @@ void Vegetation_Bgc::deltastate(){
 // summarize some variables not done in 'integrator'
 void Vegetation_Bgc::afterIntegration(){
 	// states
-	bd->m_vegs.call    = 0.;
-	bd->m_vegs.strnall = 0.;
+	bd_vegs->call    = 0.;
+	bd_vegs->strnall = 0.;
 	for (int i=0; i<NUM_PFT_PART; i++) {
-		bd->m_vegs.call += bd->m_vegs.c[i];
+		bd_vegs->call += bd_vegs->c[i];
 		if(nfeed) {
-			bd->m_vegs.strnall += bd->m_vegs.strn[i];
+			bd_vegs->strnall += bd_vegs->strn[i];
 		}
 	}
-	if (nfeed) bd->m_vegs.nall = bd->m_vegs.strnall + bd->m_vegs.labn;
+	if (nfeed) bd_vegs->nall = bd_vegs->strnall + bd_vegs->labn;
 
 	// fluxes
-	bd->m_a2v.ingppall = 0.;
-	bd->m_a2v.innppall = 0.;
-	bd->m_a2v.gppall = 0.;
-	bd->m_a2v.nppall = 0.;
-	bd->m_v2a.rgall  = 0.;
-	bd->m_v2a.rmall  = 0.;
+	bd_a2v->ingppall = 0.;
+	bd_a2v->innppall = 0.;
+	bd_a2v->gppall = 0.;
+	bd_a2v->nppall = 0.;
+	bd_v2a->rgall  = 0.;
+	bd_v2a->rmall  = 0.;
 
-	bd->m_v2soi.ltrfalcall = 0.;
-	bd->m_v2soi.ltrfalnall = 0.;
-	bd->m_v2soi.mossdeathc = 0.;
-	bd->m_v2soi.mossdeathn = 0.;
+	bd_v2soi->ltrfalcall = 0.;
+	bd_v2soi->ltrfalnall = 0.;
+	bd_v2soi->mossdeathc = 0.;
+	bd_v2soi->mossdeathn = 0.;
 
-	bd->m_v2v.nmobilall  = 0.;
-	bd->m_v2v.nresorball = 0.;
+	bd_v2v->nmobilall  = 0.;
+	bd_v2v->nresorball = 0.;
 
- 	bd->m_soi2v.snuptakeall= 0.;
+ 	bd_soi2v->snuptakeall= 0.;
 
 	for (int i=0; i<NUM_PFT_PART; i++) {
-		bd->m_a2v.ingppall += bd->m_a2v.ingpp[i];
-		bd->m_a2v.innppall += bd->m_a2v.innpp[i];
-		bd->m_a2v.gppall   += bd->m_a2v.gpp[i];
-		bd->m_a2v.nppall   += bd->m_a2v.npp[i];
-		bd->m_v2a.rgall    += bd->m_v2a.rg[i];
-		bd->m_v2a.rmall    += bd->m_v2a.rm[i];
+		bd_a2v->ingppall += bd_a2v->ingpp[i];
+		bd_a2v->innppall += bd_a2v->innpp[i];
+		bd_a2v->gppall   += bd_a2v->gpp[i];
+		bd_a2v->nppall   += bd_a2v->npp[i];
+		bd_v2a->rgall    += bd_v2a->rg[i];
+		bd_v2a->rmall    += bd_v2a->rm[i];
 
-		if (cd->m_veg.nonvascular[ipft]==0) {
-			bd->m_v2soi.ltrfalcall += bd->m_v2soi.ltrfalc[i];
-		} else if (cd->m_veg.nonvascular[ipft]>0) {
-			bd->m_v2soi.mossdeathc += bd->m_v2soi.ltrfalc[i];
+		if (cd_vegs->nonvascular[ipft]==0) {
+			bd_v2soi->ltrfalcall += bd_v2soi->ltrfalc[i];
+		} else if (cd_vegs->nonvascular[ipft]>0) {
+			bd_v2soi->mossdeathc += bd_v2soi->ltrfalc[i];
 		}
 
 		if(nfeed) {
-			if (cd->m_veg.nonvascular[ipft]==0) {
-				bd->m_v2soi.ltrfalnall += bd->m_v2soi.ltrfaln[i];
-			} else if (cd->m_veg.nonvascular[ipft]>0) {
-				bd->m_v2soi.mossdeathn += bd->m_v2soi.ltrfaln[i];
+			if (cd_vegs->nonvascular[ipft]==0) {
+				bd_v2soi->ltrfalnall += bd_v2soi->ltrfaln[i];
+			} else if (cd_vegs->nonvascular[ipft]>0) {
+				bd_v2soi->mossdeathn += bd_v2soi->ltrfaln[i];
 			}
 
-			bd->m_v2v.nmobilall  += bd->m_v2v.nmobil[i];
-			bd->m_v2v.nresorball += bd->m_v2v.nresorb[i];
+			bd_v2v->nmobilall  += bd_v2v->nmobil[i];
+			bd_v2v->nresorball += bd_v2v->nresorb[i];
 
-		 	bd->m_soi2v.snuptakeall+= bd->m_soi2v.snuptake[i];
+		 	bd_soi2v->snuptakeall+= bd_soi2v->snuptake[i];
 		}
 	}
 
 	if (nfeed) {
    		// total actual N uptake for root N extraction from different soil layers
-		double tempnuptake = bd->m_soi2v.snuptakeall+bd->m_soi2v.lnuptake;
-	 	for (int il=0; il<cd->m_soil.numsl; il++) {
+		double tempnuptake = bd_soi2v->snuptakeall+bd_soi2v->lnuptake;
+	 	for (int il=0; il<cd_sois->numsl; il++) {
 	 		if (fracnuptake[il]>0.) {
-	 			bd->m_soi2v.nextract[il] = tempnuptake * fracnuptake[il];   //
+	 			bd_soi2v->nextract[il] = tempnuptake * fracnuptake[il];   //
 	 		} else {
-	 			bd->m_soi2v.nextract[il] = 0.;
+	 			bd_soi2v->nextract[il] = 0.;
 	 		}
 	 	}
 
@@ -633,7 +656,7 @@ double  Vegetation_Bgc::getGPP(const double &co2, const double & par,
                    const double &ftemp, const double & gv) {
 
   	double ci  = co2 * gv;
-  	double thawpcnt = ed->m_soid.rtdpthawpct;
+  	double thawpcnt = ed_soid->rtdpthawpct;
   	double fpar = par/(bgcpar.ki +par);   // par : photosynthetically active radiation in J/(m2s)
   	double gpp = calpar.cmax * foliage * ci / (bgcpar.kc + ci);
   	gpp *= leaf * fpar;
@@ -736,7 +759,7 @@ void Vegetation_Bgc::adapt(){
       // of vegetation type, annual PET, annual EET, 
       // CO2 concentration
 
-      updateCNeven(ed->y_l2a.eet, ed->y_l2a.pet, cd->rd->initco2, ed->y_atms.co2);
+      updateCNeven(edyly_l2a->eet, edyly_l2a->pet, rd->initco2, edyly_atms->co2);
 }
 
 //
@@ -772,15 +795,15 @@ double Vegetation_Bgc::getNuptake(const double & foliage, const double & raq10,
 	double totfrootfrac= 0.;     // pft's fraction of roots of all PFTs
 
 	totrzavln   = 0.;     // root zone avaliable N concent for N uptake
-	for(int il =0; il<cd->m_soil.numsl; il++){
-		if (cd->m_soil.frootfrac[il][ipft]> 0.) {
-			totrz +=cd->m_soil.dz[il];
-			meanrzksoil += bd->m_soid.knmoist[il]*cd->m_soil.dz[il];  //NOTE: 'bd->m_soid.knmoist' is updated in Soil_bgc.cpp
+	for(int il =0; il<cd_sois->numsl; il++){
+		if (cd_sois->frootfrac[il][ipft]> 0.) {
+			totrz +=cd_sois->dz[il];
+			meanrzksoil += bd_soid->knmoist[il]*cd_sois->dz[il];  //NOTE: 'bd->m_soid.knmoist' is updated in Soil_bgc.cpp
 
-			totrzliq += ed->m_sois.liq[il];
-			totrzavln+= bd->m_sois.avln[il];
+			totrzliq += ed_sois->liq[il];
+			totrzavln+= bd_sois->avln[il];
 
-			totfrootfrac +=cd->m_soil.frootfrac[il][ipft];
+			totfrootfrac +=cd_sois->frootfrac[il][ipft];
 		}
     }
     if (totrz>0.) meanrzksoil /=totrz;
@@ -809,16 +832,18 @@ double Vegetation_Bgc::getNuptake(const double & foliage, const double & raq10,
 
     // need to distribute N uptake for each soil layer based on root, water, and avail-N distribution
     double sumrootavln = 0.;
-	for(int il =0; il<cd->m_soil.numsl; il++){
+	for(int il =0; il<cd_sois->numsl; il++){
 		fracnuptake[il] = 0.;
-		if (cd->m_soil.frootfrac[il][ipft]>0. && bd->m_sois.avln[il]>0. && ed->m_sois.liq[il]>0.) {
-			fracnuptake[il] = cd->m_soil.frootfrac[il][ipft]
-			                  *bd->m_sois.avln[il]*ed->m_sois.liq[il];
+		if (cd_sois->frootfrac[il][ipft]>0.
+				&& bd_sois->avln[il]>0.
+				&& ed_sois->liq[il]>0.) {
+			fracnuptake[il] = cd_sois->frootfrac[il][ipft]
+			                  *bd_sois->avln[il]*ed_sois->liq[il];
 		}
 		sumrootavln +=fracnuptake[il];
 	}
 	if (sumrootavln>0.) {
-		for(int il =0; il<cd->m_soil.numsl; il++){
+		for(int il =0; il<cd_sois->numsl; il++){
 			fracnuptake[il] /= sumrootavln;
 		}
 	}
@@ -833,12 +858,56 @@ void Vegetation_Bgc::setCohortLookup(CohortLookup* chtlup){
 
 void Vegetation_Bgc::setCohortData(CohortData* cdp){
   	 cd = cdp;
+  	 rd = cdp->rd;
+  	 if(tstepmode == MONTHLY){
+  		 cd_vegs = &cdp->m_veg;
+  		 cd_vegd = &cdp->m_vegd;
+  		 cd_sois = &cdp->m_soil;
+  	 }else if(tstepmode == DAILY){
+  		 cd_vegs = &cdp->d_veg;
+  		 cd_vegd = &cdp->d_vegd;
+  		 cd_sois = &cdp->d_soil;
+  	 }
 };
 
 void Vegetation_Bgc::setEnvData(EnvData* edp){
-  	 ed = edp;
+	edyly_atms = &edp->y_atms;
+	edyly_l2a  = &edp->y_l2a;
+	if(tstepmode == MONTHLY) {
+		ed_atms = &edp->m_atms;
+		ed_a2l  = &edp->m_a2l;
+		ed_l2a  = &edp->m_l2a;
+		ed_sois = &edp->m_sois;
+		ed_soid = &edp->m_soid;
+	}else if(tstepmode == DAILY) {
+		ed_atms = &edp->d_atms;
+		ed_a2l  = &edp->d_a2l;
+		ed_l2a  = &edp->d_l2a;
+		ed_sois = &edp->d_sois;
+		ed_soid = &edp->d_soid;
+	}
 };
 
 void Vegetation_Bgc::setBgcData(BgcData* bdp){
-  	 bd =bdp;
-}
+	if(tstepmode == MONTHLY) {
+		bd_vegs = &bdp->m_vegs;
+		bd_vegd = &bdp->m_vegd;
+		bd_a2v = &bdp->m_a2v;
+		bd_v2a = &bdp->m_v2a;
+		bd_v2v = &bdp->m_v2v;
+		bd_sois = &bdp->m_sois;
+		bd_soid = &bdp->m_soid;
+		bd_v2soi = &bdp->m_v2soi;
+		bd_soi2v = &bdp->m_soi2v;
+	}else if(tstepmode == DAILY) {
+		bd_vegs = &bdp->d_vegs;
+		bd_vegd = &bdp->d_vegd;
+		bd_a2v = &bdp->d_a2v;
+		bd_v2a = &bdp->d_v2a;
+		bd_v2v = &bdp->d_v2v;
+		bd_sois = &bdp->d_sois;
+		bd_soid = &bdp->d_soid;
+		bd_v2soi = &bdp->d_v2soi;
+		bd_soi2v = &bdp->d_soi2v;
+	}
+};

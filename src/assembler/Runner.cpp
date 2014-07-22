@@ -385,7 +385,7 @@ void Runner::runmode1(){
 	}
 
 	cout<<"cohort: "<<chtid<<" - running! \n";
-	runcht.run_cohortly();
+	runcht.run_OneCohort();
 
 };
 
@@ -448,7 +448,7 @@ void Runner::runmode2(){
 		}
 
 		cout<<"cohort: "<<chtid<<" - running! \n";
-		runcht.run_cohortly();
+		runcht.run_OneCohort();
 
 		runcht.cohortcount++;
 

@@ -5,16 +5,17 @@ Test_run/                                         /* directory of outputs
 DATA/test_monthly/dataregion/                     /* directory of regional-level inputs
 DATA/test_monthly/datagrid/                       /* directory of grided data inputs
 DATA/test_monthly/datacht/                        /* directory of cohort inputs
+2                                                           /* model run timestep (1: monthly(default); 2: daily)
 eq                                                          /* run stage (must be "eq","sp","tr","sc", or "all")
 restart                                                     /* initial mode (must be "default", "restart", or,"sitein")
-DATA/test_monthly/output/restart-eq.nc            /* restart/site-specific input file (if "restart"/"sitein" as in previous line)
-0                                                           /* using dynamical climate data (1) or not (0)
+DATA/test_monthly/output/restart-eq.nc                      /* restart/site-specific input file (if "restart"/"sitein" as in previous line)
+0                                                           /* using dynamic climate data (1) or not (0)
 0                                                           /* using varied co2  (1) or not (0)
-1                                                           /* using dynamical LAI from veg. C in model (1), or otherwise from input (1) 
+1                                                           /* using dynamic LAI from veg. C in model (1), or otherwise from input (1) 
 0                                                           /* using fire severity as input (1), or otherwise derived from fire size/fire season/drainage type (0)
 -9999                                                       /* output starting calendar year ('-9999' for starting model running) 
-1                                                           /* single-site output at daily  (1) or not (0)
-1                                                           /* single-site output at monthly (1) or not (0)
-1                                                           /* single-site output at yearly (1) or not (0)
+0                                                           /* single-site output at daily  (1) or not (0)
+0                                                           /* single-site output at monthly (1) or not (0)
+0                                                           /* single-site output at yearly (1) or not (0)
 0                                                           /* summarized output (single/multiple sites) (1) or not (0)
 0                                                           /* output soil climate dataset (1) or not (0) - inactive
