@@ -84,8 +84,8 @@ class BgcData{
 
    		void veg_beginOfYear();
    		void veg_beginOfMonth();
-   		void veg_endOfMonth(const int & dinm);
-   		void veg_endOfYear();
+   		void veg_endOfDay(const int &dinm);
+   		void veg_endOfMonth();
 
    		void soil_beginOfYear();
    		void soil_beginOfMonth();

@@ -31,6 +31,9 @@ void Snow_Env::updateDailyM(const double & tdrv){
     		        + (1.- cd_vegd->fpcsum)* ed_a2l->snfl;
      //Note unit converstion: 1 mm H2O = 1 kgH2O/m2
 
+	ed_snw2soi->melt = 0.;
+	ed_snw2a->sublim = 0.;
+
 	bool slchg1 = false;
 	if (!ground->toplayer->isSnow && ground->toplayer->tem>0.01) {   //melting all snowfalling ('dsmass')
     	ed_snw2soi->melt = dsmass;

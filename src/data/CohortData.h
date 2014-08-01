@@ -48,6 +48,12 @@ class CohortData{
 		float nirr[MAX_ATM_DRV_YR*MINY];
 		float vapo[MAX_ATM_DRV_YR*MINY];
 
+		int act_ndep_yr;
+		float ndep[MAX_ATM_DRV_YR*MINY];
+
+		int act_ozon_yr;
+		float ozon[MAX_ATM_DRV_YR*MINY];
+
 	    float d_tair[DINY];   //current year daily atm data
 	    float d_prec[DINY];
 		float d_nirr[DINY];
@@ -80,7 +86,6 @@ class CohortData{
 
   	    void beginOfYear();
   	    void beginOfMonth();
-  	    void beginOfDay();
 
   	    void endOfDay(const int & dinm);
   	    void endOfMonth();

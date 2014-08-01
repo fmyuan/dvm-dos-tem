@@ -15,8 +15,6 @@ class FirData{
         FirData();
         ~FirData();
 
-        void clear();
-
         bool useseverity;
 
 		soidiag_fir fire_soid;
@@ -27,10 +25,8 @@ class FirData{
 		soi2atm_fir fire_soi2a;
 		atm2soi_fir fire_a2soi;
   
-	    void init();
+        void clear();
         void beginOfYear();
-        void endOfYear();
-        void burn();
     
 };
 
