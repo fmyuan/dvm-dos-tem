@@ -47,7 +47,7 @@ void Controller::ctrl4run(ModelData *md){
 		fctr >> md->outRegn;     getline(fctr,comments);
 	}
 
-	if (md->timestep!=1 || md->timestep!=2) md->timestep = 1;
+	if (md->timestep!=1 && md->timestep!=2) md->timestep = 1; //monthly is the default
 
   	fctr.close();
 

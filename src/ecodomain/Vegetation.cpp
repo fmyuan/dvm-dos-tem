@@ -18,7 +18,7 @@
 
 Vegetation::Vegetation(){
 	updateLAI5vegc = false;
-	tsmode = MONTHLY;
+	tstepmode = MONTHLY;
 	chtlu = NULL;
 	cd = NULL;
 	cd_vegd = NULL;
@@ -255,6 +255,14 @@ void Vegetation::phenology(const int &currmind, const int &currdinm){
 
 		if (cd_vegs->vegcov[ip]>0.){
 
+			// vegetation standing age
+			// tentatively set to a common age from 'ysf' - year since fire
+			// (TODO) should have more variability based on PFT types
+			if (currmind == MINY-1 && currdinm == DINM[currmind]) { // at the last-day of last month
+				cd_vegs->vegage[ip] = cd->yrsdist;
+				if (cd_vegs->vegage[ip]<=0) cd_vegd->foliagemx[ip] = 0.;
+			}
+
 			double prvunnormleafmx = 0.;   // previous 10 years' average as below
 			deque <double> prvdeque = cd->prvunnormleafmxque[ip];
 			int dequeno = prvdeque.size();
@@ -457,10 +465,10 @@ void Vegetation::setCohortLookup(CohortLookup* chtlup){
 
 void Vegetation::setCohortData(CohortData* cdp){
  	cd = cdp;
-	if (tsmode==MONTHLY) {
+	if (tstepmode==MONTHLY) {
  		cd_vegs = &cdp->m_veg;
  		cd_vegd = &cdp->m_vegd;
- 	}else if(tsmode==DAILY){
+ 	}else if(tstepmode==DAILY){
  		cd_vegs = &cdp->d_veg;
  		cd_vegd = &cdp->d_vegd;
  	}
@@ -468,13 +476,13 @@ void Vegetation::setCohortData(CohortData* cdp){
 
 void Vegetation::setEnvData(const int &ip, EnvData* edp){
   	// ed[ip] = edp;
- 	if (tsmode==MONTHLY) {
+ 	if (tstepmode==MONTHLY) {
   		ed_vegs[ip] = &edp->m_vegs;
   		ed_vegd[ip] = &edp->m_vegd;
   		ed_soid[ip] = &edp->m_soid;
         ed_v2a[ip]  = &edp->m_v2a;
         ed_atms[ip] = &edp->m_atms;
-  	}else if(tsmode==DAILY){
+  	}else if(tstepmode==DAILY){
   		ed_vegs[ip] = &edp->d_vegs;
   		ed_vegd[ip] = &edp->d_vegd;
   		ed_soid[ip] = &edp->d_soid;
@@ -485,10 +493,10 @@ void Vegetation::setEnvData(const int &ip, EnvData* edp){
 
 void Vegetation::setBgcData(const int &ip, BgcData* bdp){
 	 //bd[ip] = bdp;
- 	if (tsmode==MONTHLY) {
+ 	if (tstepmode==MONTHLY) {
   		bd_vegs[ip] = &bdp->m_vegs;
   		bd_vegd[ip] = &bdp->m_vegd;
-  	}else if(tsmode==DAILY){
+  	}else if(tstepmode==DAILY){
   		bd_vegs[ip] = &bdp->d_vegs;
   		bd_vegd[ip] = &bdp->d_vegd;
   	}

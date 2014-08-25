@@ -30,6 +30,11 @@
   
 	};
 
+	struct atm2lnd_bgc{
+  		double ndep;
+  		double ozon;
+	};
+
 	struct atm2veg_env{
 		// water
   		double rnfl;

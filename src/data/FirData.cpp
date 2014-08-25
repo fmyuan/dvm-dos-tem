@@ -22,10 +22,6 @@ void FirData::clear(){
 
 };
 
-void FirData::init(){
-	//
-};
-
 void FirData::beginOfYear(){
 	fire_soid.burnthick =0.;
 
@@ -41,11 +37,3 @@ void FirData::beginOfYear(){
 	fire_soi2a.orgn =0.;
 	
 };
-
-void FirData::endOfYear(){
-//
-};
-
-void FirData::burn(){
-	clear();
-}

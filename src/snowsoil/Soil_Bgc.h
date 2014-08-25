@@ -23,9 +23,11 @@ using namespace std;
 class Soil_Bgc{
   public:
   	Soil_Bgc();
- 	~Soil_Bgc();	
+ 	~Soil_Bgc();
+
+ 	int tstepmode;
 	
-  	bool nfeed;      // soil-plant-air N module switch
+  	bool nfeed;      // soil-plant-air N modules switch
   	bool avlnflag;   // open-N cycle switch; otherwise, N budget method used to balance the inorg. N I/O from the ecosystem
   	bool baseline;   // open-N cycle switch; otherwise, N budget method used to balance the org. N I/O from the ecosystem
 
@@ -83,13 +85,26 @@ class Soil_Bgc{
 	double totnetnmin;   // total net N mineralization
 	double totnextract;  // total root N extract (uptake) from soil
 
-	CohortData * cd;
-  	EnvData * ed;
-  	BgcData * bd;
-  	FirData * fd;
-
   	CohortLookup * chtlu;
   	Ground * ground;
+
+  	CohortData * cd;
+  	soistate_dim *cd_sois;
+  	vegstate_dim *cd_vegs;
+
+	soistate_env *ed_sois;
+	soidiag_env *ed_soid;
+	soi2lnd_env *ed_soi2l;
+
+  	BgcData * bd;
+	soistate_bgc *bd_sois;
+	soidiag_bgc *bd_soid;
+	atm2soi_bgc *bd_a2soi;
+	veg2soi_bgc *bd_v2soi;
+	soi2atm_bgc *bd_soi2a;
+	soi2veg_bgc *bd_soi2v;
+
+  	FirData * fd;
 
   	void initSoilCarbon(double & initshlwc,	double & initdeepc, double & initminec);
   	void initOslayerCarbon(double & shlwc, double & deepc);

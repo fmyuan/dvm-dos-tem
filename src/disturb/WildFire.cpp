@@ -200,8 +200,6 @@ int WildFire::getOccur(const int &yrind, const bool & friderived){
 //Burning vegetation and soil organic C
 void WildFire::burn(){
 
-	fd->burn();
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // for soil part and root burning
 
@@ -547,7 +545,7 @@ double WildFire::getBurnOrgSoilthick(){
 };
 
 void WildFire::setCohortLookup(CohortLookup* chtlup){
-  	 chtlu = chtlup;
+  	chtlu = chtlup;
 };
 
 void WildFire::setCohortData(CohortData* cdp){

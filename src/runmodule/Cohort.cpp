@@ -38,7 +38,8 @@ void Cohort::initSubmodules(){
 	atm.setCohortData(&cd);
 	atm.setEnvData(edall);
 
- 	// ecosystem domain
+ 	// ecosystem domain (structure)
+	veg.tstepmode = md->timestep;
 	veg.setCohortData(&cd);
 	veg.setCohortLookup(&chtlu);
 
@@ -49,10 +50,12 @@ void Cohort::initSubmodules(){
  		veg.setEnvData(i, &ed[i]);
  		veg.setBgcData(i, &bd[i]);
 
+ 		vegenv[i].tstepmode = md->timestep;
  		vegenv[i].setCohortLookup(&chtlu);
  		vegenv[i].setEnvData(&ed[i]);
  		vegenv[i].setCohortData(&cd);
 
+ 		vegbgc[i].tstepmode = md->timestep;
  		vegbgc[i].setCohortLookup(&chtlu);
  		vegbgc[i].setCohortData(&cd);
  		vegbgc[i].setEnvData(&ed[i]);
@@ -61,19 +64,23 @@ void Cohort::initSubmodules(){
  	}
 
 	//snow-soil module pointers
+ 	snowenv.tstepmode = md->timestep;
  	snowenv.setGround(&ground);
  	snowenv.setCohortLookup(&chtlu);
 	snowenv.setCohortData(&cd);
  	snowenv.setEnvData(edall);
 
+ 	soilenv.tstepmode = md->timestep;
  	soilenv.setGround(&ground);
  	soilenv.setCohortLookup(&chtlu);
 	soilenv.setCohortData(&cd);
 	soilenv.setEnvData(edall);
 
+ 	solprntenv.tstepmode = md->timestep;
 	solprntenv.setGround(&ground);
 	solprntenv.setEnvData(edall);
 
+ 	soilbgc.tstepmode = md->timestep;
  	soilbgc.setGround(&ground);
 	soilbgc.setCohortLookup(&chtlu);
 	soilbgc.setCohortData(&cd);
@@ -248,7 +255,6 @@ void Cohort::initStatePar() {
 	getBd4allveg();
  
 	// fire processes
-	fd->init();
 	if(md->initmode<3){
 		fire.initializeState();
 	} else {
@@ -321,9 +327,8 @@ void Cohort::updateOneTimestep(const int & yrcnt, const int & currmind, const in
 	cd.day = currdinm;
     cd.month = currmind;
 	int dinmcurr = DINM[currmind];
-	int doy = DOYINDFST[currmind]+DINM[currmind];
+	int doy = DOYINDFST[currmind]+currdinm-1;
 
-	cd.beginOfDay();
 	if(currmind==0) cd.beginOfYear();
 	if(currdinm==1) cd.beginOfMonth();
 
@@ -360,8 +365,6 @@ void Cohort::updateOneTimestep(const int & yrcnt, const int & currmind, const in
 	outbuffer.updateRestartOutputBuffer();
 
 };
-
-/////////////////////////////////////////////////////////////////////////////////
 
 /////////////////////////////////////////////////////////
 //Environment Module Calling at one time-step
@@ -429,9 +432,6 @@ void Cohort::updateEnv(const int & currmind, const int & currdinm){
 
 		//get the daily atm drivers and the data is in 'edall'
 		atm.updateDailyAtm(currmind, currdinm);
-
-		//Initialize some daily variables for 'ground'
-		edall->grnd_beginOfDay();
 
 		//'edall' in 'atm' must be assgined to that in 'ed' for each PFT
 		assignAtmEd2pfts_daily();
@@ -531,8 +531,8 @@ void Cohort::updateBgc(const int & currmind, const int & currdinm){
 	// currmind: zero-based, currdinm: day in the month (1 based)
 	int dinmcurr = DINM[currmind];
 
-	// initializing accumulators
-	if(currmind==0){		
+	// initializing yearly accumulators
+	if(currmind==0 && currdinm == 1){
 	    for (int ip=0; ip<NUM_PFT; ip++){
 	    	if (cd.m_veg.vegcov[ip]>0.){
 	    		bd[ip].veg_beginOfYear();
@@ -540,9 +540,6 @@ void Cohort::updateBgc(const int & currmind, const int & currdinm){
 	    		bd[ip].land_beginOfYear();
 	    	}
 		}
-	}
-
-	if (currdinm==1){
 		bdall->veg_beginOfYear();
 		bdall->soil_beginOfYear();
 		bdall->land_beginOfYear();
@@ -558,19 +555,20 @@ void Cohort::updateBgc(const int & currmind, const int & currdinm){
 				vegintegrator[ip].updateMonthlyVbgc();
 				vegbgc[ip].afterIntegration();
 
-				bd[ip].veg_endOfMonth(dinmcurr);                // yearly data accumulation and daily data assignment
+				// monthly data accumulation
+				bd[ip].veg_endOfDay(dinmcurr);
+
+				// yearly data accumulation
+				if (currdinm == dinmcurr) bd[ip].veg_endOfMonth();
+
 				if(currmind==11){
 					vegbgc[ip].adapt();             // this will evolve C/N ratio with CO2
-					bd[ip].veg_endOfYear();
 				}
 			}
 		}
 
 		getBd4allveg();      // integrating the monthly pfts' 'bd' to allveg 'bdall'
-		bdall->veg_endOfMonth(dinmcurr);    // yearly data accumulation and daily data assignment
-		if(currmind==11){
-			bdall->veg_endOfYear();
-		}
+		bdall->veg_endOfMonth();    // yearly data accumulation and daily data assignment
 	}
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 	// soil BGC module calling at daily time-step
@@ -661,39 +659,29 @@ void Cohort::updateFir(const int & yrind, const int & currmind){
 void Cohort::updateDIMveg(const int & currmind, const int & currdinm, const bool & dvmmodule){
 	// currmind: zero-based, currdinm: day in the month (1 based)
 
-    //
 	int dinmcurr = DINM[currmind];
 
-		//switch for using LAI read-in (false) or dynamically with vegC
-		// the read-in LAI is through the 'chtlu->envlai[12]', i.e., a 12 monthly-LAI
-		if (dvmmodule) {
-			veg.updateLAI5vegc = md->updatelai;
-		} else {
-			veg.updateLAI5vegc = false;
-		}
+	//switch for using LAI read-in (false) or dynamically with vegC
+	// the read-in LAI is through the 'chtlu->envlai[12]', i.e., a 12 monthly-LAI
+	if (dvmmodule) {
+		veg.updateLAI5vegc = md->updatelai;
+	} else {
+		veg.updateLAI5vegc = false;
+	}
 
-		// vegetation standing age
-		// tentatively set to a common age from 'ysf' - year since fire - should have more varability based on PFT types
-		for (int ip=0; ip<NUM_PFT; ip++){
-			if (cd.d_veg.vegcov[ip]>0.){
-				cd.d_veg.vegage[ip] = cd.yrsdist;
-				if (cd.d_veg.vegage[ip]<=0) cd.d_vegd.foliagemx[ip] = 0.;
-			}
-		}
+	// update phenological variables (factors used for GPP), and LAI
+	veg.phenology(currmind, currdinm);
+	veg.updateLai(currmind, currdinm);    // this must be done after phenology
 
-		// update monthly phenological variables (factors used for GPP), and LAI
-		veg.phenology(currmind, currdinm);
-		veg.updateLai(currmind, currdinm);    // this must be done after phenology
+	// LAI updated above for each PFT, but FPC (foliage percent cover) may need adjustment
+	veg.updateFpc();
+	veg.updateVegcov();
 
-		// LAI updated above for each PFT, but FPC (foliage percent cover) may need adjustment
-		veg.updateFpc();
-		veg.updateVegcov();
+	veg.updateFrootfrac();
 
-		veg.updateFrootfrac();
-
-		if (currdinm == dinmcurr){
-			cd.m_veg = cd.d_veg;
-		}
+	if (currdinm == dinmcurr){
+		cd.m_veg = cd.d_veg;
+	}
 };
 
 /////////////////////////////////////////////////////////////////////////////////

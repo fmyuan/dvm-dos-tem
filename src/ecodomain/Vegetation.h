@@ -20,7 +20,7 @@
    			vegpar_dim vegdimpar;
 
    			bool updateLAI5vegc;
-   			int tsmode;
+   			int tstepmode;
 
    			void initializeParameter();
     		void initializeState();

@@ -22,7 +22,7 @@
 
 Vegetation_Env::Vegetation_Env(){
 	ipft = MISSING_I;
-	tstepmode = MONTHLY;
+	tstepmode = DAILY;
 
 	chtlu   = NULL;
 	cd_vegs = NULL;

@@ -33,8 +33,8 @@
 			// the following 3 switches will control N modules in BGC
 	     	bool nfeed;      // =true allowing N uptake limited by soil conditions, which then controls plant growth,
 	     	                 //   basically it's a switch for soil-plant N process modules
-   		    bool avlnflg;    // inorganic N in/out module on (true) or not (false) - partial open N cycle
-	     	bool baseline;   // =true allowing ninput and nlost to be used for adjusting c/n of soil - partial open N cycle
+   		    bool avlnflg;    // inorganic N in/out module on (true) or not (false: budget method to i/o) - partial open N cycle
+	     	bool baseline;   // allowing orgninput and orgnlost to be used for adjusting c/n of soil (true), or (budget method, if false) - partial open N cycle
 
 			// the following are from Controller.cpp (reading from '????control.txt')
     		bool runeq;

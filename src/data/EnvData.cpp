@@ -1,7 +1,7 @@
 #include "EnvData.h"
 
 EnvData::EnvData(){
-
+	clear();
 };
 
 EnvData::~EnvData(){
@@ -52,7 +52,7 @@ void EnvData::clear(){
     m_snw2a = snw2atm_env();
     m_snw2soi = snw2soi_env();
 
-    // monthly
+    // yearly
     y_atms = atmstate_env();
     y_vegs = vegstate_env();
     y_snws = snwstate_env();
@@ -78,7 +78,6 @@ void EnvData::clear(){
     y_sois.rtfrozendays  = 0;
     y_sois.rtunfrozendays= 0;
 
-	cd->clear();
 };
 
 // initialize yearly accumulators
@@ -383,12 +382,6 @@ void EnvData::grnd_beginOfMonth(){
 
 };
 
-void EnvData::grnd_beginOfDay(){
-
-	// need to set some diagnostic variables to zero
-    d_snw2soi.melt =0.;
-};
-
 /////////////////////////////////////////////////////////////////////////
 // at end of day, accumulate/average daily to monthly
 // accumulate fluxes, average state and diagnostics
@@ -404,9 +397,9 @@ void EnvData::atm_endOfDay(const int & dinm){
    	m_atmd.vpd  += d_atmd.vpd/dinm;
 
    	//atm to land (including both veg/ground)
-   	m_a2l.nirr += d_a2l.nirr/dinm;    //radiation unit is fluxes
+   	m_a2l.nirr += d_a2l.nirr/dinm;     // radiation unit is fluxes
 	m_a2l.par  += d_a2l.par/dinm;
-	m_a2l.prec += d_a2l.prec;          // precipation unit is amount
+	m_a2l.prec += d_a2l.prec;          // precipitation unit is amount
 	m_a2l.rnfl += d_a2l.rnfl;
 	m_a2l.snfl += d_a2l.snfl;
 
@@ -487,6 +480,7 @@ void EnvData::grnd_endOfDay(const int & dinm, const int & doy){
 	m_sois.watertab += d_sois.watertab/dinm;
 	m_sois.draindepth += d_sois.draindepth/dinm;
 
+	// some diagnostic variables
 	d_soid.vwcshlw = 0.;  d_soid.vwcdeep = 0.;
 	d_soid.vwcminea = 0.; d_soid.vwcmineb = 0.; d_soid.vwcminec = 0.;
 	d_soid.tshlw = 0.;    d_soid.tdeep = 0.;
