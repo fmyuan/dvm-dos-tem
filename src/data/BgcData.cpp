@@ -67,8 +67,12 @@ void BgcData::clear(){
 
 };
 
+void BgcData::land_beginOfMonth(){
+	m_l2a.nep = 0.;
+};
+
 void BgcData::land_beginOfYear(){
-	y_l2a.nep =0.;
+	y_l2a.nep = 0.;
 };
 
 void BgcData::land_endOfMonth(){

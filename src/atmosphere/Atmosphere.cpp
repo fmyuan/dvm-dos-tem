@@ -4,14 +4,16 @@
 #include "Atmosphere.h"
 
 Atmosphere::Atmosphere(){
+	cd = NULL;
+	ed = NULL;
 
 	wetdays = 10.; // cru has wetdays output from 1901 to 2002, but not for scenario run
                    // temporarily assume wetdays = 10;
 
-	cd = NULL;
-	ed = NULL;
+    // yearly
 	co2= MISSING_F;
     yrsumday = MISSING_I;
+
 };
 
 Atmosphere::~Atmosphere(){

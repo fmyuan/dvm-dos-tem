@@ -378,7 +378,7 @@ void RunCohort::run_timeseries(){
 		   cht.cd.month = im+1;
 		   int dinmcurr = cht.timer->getDaysInMonth(im);;
 
-		   for (int id=0; id<dinmcurr; id++) {
+		   for (int id=1; id<=dinmcurr; id++) {             // day starting from 1
 			   cht.updateOneTimestep(yrindex, currmind, id);
 
 			   // site-daily output

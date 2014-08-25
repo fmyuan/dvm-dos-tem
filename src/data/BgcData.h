@@ -79,6 +79,7 @@ class BgcData{
 
 		deque <double> prvltrfcnque[MAX_SOI_LAY];
 
+    	void land_beginOfMonth();
     	void land_beginOfYear();
    		void land_endOfMonth();
 
