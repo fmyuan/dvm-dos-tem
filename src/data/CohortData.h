@@ -20,7 +20,7 @@ class CohortData{
   		~CohortData();
 
   		void clear();
-  
+
   		int chtid;
 	 	int year;
 	 	int month;

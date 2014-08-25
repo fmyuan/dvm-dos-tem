@@ -10,7 +10,6 @@ BgcData::~BgcData(){
 
 // re-initialize BgcData class explicitly
 void BgcData::clear(){
-	cd->clear();
 
 	//daily
 	d_vegs = vegstate_bgc();

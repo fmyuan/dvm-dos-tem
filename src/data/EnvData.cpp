@@ -78,7 +78,6 @@ void EnvData::clear(){
     y_sois.rtfrozendays  = 0;
     y_sois.rtunfrozendays= 0;
 
-	cd->clear();
 };
 
 // initialize yearly accumulators

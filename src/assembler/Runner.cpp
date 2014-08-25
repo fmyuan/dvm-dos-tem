@@ -33,7 +33,8 @@ void Runner::initInput(const string &controlfile, const string &runmode){
  		}
 
  		//
- 		if (md.runmode!=1) md.consoledebug=false;
+ 		md.consoledebug = true;
+ 		//if (md.runmode!=1) md.consoledebug=false;
 
  		configin.ctrl4run(&md);   //read in model configure info from "config/controlfile_site.txt"
 		md.checking4run();

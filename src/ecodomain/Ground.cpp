@@ -1958,12 +1958,12 @@ void Ground::checkWaterValidity(){
 			}
 
 			if (currl->frozen==1) {
-				if (currl->liq>currl->minliq) {
+				if (currl->liq>currl->minliq && currl->minliq!=MISSING_D) {
 					string msg = "frozen layer shall NOT have more than residue liquid water";
 					cout << msg + ":: in Layer "<<currl->indl<< "\n";
 				}
 
-				if ((currl->ice-currl->maxice)>1.0e-3) {        // it may be from some mathmatical round up, so '1.e-3' used as a critrial'
+				if ((currl->ice-currl->maxice)>1.0e-3 && currl->maxice!=MISSING_D) {        // it may be from some mathmatical round up, so '1.e-3' used as a critrial'
 					string msg = "frozen layer shall NOT have too much ice water";
 					cout << msg + ":: in Layer "<<currl->indl<< "\n";
 				}
@@ -1976,8 +1976,8 @@ void Ground::checkWaterValidity(){
 					cout << msg + ":: in Layer "<<currl->indl<< "\n";
 				}
 
-				if ((currl->liq-currl->maxliq)>1.e-6 && currl->isSoil) {
-					string msg = "unfrozen soil layer shall NOT have too much liquid water";
+				if ((currl->liq-currl->maxliq)>1.e-6 && currl->maxliq!=MISSING_D) {
+					string msg = "unfrozen layer shall NOT have too much liquid water";
 					cout << msg + ":: in Layer "<<currl->indl<< "\n";
 				}
 
