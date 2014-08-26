@@ -296,13 +296,13 @@ void Vegetation::phenology(const int &currmind, const int &currdinm){
 
 				cd_vegd->maxleafc[ip] = getYearlyMaxLAI(ip)/vegdimpar.sla[ip];
 			} else {
-		    	if (eet>cd_vegd->eetmx[ip]) {
+		    	if (cd_vegd->eetmx[ip] < eet) {
 		    		cd_vegd->eetmx[ip] = eet;
 		    	}
 
 		    	if (cd_vegd->unnormleafmx[ip] < tempunnormleaf) {
 					cd_vegd->unnormleafmx[ip] = tempunnormleaf;
-					cd_vegd->topt[ip] = ed_atms[ip]->ta;   // it's updating monthly for current year and then update the 'deque', but not used in 'GPP' estimation
+					cd_vegd->topt[ip] = ed_atms[ip]->ta;   // it's updating for current year and then update the 'deque', but not used in 'GPP' estimation
 				}
 
 				if (cd_vegd->growingttime[ip]<ed_soid[ip]->rtdpgdd) {  // here, we take the top root zone degree-days since growing started

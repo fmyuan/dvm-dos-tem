@@ -640,7 +640,7 @@ void EnvData::grnd_endOfDay(const int & dinm, const int & doy){
 
 	// growing season soil root zone degree day: used in TEM phenology for seasonal litter-falling variation
 	if (d_soid.rtdpgrowstart>=0 && d_soid.rtdpgrowend <=0) {
-		d_soid.rtdpgdd += d_soid.rtdpts*1.0;
+		d_soid.rtdpgdd += d_soid.rtdpts*1.0;     // '1.0' means 1 day because of using daily Ts.
 	}
 	m_soid.rtdpgdd = d_soid.rtdpgdd;
 	y_soid.rtdpgdd = d_soid.rtdpgdd;

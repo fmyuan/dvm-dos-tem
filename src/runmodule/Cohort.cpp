@@ -50,7 +50,7 @@ void Cohort::initSubmodules(){
  		veg.setEnvData(i, &ed[i]);
  		veg.setBgcData(i, &bd[i]);
 
- 		vegenv[i].tstepmode = md->timestep;
+ 		vegenv[i].tstepmode = DAILY;
  		vegenv[i].setCohortLookup(&chtlu);
  		vegenv[i].setEnvData(&ed[i]);
  		vegenv[i].setCohortData(&cd);
@@ -64,19 +64,19 @@ void Cohort::initSubmodules(){
  	}
 
 	//snow-soil module pointers
- 	snowenv.tstepmode = md->timestep;
+ 	snowenv.tstepmode = DAILY;
  	snowenv.setGround(&ground);
  	snowenv.setCohortLookup(&chtlu);
 	snowenv.setCohortData(&cd);
  	snowenv.setEnvData(edall);
 
- 	soilenv.tstepmode = md->timestep;
+ 	soilenv.tstepmode = DAILY;
  	soilenv.setGround(&ground);
  	soilenv.setCohortLookup(&chtlu);
 	soilenv.setCohortData(&cd);
 	soilenv.setEnvData(edall);
 
- 	solprntenv.tstepmode = md->timestep;
+ 	solprntenv.tstepmode = DAILY;
 	solprntenv.setGround(&ground);
 	solprntenv.setEnvData(edall);
 
@@ -329,7 +329,7 @@ void Cohort::updateOneTimestep(const int & yrcnt, const int & currmind, const in
 	int dinmcurr = DINM[currmind];
 	int doy = DOYINDFST[currmind]+currdinm-1;
 
-	if(currmind==0) cd.beginOfYear();
+	if(currmind==0 && currdinm==1) cd.beginOfYear();
 	if(currdinm==1) cd.beginOfMonth();
 
  	// first, update the current dimension/structure of veg-snow/soil column (domain)
@@ -353,7 +353,7 @@ void Cohort::updateOneTimestep(const int & yrcnt, const int & currmind, const in
    	}
 
 	if(currdinm==dinmcurr) cd.endOfMonth();
-	if(currmind==11) cd.endOfYear();
+	if(currmind==11 && currdinm==dinmcurr) cd.endOfYear();
 
 	////////////////////////////
 	// store all data for single/multiple cohorts
@@ -561,8 +561,8 @@ void Cohort::updateBgc(const int & currmind, const int & currdinm){
 
 	// vegetation BGC module calling
 	// it's called at the last day of the month, so that monthly drivers/states are updated
-	if ((md->timestep==DAILY && currdinm == dinmcurr) ||    // monthly
-	     md->timestep==MONTHLY) {                           // daily
+	if ((md->timestep==MONTHLY && currdinm == dinmcurr) ||    // monthly
+	     md->timestep==DAILY) {                           // daily
 
 		for (int ip=0; ip<NUM_PFT; ip++){
 			if (cd.m_veg.vegcov[ip]>0.){
@@ -669,7 +669,7 @@ void Cohort::updateFir(const int & yrind, const int & currmind){
 		cd.d_soil = cd.m_soil;
 		cd.y_soil = cd.m_soil;
 
- 		getSoilFineRootFrac();
+ 		getSoilFineRootFrac(&cd.m_veg, &cd.m_soil);
   	}
 
 };
@@ -739,11 +739,19 @@ void Cohort::updateDIMgrd(const int & currmind, const int & currdinm, const bool
 
 	}
 
-	// update soil dimension, especially here the root fraction which updated monthly
-	if (currdinm == 1) { // first day of the month
+	// update soil dimension, especially here the root fraction which updated each timestep
+	if (md->timestep==MONTHLY && currdinm == 1) { // first day of the month
 		ground.retrieveSoilDimension(&cd.m_soil);
-		getSoilFineRootFrac();
+		getSoilFineRootFrac(&cd.m_veg, &cd.m_soil);
 		cd.d_soil = cd.m_soil;      //soil dimension remains constant in a month
+	} else if (md->timestep==DAILY){
+		ground.retrieveSoilDimension(&cd.d_soil);
+		getSoilFineRootFrac(&cd.d_veg, &cd.d_soil);
+	} else {
+		ground.retrieveSoilDimension(&cd.y_soil);
+		getSoilFineRootFrac(&cd.y_veg, &cd.y_soil);
+		cd.m_soil = cd.y_soil;
+		cd.d_soil = cd.m_soil;
 	}
 
 	// update all soil 'bd' to each pft
@@ -753,33 +761,38 @@ void Cohort::updateDIMgrd(const int & currmind, const int & currdinm, const bool
 
 //////////////////////////////////////////////////////////////////////////////////////
 // adjusting fine root fraction in soil
-void Cohort::getSoilFineRootFrac(){
+void Cohort::getSoilFineRootFrac(vegstate_dim *cd_veg, soistate_dim *cd_soil){
 
-	double mossthick = cd.m_soil.mossthick;
+	double mossthick = cd_soil->mossthick;
 	double totfrootc = 0.;   //fine root C summed for all PFTs
 	for (int ip=0; ip<NUM_PFT; ip++){
 
-		if (cd.m_veg.vegcov[ip]>0.){
+		if (cd_veg->vegcov[ip]>0.){
 
 			double layertop, layerbot;
-			// covert PFT 10-layer root fraction to acculative ones for interpolating
+			// covert PFT 10-layer root fraction to accumulative ones for interpolating
 			double cumrootfrac[MAX_ROT_LAY];
-			cumrootfrac[0] = cd.m_veg.frootfrac[0][ip];
+			cumrootfrac[0] = cd_veg->frootfrac[0][ip];
 			for (int il=1; il<MAX_ROT_LAY; il++){
-				cumrootfrac[il] = cumrootfrac[il-1]+cd.m_veg.frootfrac[il][ip];
+				cumrootfrac[il] = cumrootfrac[il-1]+cd_veg->frootfrac[il][ip];
 			}
 
 			// calculate soil fine root fraction from PFT's 10-rootlayer structure
 			// note: at this point, soil fine root fraction ACTUALLY is root biomass C distribution along soil profile
-			for (int il=0; il<cd.m_soil.numsl; il++){
-				if (cd.m_soil.type[il]>0) {   // non-moss soil layers only
-					layertop = cd.m_soil.z[il] - mossthick;
-					layerbot = cd.m_soil.z[il]+cd.m_soil.dz[il]-mossthick;
+			for (int il=0; il<cd_soil->numsl; il++){
+				if (cd_soil->type[il]>0) {   // non-moss soil layers only
+					layertop = cd_soil->z[il] - mossthick;
+					layerbot = cd_soil->z[il]+cd_soil->dz[il]-mossthick;
 
-					cd.m_soil.frootfrac[il][ip] = assignSoilLayerRootFrac(layertop, layerbot, cumrootfrac, ROOTTHICK);  //fraction
-					cd.m_soil.frootfrac[il][ip] *= bd[ip].m_vegs.c[I_root];  //root C
-
-					totfrootc += cd.m_soil.frootfrac[il][ip];
+					cd_soil->frootfrac[il][ip] = assignSoilLayerRootFrac(layertop, layerbot, cumrootfrac, ROOTTHICK);  //fraction
+					if(md->timestep==DAILY){
+					    cd_soil->frootfrac[il][ip] *= bd[ip].d_vegs.c[I_root];  //root C
+					} else if(md->timestep==MONTHLY){
+					    cd_soil->frootfrac[il][ip] *= bd[ip].m_vegs.c[I_root];  //root C
+					} else {
+					    cd_soil->frootfrac[il][ip] *= bd[ip].y_vegs.c[I_root];  //root C
+					}
+					totfrootc += cd_soil->frootfrac[il][ip];
 
 				}
 			}
@@ -790,12 +803,12 @@ void Cohort::getSoilFineRootFrac(){
 
 	// soil fine root fraction - adjusted by both vertical distribution and root biomass of all PFTs
 	for (int ip=0; ip<NUM_PFT; ip++){
-    	if (cd.m_veg.vegcov[ip]>0.){
-    		for (int il=0; il<cd.m_soil.numsl; il++){
-    			if (cd.m_soil.type[il]>0 && cd.m_soil.frootfrac[il][ip]>0.) {   // non-moss soil layers only
-    				cd.m_soil.frootfrac[il][ip] /= totfrootc;
+    	if (cd_veg->vegcov[ip]>0.){
+    		for (int il=0; il<cd_soil->numsl; il++){
+    			if (cd_soil->type[il]>0 && cd_soil->frootfrac[il][ip]>0.) {   // non-moss soil layers only
+    				cd_soil->frootfrac[il][ip] /= totfrootc;
     			} else {
-    				cd.m_soil.frootfrac[il][ip] = 0.;
+    				cd_soil->frootfrac[il][ip] = 0.;
     			}
 
     		}

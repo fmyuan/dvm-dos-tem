@@ -490,7 +490,7 @@ void Soil_Env::retrieveDailyFronts(){
 
 	}
 
-   // determine the top deepth of daily active layer (seasonal)
+   // determine the top depth of daily active layer (seasonal)
     ed_soid->alc = 0.;
 	for (int il =0; il<MAX_NUM_FNT; il++){
 		  if (il==0 && ed_soid->unfrzcolumn==0.) {
@@ -748,7 +748,7 @@ void Soil_Env::getSoilTransFactor(double btran[MAX_SOI_LAY], Layer* fstsoill, co
 	while(currl!=NULL){
 		if(currl->isSoil){
 			sind++;
-			if(currl->tem>=0.01){
+			if(currl->tem>=0.0){
 				psisat = currl->psisat;
 				psi = dynamic_cast<SoilLayer*>(currl)->getMatricPotential();
 

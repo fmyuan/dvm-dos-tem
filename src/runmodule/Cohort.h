@@ -109,7 +109,7 @@
      	    void updateFir(const int & yrcnt, const int & currmind);
 
 		    // update root distribution
-		    void getSoilFineRootFrac();
+		    void getSoilFineRootFrac(vegstate_dim *cd_veg, soistate_dim *cd_soil);
 		    double assignSoilLayerRootFrac(const double & topz, const double & botz,
 		           const double csumrootfrac[MAX_ROT_LAY], const double dzrotlay[MAX_ROT_LAY]);
 

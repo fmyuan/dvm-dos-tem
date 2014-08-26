@@ -98,6 +98,7 @@ void CohortData::beginOfYear(){
 		y_vegd.ffoliage[ip]     = 0.;
 		y_vegd.eetmx[ip]        = 0.;
 		y_vegd.growingttime[ip] = 0.;
+		d_vegd.growingttime[ip] = 0.;
 		y_vegd.topt[ip]         = 0.;
 		y_vegd.unnormleafmx[ip] = 0.;
 
