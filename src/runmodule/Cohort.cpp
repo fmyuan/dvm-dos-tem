@@ -352,6 +352,7 @@ void Cohort::updateOneTimestep(const int & yrcnt, const int & currmind, const in
    	   	updateFir(yrcnt, currmind);
    	}
 
+   	if(md->timestep==DAILY) cd.endOfDay(dinmcurr);
 	if(currdinm==dinmcurr-1) cd.endOfMonth();
 	if(currmind==11 && currdinm==dinmcurr-1) cd.endOfYear();
 
@@ -711,7 +712,8 @@ void Cohort::updateDIMveg(const int & currmind, const int & currdinm, const bool
 	veg.updateFrootfrac();
 
 	if (currdinm == dinmcurr-1){
-		cd.m_veg = cd.d_veg;
+		if (md->timestep==DAILY) cd.m_veg = cd.d_veg; // it will be updated again to get those mean values for monthly
+		if (md->timestep==MONTHLY) cd.d_veg = cd.m_veg; // just in case we need it somewhere
 	}
 };
 

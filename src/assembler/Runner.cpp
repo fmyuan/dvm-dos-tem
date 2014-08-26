@@ -93,6 +93,8 @@ void Runner::initOutput() {
 
 		string stage = "-"+md.runstages;
 
+		if(md.timestep!=DAILY) md.outSiteDay = false;
+
  		// 1)for general outputs
 		if (md.runmode==1) {   //very detailed output for ONE cohort ONLY
 
