@@ -100,7 +100,7 @@ int Timer::getCurrentYearIndex(){
 
 int Timer::getDOYIndex(const int &mind, const int &did){
   // here the mon is month index, starting from 0 - 11 for Jan. - Dec.
-  // id is day index
+  // id is day index (1-31/30/28)
   	int doy = DOYINDFST[mind]+ did;
  	return (doy);
 };

@@ -18,7 +18,7 @@
 
 Vegetation::Vegetation(){
 	updateLAI5vegc = false;
-	tstepmode = MONTHLY;
+	tstepmode = DAILY;
 	chtlu = NULL;
 	cd = NULL;
 	cd_vegd = NULL;
@@ -177,13 +177,23 @@ void Vegetation::updateLai(const int &currmind, const int &currdinm){
     	if (cd_vegs->vegcov[ip]>0.){
     		if(!updateLAI5vegc){
     			cd_vegs->lai[ip] = chtlu->envlai[currmind][ip];     //So, this will give a portal for input LAI
-
+                if (tstepmode==DAILY) {   // need to interpolate for daily simulation
+                	double curlai = chtlu->envlai[currmind][ip];
+                	double prelai = 0.;
+                	if(currmind>0) {
+                		prelai=chtlu->envlai[currmind-1][ip];
+                	} else {
+                		prelai=chtlu->envlai[MINY-1][ip];
+                	}
+                	// assuming 'prelai'at the first day and 'curlai' at the last day of month
+                	cd_vegs->lai[ip] = prelai + (curlai-prelai)/DINM[currmind]*(currdinm+1);
+                }
     		}else {
     			if (bd_vegs[ip]->c[I_leaf] > 0.) {
     				cd_vegs->lai[ip] = vegdimpar.sla[ip] * bd_vegs[ip]->c[I_leaf];
     			} else {
-    				if (ed_soid[ip]->rtdpgrowstart>0 && ed_soid[ip]->rtdpgrowend<0) {
-    					cd_vegs->lai[ip] = 0.001;   // this is needed for leaf emerging
+    				if (cd_vegd->growingttime[ip] == 0.0) {
+    					cd_vegs->lai[ip] = 0.001;   // this is needed for leaf emerging of annual or deciduous species
     				}
     			}
     		}
@@ -288,7 +298,7 @@ void Vegetation::phenology(const int &currmind, const int &currdinm){
 			cd_vegd->fleaf[ip] = fleaf;
 
 			// set the phenological variables of the year
-			if (currmind == 0 && currdinm == 1) {
+			if (currmind == 0 && currdinm == 0) {
 				cd_vegd->eetmx[ip] = eet;
 				cd_vegd->unnormleafmx[ip] = tempunnormleaf;
 				cd_vegd->growingttime[ip] = ed_soid[ip]->rtdpgdd;
@@ -305,12 +315,14 @@ void Vegetation::phenology(const int &currmind, const int &currdinm){
 					cd_vegd->topt[ip] = ed_atms[ip]->ta;   // it's updating for current year and then update the 'deque', but not used in 'GPP' estimation
 				}
 
-				if (cd_vegd->growingttime[ip]<ed_soid[ip]->rtdpgdd) {  // here, we take the top root zone degree-days since growing started
+				if (cd_vegd->growingttime[ip]<ed_soid[ip]->rtdpgdd) {
+					// here, we take the top root zone degree-days since growing started
+					// can be modified when such an algorithm available
 					cd_vegd->growingttime[ip]=ed_soid[ip]->rtdpgdd;
 				}
 			}
 
-			// 2) plant size (biomass C) or age controlled foliage fraction rative to the max. leaf C
+			// 2) plant size (biomass C) or age controlled foliage fraction relative to the max. leaf C
 			cd_vegd->ffoliage[ip] = getFfoliage(ip, cd_vegs->ifwoody[ip],
 					cd_vegs->ifperenial[ip], bd_vegs[ip]->call);
 
@@ -401,7 +413,7 @@ double Vegetation::getFfoliage(const int &ipft, const bool & ifwoody, const bool
  		ffoliage =  1./(1+m1*exp(m2*sqrt(fcv)));
 	}
 
-    //it is assumed that foliage will not go down during a growth cycle
+    //it is assumed that foliage will not go down during a growing life cycle
   	if(ffoliage>cd_vegd->foliagemx[ipft]){
   		cd_vegd->foliagemx[ipft] = ffoliage;
   	}else{
@@ -426,7 +438,7 @@ double Vegetation::getYearlyMaxLAI(const int &ipft){
 };
 
 
-// the following can be developed further for dynamical fine root distribution
+// the following can be developed further for dynamic fine root distribution
 // currently, it's only do some checking
 void Vegetation::updateFrootfrac(){
 
@@ -447,7 +459,7 @@ void Vegetation::updateFrootfrac(){
     			}
 
     		} else {
-    			for (int il=1; il<MAX_ROT_LAY; il++){
+    			for (int il=0; il<MAX_ROT_LAY; il++){
     				cd_vegs->frootfrac[il][ip] = 0.;
     			}
 

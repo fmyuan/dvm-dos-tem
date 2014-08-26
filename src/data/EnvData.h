@@ -108,7 +108,7 @@ class EnvData{
 
 	// accumulating/averaging yearly variables at the end of month
 	void atm_endOfMonth();
-	void veg_endOfMonth(const int & currmind);
+	void veg_endOfMonth();
 	void grnd_endOfMonth();
 
   private:

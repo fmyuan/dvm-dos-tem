@@ -217,6 +217,8 @@ void EnvData::grnd_beginOfYear(){
 	y_soid.rtdpthawpct  = 0.;
 	y_soid.rtdpts   = 0.;
  	y_soid.rtdpgdd  = 0.;
+ 	m_soid.rtdpgdd  = 0.;
+ 	d_soid.rtdpgdd  = 0.;
  	d_soid.rtdpgrowstart  =MISSING_I;
  	m_soid.rtdpgrowstart  =MISSING_I;
  	y_soid.rtdpgrowstart  =MISSING_I;
@@ -691,25 +693,25 @@ void EnvData::atm_endOfMonth(){
 
 };
 
-void EnvData::veg_endOfMonth(const int & currmind){
+void EnvData::veg_endOfMonth(){
 
-	y_vegs.rwater  += m_vegs.rwater/12.;     // canopy-contained rainfall water
-	y_vegs.snow    += m_vegs.snow/12.;
+	y_vegs.rwater  += m_vegs.rwater/MINY;     // canopy-contained rainfall water
+	y_vegs.snow    += m_vegs.snow/MINY;
 
-	y_vegd.rc      += m_vegd.rc/12.;
-	y_vegd.cc      += m_vegd.cc/12.;
-	y_vegd.btran   += m_vegd.btran/12.;
-	y_vegd.m_ppfd  += m_vegd.m_ppfd/12.;
-	y_vegd.m_vpd   += m_vegd.m_vpd/12.;
+	y_vegd.rc      += m_vegd.rc/MINY;
+	y_vegd.cc      += m_vegd.cc/MINY;
+	y_vegd.btran   += m_vegd.btran/MINY;
+	y_vegd.m_ppfd  += m_vegd.m_ppfd/MINY;
+	y_vegd.m_vpd   += m_vegd.m_vpd/MINY;
 
-	y_v2a.swrefl   += m_v2a.swrefl/12;
+	y_v2a.swrefl   += m_v2a.swrefl/MINY;
 	y_v2a.evap     += m_v2a.evap;
 	y_v2a.tran     += m_v2a.tran;
 	y_v2a.evap_pet += m_v2a.evap_pet;
 	y_v2a.tran_pet += m_v2a.tran_pet;
 	y_v2a.sublim   += m_v2a.sublim;
 
-	y_v2g.swthfl+= m_v2g.swthfl/12.;
+	y_v2g.swthfl+= m_v2g.swthfl/MINY;
 	y_v2g.rdrip += m_v2g.rdrip;
 	y_v2g.sdrip += m_v2g.sdrip;
 	y_v2g.rthfl += m_v2g.rthfl;

@@ -430,7 +430,7 @@ void WildFire::burn(){
 	}
 
     //Need to copy 'bdall->m_soils' to other PFTs, because above soil portion of 'bd' is done on 'bdall'
-    for (int ip=1; ip<NUM_PFT; ip++) {
+    for (int ip=0; ip<NUM_PFT; ip++) {
     	if (cd->m_veg.vegcov[ip]>0.){
     		bd[ip]->m_sois = bdall->m_sois;
     	}

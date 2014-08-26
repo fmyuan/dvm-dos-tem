@@ -258,7 +258,7 @@ void Atmosphere::prepareDayDrivingData2(const int &yrcount, const bool &changeco
 
 	float dtemp = 0.f;
 
-    for (int im=1; im<12; im++) {
+    for (int im=0; im<12; im++) {
   		 for (int id =0; id<DINM[im]; id++){
 
   			 dtemp  = cd->d_tair[DOYINDFST[im]+id];

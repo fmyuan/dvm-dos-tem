@@ -40,7 +40,7 @@ void OutRetrive::setRegnOutData(OutDataRegn *regnodp){
 
 void OutRetrive::updateRegnOutputBuffer(const int & im, const int &idoy){
 
-	if (im==0 && idoy==1) {
+	if (im==0 && idoy==1) {    //'doy' is 1-based index
 		regnod->chtid = cd->chtid;
 		regnod->year  = cd->year;
 		regnod->yrsdist =cd->yrsdist;

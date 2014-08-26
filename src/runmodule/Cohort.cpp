@@ -323,14 +323,14 @@ void Cohort::prepareDayDrivingData(const int & yrindx, const int & usedatmyr){
 
 void Cohort::updateOneTimestep(const int & yrcnt, const int & currmind, const int & currdinm){
 
-	// currmind: zero-based, currdinm: day in the month (1 based)
+	// currmind: zero-based indexing, currdinm: day in the month (0 based-index)
 	cd.day = currdinm;
     cd.month = currmind;
 	int dinmcurr = DINM[currmind];
-	int doy = DOYINDFST[currmind]+currdinm-1;
+	int doy = timer->getDOYIndex(currmind, currdinm+1);
 
-	if(currmind==0 && currdinm==1) cd.beginOfYear();
-	if(currdinm==1) cd.beginOfMonth();
+	if(currmind==0 && currdinm==0) cd.beginOfYear();
+	if(currdinm==0) cd.beginOfMonth();
 
  	// first, update the current dimension/structure of veg-snow/soil column (domain)
    	updateDIMveg(currmind, currdinm, md->dvmmodule);
@@ -347,13 +347,13 @@ void Cohort::updateOneTimestep(const int & yrcnt, const int & currmind, const in
   		updateBgc(currmind, currdinm);
   	}
 
-  	// fourthly, run the disturbance module
-   	if(md->dsbmodule){
+  	// fourthly, run the disturbance module at monthly time-step only
+   	if(md->dsbmodule && currdinm==dinmcurr-1){
    	   	updateFir(yrcnt, currmind);
    	}
 
-	if(currdinm==dinmcurr) cd.endOfMonth();
-	if(currmind==11 && currdinm==dinmcurr) cd.endOfYear();
+	if(currdinm==dinmcurr-1) cd.endOfMonth();
+	if(currmind==11 && currdinm==dinmcurr-1) cd.endOfYear();
 
 	////////////////////////////
 	// store all data for single/multiple cohorts
@@ -374,7 +374,7 @@ void Cohort::updateEnv(const int & currmind, const int & currdinm){
 //Yuan: note that the Veg-Env module calling is for a few PFTs within ONE cohort
 //      1) ed calling is done for each PFTs within the module
 //      2) Env-module calling is done for one PFT, so needs loop for vegetation-relevant processes
-//      3) 'currmind': zero-based, 'currdinm': day of the month (1 based)
+//      3) 'currmind':  0 based-index, 'currdinm': day of the month (0 based-index)
 
     // (i) the n factor for soil temperature calculation from Tair
 
@@ -403,7 +403,7 @@ void Cohort::updateEnv(const int & currmind, const int & currdinm){
 				ed[ip].grnd_beginOfYear();
 			}
 
-			if (currdinm==1){
+			if (currdinm==0){
 				ed[ip].atm_beginOfMonth();
 				ed[ip].veg_beginOfMonth();
 				ed[ip].grnd_beginOfMonth();
@@ -416,7 +416,7 @@ void Cohort::updateEnv(const int & currmind, const int & currdinm){
 		edall->veg_beginOfYear();
 		edall->grnd_beginOfYear();
 	}
-	if (currdinm==1){
+	if (currdinm==0){
 		edall->atm_beginOfMonth();
 		edall->veg_beginOfMonth();
 		edall->grnd_beginOfMonth();
@@ -427,7 +427,7 @@ void Cohort::updateEnv(const int & currmind, const int & currdinm){
 
         int dinmcurr = DINM[currmind];
 
-		int doy =timer->getDOYIndex(currmind, currdinm);
+		int doy =timer->getDOYIndex(currmind, currdinm+1);  // currdinm indexing from 0
 		daylength = gd->alldaylengths[doy];
 
 		//get the daily atm drivers and the data is in 'edall'
@@ -500,10 +500,11 @@ void Cohort::updateEnv(const int & currmind, const int & currdinm){
 				ed[ip].atm_endOfDay(dinmcurr);
 				ed[ip].veg_endOfDay(dinmcurr);
 				ed[ip].grnd_endOfDay(dinmcurr, doy);
+
 				// accumulate yearly vars at the last day of a month
-				if(currdinm==dinmcurr){
+				if(currdinm==dinmcurr-1){
 					ed[ip].atm_endOfMonth();
-					ed[ip].veg_endOfMonth(currmind);
+					ed[ip].veg_endOfMonth();
 					ed[ip].grnd_endOfMonth();
 				}
 			}
@@ -515,9 +516,9 @@ void Cohort::updateEnv(const int & currmind, const int & currdinm){
 		edall->grnd_endOfDay(dinmcurr, doy);
 
 		// accumulate yearly vars at the last day of a month for all pfts
-		if(currdinm==dinmcurr){
+		if(currdinm==dinmcurr-1){
 			edall->atm_endOfMonth();
-			edall->veg_endOfMonth(currmind);
+			edall->veg_endOfMonth();
 			edall->grnd_endOfMonth();
 		}
 
@@ -528,11 +529,11 @@ void Cohort::updateEnv(const int & currmind, const int & currdinm){
 ///////////////////////////////////////////////////////////////////////////////////////////
 void Cohort::updateBgc(const int & currmind, const int & currdinm){
 
-	// currmind: zero-based, currdinm: day in the month (1 based)
+	// currmind: zero-based indexing, currdinm: day in the month (0 based-index)
 	int dinmcurr = DINM[currmind];
 
 	// initializing yearly accumulators
-	if(currmind==0 && currdinm == 1){
+	if(currmind==0 && currdinm == 0){
 	    for (int ip=0; ip<NUM_PFT; ip++){
 	    	if (cd.m_veg.vegcov[ip]>0.){
 	    		bd[ip].veg_beginOfYear();
@@ -546,7 +547,7 @@ void Cohort::updateBgc(const int & currmind, const int & currdinm){
 	}
 
 	// initializing monthly accumulators
-    if (currdinm == 1) {
+    if (currdinm == 0) {
 	    for (int ip=0; ip<NUM_PFT; ip++){
 	    	if (cd.d_veg.vegcov[ip]>0.){
 	    		bd[ip].veg_beginOfMonth();
@@ -560,12 +561,21 @@ void Cohort::updateBgc(const int & currmind, const int & currdinm){
     }
 
 	// vegetation BGC module calling
-	// it's called at the last day of the month, so that monthly drivers/states are updated
-	if ((md->timestep==MONTHLY && currdinm == dinmcurr) ||    // monthly
-	     md->timestep==DAILY) {                           // daily
+	// it's called at the last day of the month,
+    // so that monthly drivers/states are updated upon monthly-averaged 'ed' or others
+	if ((md->timestep==MONTHLY && currdinm == dinmcurr-1) ||    // monthly
+	     md->timestep==DAILY) {                                 // daily
 
 		for (int ip=0; ip<NUM_PFT; ip++){
-			if (cd.m_veg.vegcov[ip]>0.){
+			double vegcov = 0.;
+			if (md->timestep==MONTHLY) {
+				vegcov = cd.m_veg.vegcov[ip];
+			} else if(md->timestep==DAILY) {
+				vegcov = cd.d_veg.vegcov[ip];
+			} else {
+				vegcov = cd.y_veg.vegcov[ip];
+			}
+			if (vegcov>0.){
 
 				vegbgc[ip].prepareIntegration(md->nfeed);
 				vegintegrator[ip].updateMonthlyVbgc();
@@ -575,9 +585,9 @@ void Cohort::updateBgc(const int & currmind, const int & currdinm){
 				if (md->timestep == DAILY) bd[ip].veg_endOfDay(dinmcurr);
 
 				// yearly data accumulation
-				if (currdinm == dinmcurr) bd[ip].veg_endOfMonth();
+				if (currdinm == dinmcurr-1) bd[ip].veg_endOfMonth();
 
-				if(currmind==11){
+				if(currmind==11 && currdinm == dinmcurr-1){
 					vegbgc[ip].adapt();             // this will evolve C/N ratio with CO2
 				}
 			}
@@ -585,8 +595,8 @@ void Cohort::updateBgc(const int & currmind, const int & currdinm){
 
 		getBd4allveg();             // integrating the pfts' 'bd' to allveg 'bdall'
 
-		if(md->timestep == DAILY) bdall->veg_endOfDay(dinmcurr); // monthly data accumulation
-		bdall->veg_endOfMonth();    // yearly data accumulation
+		if(md->timestep==DAILY) bdall->veg_endOfDay(dinmcurr); // monthly data accumulation
+		if(currdinm==dinmcurr-1) bdall->veg_endOfMonth();    // yearly data accumulation
 
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -603,7 +613,7 @@ void Cohort::updateBgc(const int & currmind, const int & currdinm){
 		if(md->timestep==DAILY) bdall->soil_endOfDay(dinmcurr);
 
 		// yearly data accumulation
-		if (currdinm==dinmcurr) {
+		if (currdinm==dinmcurr-1) {
 			bdall->soil_endOfMonth();
 			bdall->land_endOfMonth();
 		}
@@ -614,7 +624,7 @@ void Cohort::updateBgc(const int & currmind, const int & currdinm){
 
 };
 
-//fire disturbance module calling
+//fire disturbance module calling at monthly time-step currently
 /////////////////////////////////////////////////////////////////////////////////
 void Cohort::updateFir(const int & yrind, const int & currmind){
 
@@ -678,7 +688,7 @@ void Cohort::updateFir(const int & yrind, const int & currmind){
 //   Dynamical Vegetation Module (DVM) calling (currrently at monthly timestep)
 ////////////////////////////////////////////////////////////////////////////////
 void Cohort::updateDIMveg(const int & currmind, const int & currdinm, const bool & dvmmodule){
-	// currmind: zero-based, currdinm: day in the month (1 based)
+	// currmind: 0 based index, currdinm: day in the month (0 based index)
 
 	int dinmcurr = DINM[currmind];
 
@@ -692,7 +702,7 @@ void Cohort::updateDIMveg(const int & currmind, const int & currdinm, const bool
 
 	// update phenological variables (factors used for GPP), and LAI
 	veg.phenology(currmind, currdinm);
-	veg.updateLai(currmind, currdinm);    // this must be done after phenology
+	veg.updateLai(currmind, currdinm);    // this must be done only after phenology
 
 	// LAI updated above for each PFT, but FPC (foliage percent cover) may need adjustment
 	veg.updateFpc();
@@ -700,7 +710,7 @@ void Cohort::updateDIMveg(const int & currmind, const int & currdinm, const bool
 
 	veg.updateFrootfrac();
 
-	if (currdinm == dinmcurr){
+	if (currdinm == dinmcurr-1){
 		cd.m_veg = cd.d_veg;
 	}
 };
@@ -709,7 +719,7 @@ void Cohort::updateDIMveg(const int & currmind, const int & currdinm, const bool
 //   Dynamical Soil Layer Module (DSL)
 ////////////////////////////////////////////////////////////////////////////////
 void Cohort::updateDIMgrd(const int & currmind, const int & currdinm, const bool & dslmodule){
-	// currmind: zero-based, currdinm: day in the month (1 based)
+	// currmind: 0 based index, currdinm: day in the month (0 based index)
 
 	// re-call the 'bdall' soil C contents and assign them to the double-linked layer matrix
 	soilbgc.assignCarbonBd2Layer();
@@ -739,8 +749,8 @@ void Cohort::updateDIMgrd(const int & currmind, const int & currdinm, const bool
 
 	}
 
-	// update soil dimension, especially here the root fraction which updated each timestep
-	if (md->timestep==MONTHLY && currdinm == 1) { // first day of the month
+	// update soil dimension, especially here the root fraction which updated each time-step
+	if (md->timestep==MONTHLY && currdinm == 0) { // first day of the month
 		ground.retrieveSoilDimension(&cd.m_soil);
 		getSoilFineRootFrac(&cd.m_veg, &cd.m_soil);
 		cd.d_soil = cd.m_soil;      //soil dimension remains constant in a month
@@ -777,7 +787,7 @@ void Cohort::getSoilFineRootFrac(vegstate_dim *cd_veg, soistate_dim *cd_soil){
 				cumrootfrac[il] = cumrootfrac[il-1]+cd_veg->frootfrac[il][ip];
 			}
 
-			// calculate soil fine root fraction from PFT's 10-rootlayer structure
+			// calculate soil fine root fraction from PFT's 10-root-layer structure
 			// note: at this point, soil fine root fraction ACTUALLY is root biomass C distribution along soil profile
 			for (int il=0; il<cd_soil->numsl; il++){
 				if (cd_soil->type[il]>0) {   // non-moss soil layers only
