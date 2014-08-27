@@ -484,10 +484,10 @@ void Ground::updateLayerIndex(){
 
 		if(currl->isSoil){
 			sind++;
-
+    		currl->solind = sind;
+		} else {
+			currl->solind = MISSING_I;
 		}
-
-		currl->solind = sind;
 
 		currl =currl->nextl;
 	}
@@ -509,7 +509,7 @@ void Ground::updateLayerZ(){
 		currl = currl->nextl;
 	}
 
-	// snow layers ar indexed upwardly
+	// snow layers are indexed upwardly
 	currl = fstsoill;     // 'fstsoill' must be first set up or updated
 	while(currl!=NULL){
 		if (currl->isSnow) {
@@ -1016,7 +1016,7 @@ void Ground::redivideShlwLayers(){
 
 						combineTwoSoilLayersL2U(lwsl,upsl);  //combine this layer and next layer
 
-						upsl->indl = lwsl->indl;
+						//upsl->indl = lwsl->indl;
 						removeLayer(currl->nextl);
 						goto COMBINEBEGIN;
 					} else {
@@ -1244,10 +1244,13 @@ void Ground::splitOneSoilLayer(SoilLayer*usl, SoilLayer* lsl, const double & upd
      usl->dz -= lsldz;    // the upper one will not change its depth from the surface
 	 lsl->z   = usl->z + usl->dz;
 	 lsl->dz  = lsldz;
+	 lsl->rho = usl->rho;
 	 // update layer physical properties ('dz' and 'poro' dependent only)
 	 lsl->derivePhysicalProperty();
 	 usl->derivePhysicalProperty();
 
+	 lsl->hcond = usl->hcond;
+	 lsl->tcond = usl->tcond;
 	 //update layer temperature first, because it's needed for determine frozen status below
 	 if(usl->nextl==NULL){
 		lsl->tem = usl->tem;

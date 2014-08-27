@@ -76,7 +76,7 @@ void Richards::update(Layer *fstsoill, Layer* bdrainl, const double & bdraindept
 	indx0sl = currl->solind;
 	Layer* topsoill = currl;
 
-	while (currl!=NULL && currl->solind<=drainl->solind) {
+	while (currl!=NULL && currl->solind<=drainl->solind && !currl->isRock) {
 		// prepare arrays for calling Richards Equation's solver
 		// for one continuous section of unfrozen soil column: 'soilind' from indx0al:indx0al+numal
 		prepareSoilNodes(currl, bdraindepth);
@@ -147,7 +147,7 @@ void Richards::update(Layer *fstsoill, Layer* bdrainl, const double & bdraindept
 
 	// for layers above 'topsoill', e.g., 'dead moss', if excluded from hydrological process
 	currl = topsoill->prevl;
-	while (currl!=NULL && currl->nextl!=NULL){
+	while (currl!=NULL && currl->nextl!=NULL && !currl->isRock){
 
 		if (currl->indl<fstsoill->indl) break;    // if no layer excluded, the 'while' loop will break here
 
