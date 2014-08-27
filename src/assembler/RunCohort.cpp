@@ -392,9 +392,12 @@ void RunCohort::run_timeseries(){
 	    			   }
 				   }
 
-				   bgcdlyouter.outputCohortBgcVars_dly(-1, &cht.cd, cht.bdall,
+				   // the following NOT always available
+				   if(md->timestep==DAILY){
+		    		   dimmlyouter.outputCohortDimVars_dly(&cht.cd, dstepcnt);
+				       bgcdlyouter.outputCohortBgcVars_dly(-1, &cht.cd, cht.bdall,
 						   icalyr, im, id, dstepcnt);     // this will output non-veg (multiple PFT) related variables
-
+				   }
 				   dstepcnt++;
 	    	   }
 		   } // end of for loop of daily

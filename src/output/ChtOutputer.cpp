@@ -32,6 +32,7 @@ void ChtOutputer::init(string & dirfile){
   	chtidV = ncfile->add_var("CHTID", ncInt);
 	yearV  = ncfile->add_var("YEAR", ncInt, timeD);
 	monV   = ncfile->add_var("MONTH", ncInt, timeD);
+	dayV   = ncfile->add_var("DAY", ncInt, timeD);
 
 	// veg dimension variables
    	cmttypeV  = ncfile->add_var("CMTTYPE", ncInt, timeD);
@@ -79,12 +80,65 @@ void ChtOutputer::init(string & dirfile){
 
 }
 
+void ChtOutputer::outputCohortDimVars_dly(CohortData *dimod, const int & tstepcnt){
+ 	NcError err(NcError::verbose_nonfatal);
+
+	if (tstepcnt==0) chtidV->put(&dimod->chtid);
+	yearV->put_rec(&dimod->year, tstepcnt);
+	monV->put_rec(&dimod->month, tstepcnt);
+	dayV->put_rec(&dimod->day, tstepcnt);
+
+   	cmttypeV->put_rec(&dimod->cmttype, tstepcnt);
+
+   	vegageV->put_rec(&dimod->d_veg.vegage[0], tstepcnt);
+   	ifwoodyV->put_rec(&dimod->d_veg.ifwoody[0], tstepcnt);
+   	ifdeciwoodyV->put_rec(&dimod->d_veg.ifdeciwoody[0], tstepcnt);
+   	ifperenialV->put_rec(&dimod->d_veg.ifperenial[0], tstepcnt);
+   	nonvascularV->put_rec(&dimod->d_veg.nonvascular[0], tstepcnt);
+
+   	vegcovV->put_rec(&dimod->d_veg.vegcov[0], tstepcnt);
+   	laiV->put_rec(&dimod->d_veg.lai[0], tstepcnt);
+   	fpcV->put_rec(&dimod->d_veg.fpc[0], tstepcnt);
+   	rtfracV->put_rec(&dimod->d_veg.frootfrac[0][0], tstepcnt);
+   	fleafV->put_rec(&dimod->d_vegd.fleaf[0], tstepcnt);
+   	ffoliageV->put_rec(&dimod->d_vegd.ffoliage[0], tstepcnt);
+
+   	//
+   	snwthickV->put_rec(&dimod->d_snow.thick, tstepcnt);
+   	snwdenseV->put_rec(&dimod->d_snow.dense, tstepcnt);
+   	snwextramassV->put_rec(&dimod->d_snow.extramass, tstepcnt);
+   	snwageV->put_rec(&dimod->d_snow.olds, tstepcnt);
+
+   	//
+   	soillayernumV->put_rec(&dimod->d_soil.numsl, tstepcnt);
+   	soilmossnumV->put_rec(&dimod->d_soil.mossnum, tstepcnt);
+   	soilshlwnumV->put_rec(&dimod->d_soil.shlwnum, tstepcnt);
+   	soildeepnumV->put_rec(&dimod->d_soil.deepnum, tstepcnt);
+   	soilminenumV->put_rec(&dimod->d_soil.minenum, tstepcnt);
+
+   	soilthickV->put_rec(&dimod->d_soil.totthick, tstepcnt);
+   	mossthickV->put_rec(&dimod->d_soil.mossthick, tstepcnt);
+   	shlwthickV->put_rec(&dimod->d_soil.shlwthick, tstepcnt);
+   	deepthickV->put_rec(&dimod->d_soil.deepthick, tstepcnt);
+   	mineathickV->put_rec(&dimod->d_soil.mineathick, tstepcnt);
+   	minebthickV->put_rec(&dimod->d_soil.minebthick, tstepcnt);
+   	minecthickV->put_rec(&dimod->d_soil.minecthick, tstepcnt);
+   	soilzV->put_rec(&dimod->d_soil.z[0], tstepcnt);
+   	soildzV->put_rec(&dimod->d_soil.dz[0], tstepcnt);
+   	soiltypeV->put_rec(&dimod->d_soil.type[0], tstepcnt);
+   	soilporoV->put_rec(&dimod->d_soil.por[0], tstepcnt);
+   	soiltextureV->put_rec(&dimod->d_soil.texture[0], tstepcnt);
+   	soilrtfracV->put_rec(&dimod->d_soil.frootfrac[0][0], tstepcnt);
+
+}
+
 void ChtOutputer::outputCohortDimVars_mly(CohortData *dimod, const int & tstepcnt){
  	NcError err(NcError::verbose_nonfatal);
 
 	if (tstepcnt==0) chtidV->put(&dimod->chtid);
 	yearV->put_rec(&dimod->year, tstepcnt);
 	monV->put_rec(&dimod->month, tstepcnt);
+	dayV->put_rec(&MISSING_I, tstepcnt);
 
    	cmttypeV->put_rec(&dimod->cmttype, tstepcnt);
 
@@ -136,6 +190,7 @@ void ChtOutputer::outputCohortDimVars_yly(CohortData *dimod, const int & tstepcn
 	if (tstepcnt==0) chtidV->put(&dimod->chtid);
 	yearV->put_rec(&dimod->year, tstepcnt);
 	monV->put_rec(&MISSING_I, tstepcnt);
+	dayV->put_rec(&MISSING_I, tstepcnt);
 
    	cmttypeV->put_rec(&dimod->cmttype, tstepcnt);
 

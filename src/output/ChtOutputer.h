@@ -17,6 +17,7 @@ class ChtOutputer{
 		~ChtOutputer();
 				
 		void init(string & dirfile);
+		void outputCohortDimVars_dly(CohortData *cdp, const int & recordcnt);
 		void outputCohortDimVars_mly(CohortData *cdp, const int & recordcnt);
 		void outputCohortDimVars_yly(CohortData *cdp, const int & recordcnt);
 
@@ -36,6 +37,7 @@ class ChtOutputer{
 
 		NcVar* yearV;
 		NcVar* monV;
+		NcVar* dayV;
 		NcVar* chtidV;
 
 		NcVar* cmttypeV;
