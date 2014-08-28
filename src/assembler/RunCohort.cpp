@@ -262,11 +262,18 @@ void RunCohort::run_OneCohort(){
 
 			//
 			cht.timer->reset();
+
 			md->envmodule = true;
 		    md->bgcmodule = true;
 		    md->dsbmodule = true;
 		    md->dslmodule = true;
 		    md->dvmmodule = true;
+		    for (int ip=0; ip<NUM_PFT; ip++) {
+		    	cht.vegbgc[ip].nfeed = md->nfeed;
+		    }
+		    cht.soilbgc.nfeed = md->nfeed;
+			cht.soilbgc.avlnflag = md->avlnflg;
+			cht.soilbgc.baseline = md->baseline;
 
 			md->friderived = true;
 			cht.timer->stageyrind = 0;
@@ -348,6 +355,12 @@ void RunCohort::runEnvmodule(){
      md->dsbmodule = false;
      md->dslmodule = false;
      md->dvmmodule = false;
+     for (int ip=0; ip<NUM_PFT; ip++) {
+    	 cht.vegbgc[ip].nfeed = false;
+     }
+     cht.soilbgc.nfeed = false;
+	 cht.soilbgc.avlnflag = false;
+	 cht.soilbgc.baseline = false;
 
      cht.cd.yrsdist = 1000;
 

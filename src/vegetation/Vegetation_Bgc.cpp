@@ -169,11 +169,8 @@ void Vegetation_Bgc::initializeState5restart(RestartData *resin){
 
 };
 
-//Yuan: the calculation is done for PFTs one by one
-void Vegetation_Bgc::prepareIntegration(const bool &nfeedback){
-
-	//option of N module
-	nfeed = nfeedback;
+// the calculation is done for PFTs one by one
+void Vegetation_Bgc::prepareIntegration(){
 
 	//canopy conductance for GPP
 	double pet = ed_l2a->pet;    //

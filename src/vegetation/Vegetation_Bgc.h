@@ -44,7 +44,7 @@
     		void initializeState();
     		void initializeState5restart(RestartData *resin);
     
-			void prepareIntegration(const bool &nfeedback);
+			void prepareIntegration();
   			void delta();
   			void deltanfeed();
   			void deltastate();

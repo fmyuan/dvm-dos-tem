@@ -95,15 +95,16 @@ class Integrator{
        char predstr_veg[NUMEQ_VEG][11];
        char predstr_soi[NUMEQ_SOI][11];
 
-       bool vegbgc;
-       bool soibgc;
+       bool vbgcflag;
+       bool sbgcflag;
                     
-       void setBgcData(BgcData *bdp);
+       void setSoiBgcData(BgcData *bdp);
+       void setVegBgcData(BgcData *bdp);
        void setSoil_Bgc(Soil_Bgc * soib);
        void setVegetation_Bgc(Vegetation_Bgc * vegb);
        
-       void updateMonthlyVbgc();
-       void updateDailySbgc(const int &numsl);
+       void updateVegBgc();
+       void updateSoiBgc(const int &numsl);
 
   private:
 
@@ -170,8 +171,8 @@ class Integrator{
       static float  b1, b3, b4, b5;
       static float  b6, b61, b62, b63, b64, b65;
 	 
-      Soil_Bgc * ssl;
-	  Vegetation_Bgc * veg;
+      Soil_Bgc * sbgc;
+	  Vegetation_Bgc * vbgc;
 	  
 	  soistate_bgc *soils;
   	  vegstate_bgc *vegs;

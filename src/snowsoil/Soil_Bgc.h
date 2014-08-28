@@ -63,7 +63,7 @@ class Soil_Bgc{
   	void deltan();
   	void deltastate();
 
-  	void prepareIntegration(const bool &mdnfeedback, const bool &mdavlnflg, const bool &mdbaseline);
+  	void prepareIntegration();
   	void afterIntegration();
   
   private:

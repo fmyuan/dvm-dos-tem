@@ -56,6 +56,7 @@ void Cohort::initSubmodules(){
  		vegenv[i].setCohortData(&cd);
 
  		vegbgc[i].tstepmode = md->timestep;
+ 		vegbgc[i].nfeed = md->nfeed;
  		vegbgc[i].setCohortLookup(&chtlu);
  		vegbgc[i].setCohortData(&cd);
  		vegbgc[i].setEnvData(&ed[i]);
@@ -81,6 +82,9 @@ void Cohort::initSubmodules(){
 	solprntenv.setEnvData(edall);
 
  	soilbgc.tstepmode = md->timestep;
+ 	soilbgc.nfeed = md->nfeed;
+ 	soilbgc.avlnflag = md->avlnflg;
+ 	soilbgc.baseline = md->baseline;
  	soilbgc.setGround(&ground);
 	soilbgc.setCohortLookup(&chtlu);
 	soilbgc.setCohortData(&cd);
@@ -97,14 +101,13 @@ void Cohort::initSubmodules(){
  	}
  	fire.setFirData(fd);
 
-	//BGC states change integration module pointers
+	//BGC states change integration module pointers (note that the calling order, otherwise segmentation fault)
+ 	solintegrator.setSoil_Bgc(&soilbgc);     // this setting do first
+	solintegrator.setSoiBgcData(bdall);      // this setting do secondly
  	for (int i=0; i<NUM_PFT; i++){
- 		vegintegrator[i].setBgcData(&bd[i]);
- 		vegintegrator[i].setVegetation_Bgc(&vegbgc[i]);
+ 		vegintegrator[i].setVegetation_Bgc(&vegbgc[i]);    // this setting do first
+ 		vegintegrator[i].setVegBgcData(&bd[i]);            // this setting do secondly
  	}
-
-	solintegrator.setBgcData(bdall);
- 	solintegrator.setSoil_Bgc(&soilbgc);
 
  	// Output data pointers
  	outbuffer.setDimensionData(&cd);
@@ -588,8 +591,8 @@ void Cohort::updateBgc(const int & currmind, const int & currdinm){
 		for (int ip=0; ip<NUM_PFT; ip++){
 			if (cd_veg->vegcov[ip]>0.){
 
-				vegbgc[ip].prepareIntegration(md->nfeed);
-				vegintegrator[ip].updateMonthlyVbgc();
+				vegbgc[ip].prepareIntegration();
+				vegintegrator[ip].updateVegBgc();
 				vegbgc[ip].afterIntegration();
 
 				// monthly data accumulation from daily simulation
@@ -615,8 +618,8 @@ void Cohort::updateBgc(const int & currmind, const int & currdinm){
 
 		// note: in soil bgc, edall is used (i.e., not pft individually)
         // call the ODE for soil bgc
-		soilbgc.prepareIntegration(md->nfeed, md->avlnflg, md->baseline);
-		solintegrator.updateDailySbgc(MAX_SOI_LAY);
+		soilbgc.prepareIntegration();
+		solintegrator.updateSoiBgc(MAX_SOI_LAY);
 		soilbgc.afterIntegration();
 
 		// monthly data updating

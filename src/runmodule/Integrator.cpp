@@ -145,34 +145,53 @@ Integrator::~Integrator(){
 
 };
 
-void Integrator::setBgcData(BgcData * bdp){
-     // veg. bgc at monthly time-step
-	 vegs = &bdp->m_vegs;
-     a2v  = &bdp->m_a2v;
-	 v2a  = &bdp->m_v2a;
-	 v2soi= &bdp->m_v2soi;
-	 soi2v= &bdp->m_soi2v;
-	 v2v  = &bdp->m_v2v;
+void Integrator::setVegBgcData(BgcData * bdp){
+    // veg. bgc at monthly/daily time-step
 
-	 // soil bgc at daily time-step (so, be cautious here if need data from veg.)
-   	 soils = &bdp->d_sois;
-	 soi2l = &bdp->d_soi2l;
-	 soi2a = &bdp->d_soi2a;
-	 soi2soi = &bdp->d_soi2soi;
+	if(vbgc->tstepmode==MONTHLY) {
+		vegs = &bdp->m_vegs;
+		a2v  = &bdp->m_a2v;
+		v2a  = &bdp->m_v2a;
+		v2soi= &bdp->m_v2soi;
+		soi2v= &bdp->m_soi2v;
+		v2v  = &bdp->m_v2v;
+	} else if (vbgc->tstepmode==DAILY){
+		vegs = &bdp->d_vegs;
+		a2v  = &bdp->d_a2v;
+		v2a  = &bdp->d_v2a;
+		v2soi= &bdp->d_v2soi;
+		soi2v= &bdp->d_soi2v;
+		v2v  = &bdp->d_v2v;
+	}
+}
+
+void Integrator::setSoiBgcData(BgcData * bdp){
+	// soil bgc at monthly/daily time-step
+   	if(sbgc->tstepmode==MONTHLY){
+   		soils = &bdp->m_sois;
+   		soi2l = &bdp->m_soi2l;
+   		soi2a = &bdp->m_soi2a;
+   		soi2soi = &bdp->m_soi2soi;
+   	} else if(sbgc->tstepmode==DAILY){
+   	   	soils = &bdp->d_sois;
+   	   	soi2l = &bdp->d_soi2l;
+   	   	soi2a = &bdp->d_soi2a;
+   	   	soi2soi = &bdp->d_soi2soi;
+   	}
 
 };
 
 void Integrator::setSoil_Bgc(Soil_Bgc * soip){
-   	 ssl = soip;
+   	 sbgc = soip;
 };
 
 void Integrator::setVegetation_Bgc(Vegetation_Bgc * vegp){
-   	 veg = vegp;
+   	 vbgc = vegp;
 };
  
-void Integrator::updateMonthlyVbgc(){
-	 vegbgc = true;      // these two switches will only allow vegetation_bgc call in 'delta'
-	 soibgc = false;
+void Integrator::updateVegBgc(){
+	 vbgcflag = true;      // these two switches will only allow vegetation_bgc call in 'delta'
+	 sbgcflag = false;
 
 	// first reset all the variables to zero
      for (int iv = 0; iv < NUMEQ; iv++){
@@ -191,9 +210,9 @@ void Integrator::updateMonthlyVbgc(){
 
 };
 
-void Integrator::updateDailySbgc(const int & numsoillayer){
-	 vegbgc = false;
-	 soibgc = true;      // these two switches will only allow soil_bgc call in 'delta'
+void Integrator::updateSoiBgc(const int & numsoillayer){
+	 vbgcflag = false;
+	 sbgcflag = true;      // these two switches will only allow soil_bgc call in 'delta'
 
      numsl = numsoillayer;
 
@@ -484,39 +503,39 @@ void Integrator::y2cflux_soi(float y[]){
 /****************************************************************/
 void Integrator::delta(float pstate[], float pdstate[]){
 
-	if (vegbgc) {
+	if (vbgcflag) {
 		// assign value from pstate to temporate variables in veg
 		// only state variabls are needed, since fluxes and diagnostic variables will
 		// be recalculated again based on state variabels
 		y2tcstate_veg(pstate);
 
 		// calculate the fluxes
-		veg->delta();
-		veg->deltanfeed();
+		vbgc->delta();
+		vbgc->deltanfeed();
 
 		// update the delta of state variables
-		veg->deltastate();
+		vbgc->deltastate();
 
 		// assign fluxes and state back to pdstate
 		dc2ystate_veg(pdstate);
 		dc2yflux_veg(pdstate);
 	}
 
-//   ssl->del_soi2v = veg->del_soi2v;  // These two will be done out of this module, because veg-> has to integrate
-//   ssl->del_v2soi = veg->del_v2soi;
+//   sbgc->del_soi2v = vbgc->del_soi2v;  // These two will be done out of this module, because vbgc-> has to integrate
+//   sbgc->del_v2soi = vbgc->del_v2soi;
 
-	if (soibgc) {
-		// assign value from pstate to temporate variables in ssl
+	if (sbgcflag) {
+		// assign value from pstate to temporate variables in sbgc
 		// only state variabls are needed, since fluxes and diagnostic variables will
 		// be recalculated again based on state variabels
 		y2tcstate_soi(pstate);
 
 		// calculate the fluxes
-		ssl->deltac();
-		ssl->deltan();
+		sbgc->deltac();
+		sbgc->deltan();
 
 		// update the delta of state
-		ssl->deltastate();
+		sbgc->deltastate();
 
 		// assign fluxes and state back to pdstate
 		dc2ystate_soi(pdstate);
@@ -528,32 +547,32 @@ void Integrator::delta(float pstate[], float pdstate[]){
 void Integrator::y2tcstate_veg(float pstate[]){
 
 	for (int i=0; i<NUM_PFT_PART; i++){
-     veg->tmp_vegs.c[i]   = pstate[I_VEGC+i];
-     veg->tmp_vegs.strn[i]= pstate[I_STRN+i];
+     vbgc->tmp_vegs.c[i]   = pstate[I_VEGC+i];
+     vbgc->tmp_vegs.strn[i]= pstate[I_STRN+i];
 	}
 
-    veg->tmp_vegs.labn  = pstate[I_LABN];
-    veg->tmp_vegs.deadc = pstate[I_DEADC];
-    veg->tmp_vegs.deadn = pstate[I_DEADN];
+    vbgc->tmp_vegs.labn  = pstate[I_LABN];
+    vbgc->tmp_vegs.deadc = pstate[I_DEADC];
+    vbgc->tmp_vegs.deadn = pstate[I_DEADN];
 
 };
 
 void Integrator::y2tcstate_soi(float pstate[]){
 
      for(int il =0; il<numsl; il++){
-     	ssl->tmp_sois.rawc[il] = pstate[I_L_RAWC+il];
-        ssl->tmp_sois.soma[il] = pstate[I_L_SOMA+il];
-        ssl->tmp_sois.sompr[il]= pstate[I_L_SOMPR+il];
-        ssl->tmp_sois.somcr[il]= pstate[I_L_SOMCR+il];
+     	sbgc->tmp_sois.rawc[il] = pstate[I_L_RAWC+il];
+        sbgc->tmp_sois.soma[il] = pstate[I_L_SOMA+il];
+        sbgc->tmp_sois.sompr[il]= pstate[I_L_SOMPR+il];
+        sbgc->tmp_sois.somcr[il]= pstate[I_L_SOMCR+il];
 
-        ssl->tmp_sois.orgn[il] = pstate[I_L_ORGN+il];
-        ssl->tmp_sois.avln[il] = pstate[I_L_AVLN+il];
+        sbgc->tmp_sois.orgn[il] = pstate[I_L_ORGN+il];
+        sbgc->tmp_sois.avln[il] = pstate[I_L_AVLN+il];
 
      }
-     ssl->tmp_sois.wdebrisc= pstate[I_WDEBRISC];
-     ssl->tmp_sois.wdebrisn= pstate[I_WDEBRISN];
-     ssl->tmp_sois.dmossc  = pstate[I_DMOSSC];
-     ssl->tmp_sois.dmossn  = pstate[I_DMOSSN];
+     sbgc->tmp_sois.wdebrisc= pstate[I_WDEBRISC];
+     sbgc->tmp_sois.wdebrisn= pstate[I_WDEBRISN];
+     sbgc->tmp_sois.dmossc  = pstate[I_DMOSSC];
+     sbgc->tmp_sois.dmossn  = pstate[I_DMOSSN];
 
 };
 
@@ -561,73 +580,73 @@ void Integrator::y2tcstate_soi(float pstate[]){
 void Integrator::dc2ystate_veg(float pdstate[]){
 
 	for (int i=0; i<NUM_PFT_PART; i++){
-		pdstate[I_VEGC+i] = veg->del_vegs.c[i];
-		pdstate[I_STRN+i] = veg->del_vegs.strn[i];
+		pdstate[I_VEGC+i] = vbgc->del_vegs.c[i];
+		pdstate[I_STRN+i] = vbgc->del_vegs.strn[i];
 	}
 
-    pdstate[I_LABN]       = veg->del_vegs.labn;
-	pdstate[I_DEADC]      = veg->del_vegs.deadc;
-	pdstate[I_DEADN]      = veg->del_vegs.deadn;
+    pdstate[I_LABN]       = vbgc->del_vegs.labn;
+	pdstate[I_DEADC]      = vbgc->del_vegs.deadc;
+	pdstate[I_DEADN]      = vbgc->del_vegs.deadn;
 
 };
 
 void Integrator::dc2ystate_soi(float pdstate[]){
 
     for (int il =0; il<numsl; il++){
-    	pdstate[I_L_RAWC+il]  = ssl->del_sois.rawc[il];
-        pdstate[I_L_SOMA+il]  = ssl->del_sois.soma[il];
-        pdstate[I_L_SOMPR+il] = ssl->del_sois.sompr[il];
-        pdstate[I_L_SOMCR+il] = ssl->del_sois.somcr[il];
-        pdstate[I_L_ORGN+il]  = ssl->del_sois.orgn[il];
-        pdstate[I_L_AVLN+il]  = ssl->del_sois.avln[il];
+    	pdstate[I_L_RAWC+il]  = sbgc->del_sois.rawc[il];
+        pdstate[I_L_SOMA+il]  = sbgc->del_sois.soma[il];
+        pdstate[I_L_SOMPR+il] = sbgc->del_sois.sompr[il];
+        pdstate[I_L_SOMCR+il] = sbgc->del_sois.somcr[il];
+        pdstate[I_L_ORGN+il]  = sbgc->del_sois.orgn[il];
+        pdstate[I_L_AVLN+il]  = sbgc->del_sois.avln[il];
 
     }
 
-	pdstate[I_WDEBRISC] = ssl->del_sois.wdebrisc;
-	pdstate[I_WDEBRISN] = ssl->del_sois.wdebrisn;
-	pdstate[I_DMOSSC]   = ssl->del_sois.dmossc;
-	pdstate[I_DMOSSN]   = ssl->del_sois.dmossn;
+	pdstate[I_WDEBRISC] = sbgc->del_sois.wdebrisc;
+	pdstate[I_WDEBRISN] = sbgc->del_sois.wdebrisn;
+	pdstate[I_DMOSSC]   = sbgc->del_sois.dmossc;
+	pdstate[I_DMOSSN]   = sbgc->del_sois.dmossn;
 
 };
 
 void Integrator::dc2yflux_veg(float pdstate[]){
 
 	for (int i=0; i<NUM_PFT_PART; i++){
-		pdstate[I_INGPP+i] = veg->del_a2v.ingpp[i];
-		pdstate[I_INNPP+i] = veg->del_a2v.innpp[i];
-		pdstate[I_GPP+i]   = veg->del_a2v.gpp[i];
-		pdstate[I_NPP+i]   = veg->del_a2v.npp[i];
-		pdstate[I_RG+i]    = veg->del_v2a.rg[i];
-		pdstate[I_RM+i]    = veg->del_v2a.rm[i];
-		pdstate[I_LTRC+i]  = veg->del_v2soi.ltrfalc[i];
-		pdstate[I_SNUP+i]  = veg->del_soi2v.snuptake[i];
-		pdstate[I_NMBOL+i] = veg->del_v2v.nmobil[i];
-		pdstate[I_NRSRB+i] = veg->del_v2v.nresorb[i];
-		pdstate[I_LTRN+i]  = veg->del_v2soi.ltrfaln[i];
+		pdstate[I_INGPP+i] = vbgc->del_a2v.ingpp[i];
+		pdstate[I_INNPP+i] = vbgc->del_a2v.innpp[i];
+		pdstate[I_GPP+i]   = vbgc->del_a2v.gpp[i];
+		pdstate[I_NPP+i]   = vbgc->del_a2v.npp[i];
+		pdstate[I_RG+i]    = vbgc->del_v2a.rg[i];
+		pdstate[I_RM+i]    = vbgc->del_v2a.rm[i];
+		pdstate[I_LTRC+i]  = vbgc->del_v2soi.ltrfalc[i];
+		pdstate[I_SNUP+i]  = vbgc->del_soi2v.snuptake[i];
+		pdstate[I_NMBOL+i] = vbgc->del_v2v.nmobil[i];
+		pdstate[I_NRSRB+i] = vbgc->del_v2v.nresorb[i];
+		pdstate[I_LTRN+i]  = vbgc->del_v2soi.ltrfaln[i];
 	}
 
-  	pdstate[I_INNUP] = veg->del_soi2v.innuptake;
-    pdstate[I_LNUP]  = veg->del_soi2v.lnuptake;
+  	pdstate[I_INNUP] = vbgc->del_soi2v.innuptake;
+    pdstate[I_LNUP]  = vbgc->del_soi2v.lnuptake;
 
 };
 
 void Integrator::dc2yflux_soi(float pdstate[]){
 
 	 for (int il =0; il<numsl; il++){
-		pdstate[I_L_RH_RAW +il]  = ssl->del_soi2a.rhrawc[il];
-		pdstate[I_L_RH_SOMA +il] = ssl->del_soi2a.rhsoma[il];
-		pdstate[I_L_RH_SOMPR+il] = ssl->del_soi2a.rhsompr[il];
-		pdstate[I_L_RH_SOMCR+il] = ssl->del_soi2a.rhsomcr[il];
+		pdstate[I_L_RH_RAW +il]  = sbgc->del_soi2a.rhrawc[il];
+		pdstate[I_L_RH_SOMA +il] = sbgc->del_soi2a.rhsoma[il];
+		pdstate[I_L_RH_SOMPR+il] = sbgc->del_soi2a.rhsompr[il];
+		pdstate[I_L_RH_SOMCR+il] = sbgc->del_soi2a.rhsomcr[il];
 
-		pdstate[I_L_NIMMOB+il]   = ssl->del_soi2soi.nimmob[il];
-		pdstate[I_L_NMIN+il]     = ssl->del_soi2soi.netnmin[il];
+		pdstate[I_L_NIMMOB+il]   = sbgc->del_soi2soi.nimmob[il];
+		pdstate[I_L_NMIN+il]     = sbgc->del_soi2soi.netnmin[il];
 	 }
 
- 	 pdstate[I_RH_WD]    = ssl->del_soi2a.rhwdeb;
- 	 pdstate[I_RH_DMOSS] = ssl->del_soi2a.rhmossc;
+ 	 pdstate[I_RH_WD]    = sbgc->del_soi2a.rhwdeb;
+ 	 pdstate[I_RH_DMOSS] = sbgc->del_soi2a.rhmossc;
 
-	 pdstate[I_ORGNLOSS] = ssl->del_soi2l.orgnlost;
-     pdstate[I_AVLNLOSS] = ssl->del_soi2l.avlnlost;
+	 pdstate[I_ORGNLOSS] = sbgc->del_soi2l.orgnlost;
+     pdstate[I_AVLNLOSS] = sbgc->del_soi2l.avlnlost;
 
 };
 
@@ -646,18 +665,18 @@ int Integrator::checkPools(){
 	int negativepool = -1;
 
 	/////
-   	if (vegbgc) {
+   	if (vbgcflag) {
    		for (int i=0; i<NUM_PFT_PART; i++) {
    			if(ydum[I_VEGC+i]<0) return (I_VEGC+i);
 
-   			if (veg->nfeed) {
+   			if (vbgc->nfeed) {
    				if(ydum[I_STRN+i]<0) return (I_STRN+i);
    			}
    		}
 
    		if(ydum[I_DEADC]<0)	return (I_DEADC);
 
-		if (veg->nfeed) {
+		if (vbgc->nfeed) {
 			if(ydum[I_LABN]<0) return (I_LABN);
 			if(ydum[I_DEADN]<0) return (I_DEADN);
    		}
@@ -665,7 +684,7 @@ int Integrator::checkPools(){
    	}
 
    	////
-   	if (soibgc) {
+   	if (sbgcflag) {
 
    		for (int il=0; il<numsl; il++){
    			if(ydum[I_L_RAWC+il]<0) {
@@ -684,7 +703,7 @@ int Integrator::checkPools(){
    				return (I_L_SOMCR+il);
    			}
 
-   			if (ssl->nfeed) {
+   			if (sbgc->nfeed) {
    				if(ydum[I_L_AVLN+il]<0) {
    					return (I_L_AVLN+il);
    				}
@@ -725,7 +744,7 @@ int Integrator::boundcon( float ptstate[], float err[], float& ptol ) {
   	double zero = 1.e-10;
 
 	// Check carbon and nitrogen state/flux variables
-   	if (vegbgc) {
+   	if (vbgcflag) {
    		//veg C
    		for (int i=0; i<NUM_PFT_PART; i++) {
 
@@ -760,7 +779,7 @@ int Integrator::boundcon( float ptstate[], float err[], float& ptol ) {
    		if (same>zero) return (test = vegvarkey(I_DEADC)+1);
 
    		//Veg N
-   		if (veg->nfeed) {
+   		if (vbgc->nfeed) {
    			for (int i=0; i<NUM_PFT_PART; i++) {
    				same = err[I_STRN+i] - fabs( ptol * ptstate[I_STRN+i]);
    				if (same>zero) return (test = vegvarkey(I_STRN)+1+i);
@@ -796,7 +815,7 @@ int Integrator::boundcon( float ptstate[], float err[], float& ptol ) {
 
   
     //soil_bgc
-   	if (soibgc) {
+   	if (sbgcflag) {
    		//soil C
    		for(int il =0; il<numsl; il++){
 
@@ -846,7 +865,7 @@ int Integrator::boundcon( float ptstate[], float err[], float& ptol ) {
 		if (same>zero) return (test = soivarkey(I_RH_DMOSS)+1);
 
    		// soil N
-   		if (ssl->nfeed) {
+   		if (sbgc->nfeed) {
    			for(int il =0; il<numsl; il++){
    				same = err[I_L_ORGN+il] - fabs(ptol * ptstate[I_L_ORGN+il]);
    				if (same>zero) return (test = soivarkey(I_L_ORGN)+1+il);

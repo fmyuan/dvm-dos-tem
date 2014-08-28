@@ -122,11 +122,7 @@ void Soil_Bgc::assignCarbonLayer2Bd(){
  	bd_sois->dmossc = ground->moss.dmossc;
 };
 
-void Soil_Bgc::prepareIntegration(const bool &mdnfeedback, const bool &mdavlnflg, const bool &mdbaseline){
-
-	 nfeed    = mdnfeedback;
-	 avlnflag = mdavlnflg;
-	 baseline = mdbaseline;
+void Soil_Bgc::prepareIntegration(){
 
 	 // moss death rate if any (from Vegetation_bgc.cpp)
 	 mossdeathc    = bd_v2soi->mossdeathc;
