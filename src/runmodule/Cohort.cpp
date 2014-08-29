@@ -342,7 +342,16 @@ void Cohort::updateOneTimestep(const int & yrcnt, const int & currmind, const in
 
    	// secondly, update the water/thermal process to get (bio)physical conditions
  	if(md->envmodule){
-  		updateEnv(currmind, currdinm);
+
+ 		if(currmind==5 && currdinm==12){
+ 			edall->d_soid.permafrost=1;
+ 		}
+
+ 		updateEnv(currmind, currdinm);
+
+  		if(edall->d_soid.permafrost==0) {
+  			edall->d_soid.permafrost=0;
+  		}
   	}
 
    	//thirdly, update the BGC process to get the C/N states and fluxes
@@ -366,7 +375,7 @@ void Cohort::updateOneTimestep(const int & yrcnt, const int & currmind, const in
 	}
 
 	// always output the restart data (current time-step)
-	outbuffer.updateRestartOutputBuffer();
+	outbuffer.updateRestartOutputBuffer(md);
 
 };
 

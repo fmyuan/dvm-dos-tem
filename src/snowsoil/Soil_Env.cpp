@@ -473,7 +473,7 @@ void Soil_Env::retrieveDailyFronts(){
 	   ed_sois->frontstype[il]= ground->frontstype[il];
    }
 
-   // determine the deepth of daily active layer depth (seasonal or permafrost)
+   // determine the depth of daily active layer depth (seasonal or permafrost)
    ed_soid->ald = MISSING_D;
     for (int il =0; il<MAX_NUM_FNT; il++){
 	   if (il==0 && ed_soid->unfrzcolumn<=0.) {
@@ -643,10 +643,11 @@ double Soil_Env::getEvaporation(const double & dayl, const double &rad){
 double Soil_Env::getWaterTable(Layer* lstsoill){
 	Layer* currl = lstsoill;
 	double wtd=0;
-	double s, dz, por;
+	double s, si, dz, por;
 	double thetai, thetal;
 
-	bool bottomsat = true;   //Yuan: initialize the bottom layer as saturated
+	bool bottomsat  = true;   // initialize the bottom layer as saturated
+	bool bottomclog = true;   // initialize the bottom layer as water-clogged
 	double sums=0.;
 	double ztot=0.;
 	while (currl!=NULL){
@@ -659,16 +660,26 @@ double Soil_Env::getWaterTable(Layer* lstsoill){
 			thetal = currl->getVolLiq();
 			thetal = fmin(por-thetai, thetal);
 
-			s= (thetal+thetai)/fmax(por,0.01);
-			if (bottomsat) {    //if bottom-layer saturated
-				if (s>0.999) {   //
+			s = (thetal+thetai)/fmax(por,0.01);
+			si= thetai/fmax(por,0.01);
+			if (bottomsat || bottomclog) {    //if bottom-layer saturated
+
+				// if too-much ice or too-cold, the layer is assumed to be water-logged
+				// the criteria for those two are arbitrary now, can be modified
+				if (si>0.75 || currl->tem<-2.0) {
+					bottomclog = true;
+					bottomsat = true;   // resetting the layer to raise water-table
+				} else {
+					bottomclog = false;
+				}
+
+				if (s>0.999 || bottomclog) {   //
 					sums = ztot;
 				} else {
 					bottomsat = false;
 					sums+=(fmax(0., s-0.6))/(1.0-0.6)*dz;
-					//if over 0.6 saturation, let the lower porition be part of below water table
+					//if over 0.6 saturation, let the lower portion be part of below water table
 					// this is arbitrary, but useful if the deeper layer is thick (1 or 2 m)
-
 				}
 
 			}
@@ -906,35 +917,20 @@ void Soil_Env::setCohortData(CohortData* cdp){
 };
 
 void Soil_Env::setEnvData(EnvData* edp){
-	if(tstepmode==MONTHLY) {
-	 ed_atms = &edp->m_atms;
-	 ed_atmd = &edp->m_atmd;
-	 ed_a2l  = &edp->m_a2l;
-	 ed_v2a  = &edp->m_v2a;
-	 ed_v2g  = &edp->m_v2g;
-	 ed_snws = &edp->m_snws;
-	 ed_snwd = &edp->m_snwd;
-	 ed_snw2a  = &edp->m_snw2a;
-	 ed_snw2soi= &edp->m_snw2soi;
-	 ed_sois = &edp->m_sois;
-	 ed_soid = &edp->m_soid;
-	 ed_soi2a = &edp->m_soi2a;
-	 ed_soi2l = &edp->m_soi2l;
-	}else if(tstepmode==DAILY) {
-	 ed_atms = &edp->d_atms;
-	 ed_atmd = &edp->d_atmd;
-	 ed_a2l  = &edp->d_a2l;
-	 ed_v2a  = &edp->d_v2a;
-	 ed_v2g  = &edp->d_v2g;
-	 ed_snws = &edp->d_snws;
-	 ed_snwd = &edp->d_snwd;
-	 ed_snw2a  = &edp->d_snw2a;
-	 ed_snw2soi= &edp->d_snw2soi;
-	 ed_sois = &edp->d_sois;
-	 ed_soid = &edp->d_soid;
-	 ed_soi2a = &edp->d_soi2a;
-	 ed_soi2l = &edp->d_soi2l;
-	}
+	// always at daily time-step
+	ed_atms = &edp->d_atms;
+	ed_atmd = &edp->d_atmd;
+	ed_a2l  = &edp->d_a2l;
+	ed_v2a  = &edp->d_v2a;
+	ed_v2g  = &edp->d_v2g;
+	ed_snws = &edp->d_snws;
+	ed_snwd = &edp->d_snwd;
+	ed_snw2a  = &edp->d_snw2a;
+	ed_snw2soi= &edp->d_snw2soi;
+	ed_sois = &edp->d_sois;
+	ed_soid = &edp->d_soid;
+	ed_soi2a = &edp->d_soi2a;
+	ed_soi2l = &edp->d_soi2l;
 };
 
 /////////////////////////////////////////////////////////////////////////

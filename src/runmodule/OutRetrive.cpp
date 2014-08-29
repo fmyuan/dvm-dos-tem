@@ -759,7 +759,7 @@ void OutRetrive::updateRegnOutputBuffer(const int & im, const int &idoy){
 // NOTE: 'resod', restart output data, a dataset to resume a complete model run if model is paused
 // This is useful and very needed for carrying out a series of model implementation, i.e., from eq->spinup->transient->scenario  runs
 // OR, potentially the model can run spatially for one time-step (rather than in time series for ONE cohort)
-void OutRetrive::updateRestartOutputBuffer(){
+void OutRetrive::updateRestartOutputBuffer(ModelData *md){
 
  		resod->reinitValue();
  	
@@ -773,36 +773,55 @@ void OutRetrive::updateRestartOutputBuffer(){
  		//vegegetation
  		resod->yrsdist   = cd->yrsdist;
 
- 	    for (int ip=0; ip<NUM_PFT; ip++) {
- 	    	if (cd->d_veg.vegcov[ip]>0.) {
-				resod->ifwoody[ip]    = cd->d_veg.ifwoody[ip];
-				resod->ifdeciwoody[ip]= cd->d_veg.ifdeciwoody[ip];
-				resod->ifperenial[ip] = cd->d_veg.ifperenial[ip];
-				resod->nonvascular[ip]= cd->d_veg.nonvascular[ip];
+ 		vegstate_dim *cd_vegs;
+ 		vegdiag_dim *cd_vegd;
+        vegstate_env *ed_vegs;
+        vegstate_bgc *bd_vegs;
+ 		if(md->timestep==DAILY) {
+ 			cd_vegs = &cd->d_veg;
+ 			cd_vegd= &cd->d_vegd;
+ 		}else if(md->timestep==MONTHLY) {
+ 	 		cd_vegs = &cd->m_veg;
+ 	 		cd_vegd= &cd->m_vegd;
+ 		}
 
-				resod->vegage[ip] = cd->d_veg.vegage[ip];
-				resod->vegcov[ip] = cd->d_veg.vegcov[ip];
-				resod->lai[ip]    = cd->d_veg.lai[ip];
+ 		for (int ip=0; ip<NUM_PFT; ip++) {
+ 			ed_vegs = &ed[ip]->d_vegs;   // 'ed' always at daily
+ 	 		if(md->timestep==DAILY) {
+ 	 			bd_vegs = &bd[ip]->d_vegs;
+ 	 		}else if(md->timestep==MONTHLY) {
+ 	 	 		bd_vegs = &bd[ip]->m_vegs;
+ 	 		}
+
+ 	 		if (cd_vegs->vegcov[ip]>0.) {
+				resod->ifwoody[ip]    = cd_vegs->ifwoody[ip];
+				resod->ifdeciwoody[ip]= cd_vegs->ifdeciwoody[ip];
+				resod->ifperenial[ip] = cd_vegs->ifperenial[ip];
+				resod->nonvascular[ip]= cd_vegs->nonvascular[ip];
+
+				resod->vegage[ip] = cd_vegs->vegage[ip];
+				resod->vegcov[ip] = cd_vegs->vegcov[ip];
+				resod->lai[ip]    = cd_vegs->lai[ip];
 				for (int i=0; i<MAX_ROT_LAY; i++) {
-					resod->rootfrac[i][ip] = cd->d_veg.frootfrac[i][ip];
+					resod->rootfrac[i][ip] = cd_vegs->frootfrac[i][ip];
 				}
 
-				resod->vegwater[ip] = ed[ip]->d_vegs.rwater;             //canopy water - 'vegs_env'
-				resod->vegsnow[ip]  = ed[ip]->d_vegs.snow;              //canopy snow  - 'vegs_env'
+				resod->vegwater[ip] = ed_vegs->rwater;             //canopy water - 'vegs_env'
+				resod->vegsnow[ip]  = ed_vegs->snow;              //canopy snow  - 'vegs_env'
 
 				for (int i=0; i<NUM_PFT_PART; i++) {
-					resod->vegc[i][ip] = bd[ip]->d_vegs.c[i];   // - 'vegs_bgc'
-					resod->strn[i][ip] = bd[ip]->d_vegs.strn[i];
+					resod->vegc[i][ip] = bd_vegs->c[i];   // - 'vegs_bgc'
+					resod->strn[i][ip] = bd_vegs->strn[i];
 				}
-				resod->labn[ip]      = bd[ip]->d_vegs.labn;
-				resod->deadc[ip]     = bd[ip]->d_vegs.deadc;
-				resod->deadn[ip]     = bd[ip]->d_vegs.deadn;
+				resod->labn[ip]      = bd_vegs->labn;
+				resod->deadc[ip]     = bd_vegs->deadc;
+				resod->deadn[ip]     = bd_vegs->deadn;
 
-				resod->eetmx[ip]        = cd->d_vegd.eetmx[ip];
-				resod->topt[ip]         = cd->d_vegd.topt[ip];
-				resod->unnormleafmx[ip] = cd->d_vegd.unnormleafmx[ip];
-				resod->growingttime[ip] = cd->d_vegd.growingttime[ip];
-				resod->foliagemx[ip]    = cd->d_vegd.foliagemx[ip];        // this is for f(foliage) in GPP to be sure f(foliage) not going down
+				resod->eetmx[ip]        = cd_vegd->eetmx[ip];
+				resod->topt[ip]         = cd_vegd->topt[ip];
+				resod->unnormleafmx[ip] = cd_vegd->unnormleafmx[ip];
+				resod->growingttime[ip] = cd_vegd->growingttime[ip];
+				resod->foliagemx[ip]    = cd_vegd->foliagemx[ip];        // this is for f(foliage) in GPP to be sure f(foliage) not going down
 
 				deque<double> tmpdeque1 = cd->toptque[ip];
 				int recnum = tmpdeque1.size();
@@ -829,7 +848,7 @@ void OutRetrive::updateRestartOutputBuffer(){
 
 	    } // end of 'for ip loop'
 
- 	    // snow - 'restart' from the last point, so be the daily for 'cd' and 'ed', but monthly for 'bd'
+ 	    // snow - 'restart' from the last point, so be the daily for 'cd' and 'ed'
  	    resod->numsnwl = cd->d_snow.numsnwl;
  	    resod->snwextramass = cd->d_snow.extramass;
  	    for(int il =0;il<cd->d_snow.numsnwl; il++){
@@ -843,49 +862,61 @@ void OutRetrive::updateRestartOutputBuffer(){
  		}
  		
  	    //ground-soil
- 	    resod->numsl  = cd->d_soil.numsl;     //actual number of soil layers
- 	    resod->monthsfrozen   = edall->d_sois.monthsfrozen;
- 	    resod->rtfrozendays   = edall->d_sois.rtfrozendays;
- 	    resod->rtunfrozendays = edall->d_sois.rtunfrozendays;
- 	    resod->watertab   = edall->d_sois.watertab;
- 		for(int il =0;il<cd->d_soil.numsl; il++){
- 			resod->DZsoil[il]   = cd->d_soil.dz[il];
- 			resod->AGEsoil[il]  = cd->d_soil.age[il];
- 			resod->TYPEsoil[il] = cd->d_soil.type[il];
- 			resod->TEXTUREsoil[il]= cd->d_soil.texture[il];
+ 		soistate_dim *cd_sois;
+        soistate_bgc *bd_sois;
+        soistate_env *ed_sois;
+        ed_sois = &edall->d_sois;   // always at daily time-step
+ 		if(md->timestep==DAILY) {
+ 			cd_sois = &cd->d_soil;
+ 			bd_sois = &bdall->d_sois;
+ 		}else if(md->timestep==MONTHLY) {
+ 	 		cd_sois = &cd->m_soil;
+ 	 		bd_sois = &bdall->m_sois;
+ 		}
 
- 			resod->TSsoil[il]    = edall->d_sois.ts[il];
- 			resod->LIQsoil[il]   = edall->d_sois.liq[il];
- 			resod->ICEsoil[il]   = edall->d_sois.ice[il];
- 			resod->FROZENsoil[il]= edall->d_sois.frozen[il];
- 			resod->FROZENFRACsoil[il]= edall->d_sois.frozenfrac[il];
+        resod->numsl  = cd_sois->numsl;     //actual number of soil layers
+ 	    resod->monthsfrozen   = ed_sois->monthsfrozen;
+ 	    resod->rtfrozendays   = ed_sois->rtfrozendays;
+ 	    resod->rtunfrozendays = ed_sois->rtunfrozendays;
+ 	    resod->watertab   = ed_sois->watertab;
+ 		for(int il =0;il<cd->d_soil.numsl; il++){
+ 			resod->DZsoil[il]   = cd_sois->dz[il];
+ 			resod->AGEsoil[il]  = cd_sois->age[il];
+ 			resod->TYPEsoil[il] = cd_sois->type[il];
+ 			resod->TEXTUREsoil[il]= cd_sois->texture[il];
+
+ 			resod->TSsoil[il]    = ed_sois->ts[il];
+ 			resod->LIQsoil[il]   = ed_sois->liq[il];
+ 			resod->ICEsoil[il]   = ed_sois->ice[il];
+ 			resod->FROZENsoil[il]= ed_sois->frozen[il];
+ 			resod->FROZENFRACsoil[il]= ed_sois->frozenfrac[il];
 
  		}
 
  		for(int il =0;il<MAX_ROC_LAY; il++){
- 			resod->TSrock[il] = edall->d_sois.trock[il];
+ 			resod->TSrock[il] = ed_sois->trock[il];
  			resod->DZrock[il] = ROCKTHICK[il];
  		}
 
  		for(int il =0;il<MAX_NUM_FNT; il++){
- 			resod->frontZ[il]  = edall->d_sois.frontsz[il];
- 			resod->frontFT[il] = edall->d_sois.frontstype[il];
+ 			resod->frontZ[il]  = ed_sois->frontsz[il];
+ 			resod->frontFT[il] = ed_sois->frontstype[il];
  		}
 
  		//
- 		resod->wdebrisc = bdall->d_sois.wdebrisc;
- 		resod->wdebrisn = bdall->d_sois.wdebrisn;
- 		resod->dmossc = bdall->d_sois.dmossc;
- 		resod->dmossn = bdall->d_sois.dmossn;
- 		for(int il =0;il<cd->d_soil.numsl; il++){
- 			resod->rawc[il]  = bdall->d_sois.rawc[il];
- 			resod->soma[il]  = bdall->d_sois.soma[il];
- 			resod->sompr[il] = bdall->d_sois.sompr[il];
- 			resod->somcr[il] = bdall->d_sois.somcr[il];
+ 		resod->wdebrisc = bd_sois->wdebrisc;
+ 		resod->wdebrisn = bd_sois->wdebrisn;
+ 		resod->dmossc = bd_sois->dmossc;
+ 		resod->dmossn = bd_sois->dmossn;
+ 		for(int il =0;il<cd_sois->numsl; il++){
+ 			resod->rawc[il]  = bd_sois->rawc[il];
+ 			resod->soma[il]  = bd_sois->soma[il];
+ 			resod->sompr[il] = bd_sois->sompr[il];
+ 			resod->somcr[il] = bd_sois->somcr[il];
 
- 			resod->orgn[il] = bdall->d_sois.orgn[il];
- 			resod->avln[il] = bdall->d_sois.avln[il];
- 			resod->ch4[il] = bdall->d_sois.ch4[il];
+ 			resod->orgn[il] = bd_sois->orgn[il];
+ 			resod->avln[il] = bd_sois->avln[il];
+ 			resod->ch4[il] = bd_sois->ch4[il];
 
  	    	deque<double> tmpdeque = bdall->prvltrfcnque[il];
  	    	int recnum = tmpdeque.size();
