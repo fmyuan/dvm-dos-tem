@@ -332,8 +332,11 @@ void Cohort::updateOneTimestep(const int & yrcnt, const int & currmind, const in
 	int dinmcurr = DINM[currmind];
 	int doy = timer->getDOYIndex(currmind, currdinm+1);
 
+	// note: do the 'cd' initializing timely accumulators here,
+	// because 'cd' are for both 'veg' (multiple-pfts) and 'soil',
+	// except for 'cd_snow' (which are directly associated with 'ed').
+	if(md->timestep==DAILY && currdinm==0) cd.beginOfMonth();
 	if(currmind==0 && currdinm==0) cd.beginOfYear();
-	if(currdinm==0) cd.beginOfMonth();
 
  	// first, update the current dimension/structure of veg-snow/soil column (domain)
    	updateDIMveg(currmind, currdinm, md->dvmmodule);
@@ -355,6 +358,9 @@ void Cohort::updateOneTimestep(const int & yrcnt, const int & currmind, const in
    	   	updateFir(yrcnt, currmind);
    	}
 
+	// note: do the 'cd' updating timely accumulators here,
+	// because 'cd' are for both 'veg' (multiple-pfts) and 'soil',
+	// except for 'cd_snow' (which are directly associated with 'ed').
    	if(md->timestep==DAILY) {
    		cd.endOfDay(dinmcurr);
    	} else if (md->timestep==MONTHLY){
@@ -771,7 +777,7 @@ void Cohort::updateDIMgrd(const int & currmind, const int & currdinm, const bool
 
 	// re-call the 'bdall' soil C contents
 	// and assign them to the double-linked layer matrix each time-step
-	soilbgc.assignCarbonBd2Layer();
+	if(md->bgcmodule) soilbgc.assignCarbonBd2Layer();
 
 	// only update the thickness at begin of year, since it is a slow process
 	// NOTE: the following performance IS on 'ground', which not associated with time-step
@@ -808,7 +814,7 @@ void Cohort::updateDIMgrd(const int & currmind, const int & currdinm, const bool
 	} else if (md->timestep==DAILY){
 		ground.retrieveSoilDimension(&cd.d_soil);
 		getSoilFineRootFrac(&cd.d_veg, &cd.d_soil);
-	} else {
+	} else if (currmind==0 && currdinm==0){
 		ground.retrieveSoilDimension(&cd.y_soil);
 		getSoilFineRootFrac(&cd.y_veg, &cd.y_soil);
 		cd.m_soil = cd.y_soil;
@@ -846,12 +852,16 @@ void Cohort::getSoilFineRootFrac(vegstate_dim *cd_veg, soistate_dim *cd_soil){
 					layerbot = cd_soil->z[il]+cd_soil->dz[il]-mossthick;
 
 					cd_soil->frootfrac[il][ip] = assignSoilLayerRootFrac(layertop, layerbot, cumrootfrac, ROOTTHICK);  //fraction
-					if(md->timestep==DAILY){
-					    cd_soil->frootfrac[il][ip] *= bd[ip].d_vegs.c[I_root];  //root C
-					} else if(md->timestep==MONTHLY){
-					    cd_soil->frootfrac[il][ip] *= bd[ip].m_vegs.c[I_root];  //root C
-					} else {
-					    cd_soil->frootfrac[il][ip] *= bd[ip].y_vegs.c[I_root];  //root C
+					cd_soil->frootfrac[il][ip] *= cd_veg->fpc[ip];
+
+					if(md->bgcmodule){
+						if(md->timestep==DAILY){
+					    	cd_soil->frootfrac[il][ip] *= bd[ip].d_vegs.c[I_root];  //root C
+						} else if(md->timestep==MONTHLY){
+					    	cd_soil->frootfrac[il][ip] *= bd[ip].m_vegs.c[I_root];  //root C
+						} else {
+					    	cd_soil->frootfrac[il][ip] *= bd[ip].y_vegs.c[I_root];  //root C
+						}
 					}
 					totfrootc += cd_soil->frootfrac[il][ip];
 

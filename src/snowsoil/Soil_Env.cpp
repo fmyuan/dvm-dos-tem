@@ -637,7 +637,7 @@ double Soil_Env::getEvaporation(const double & dayl, const double &rad){
 	double tair = ed_atms->ta;
 	double vpdpa = ed_atmd->vpd;
 	double daylsec = dayl*3600;
-	if (daylsec < 0.1) { // 0.1 sec for mathmatical purpose, otherwise 'daytimerad' below will be 'inf'
+	if (daylsec < 0.1) { // 0.1 sec for mathematical purpose, otherwise 'daytimerad' below will be 'inf'
 		return (0.);
 	}
 	double daytimerad = rad*86400/daylsec; //w/m2
@@ -648,6 +648,7 @@ double Soil_Env::getEvaporation(const double & dayl, const double &rad){
 	double rbl = 107 * rcorr;
 	
 	double pmet = getPenMonET( tair, vpdpa, daytimerad,rbl, rbl);
+	ed_soi2a->evap_pet = pmet;
 	double dsr = ed_atms->dsr;
 	if (dsr<=1.0) dsr=1.0;
 	double ratiomin =envpar.evapmin;

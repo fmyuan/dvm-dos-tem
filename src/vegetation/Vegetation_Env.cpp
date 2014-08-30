@@ -132,7 +132,7 @@ void Vegetation_Env::updateWaterBalance(const double & daylhr){
 		ed_v2g->sthfl = ed_a2v->snfl -ed_a2v->sinter;
 	
 		//evaportranspiration
-		//temperature and pressure correction factor for conductances
+		//temperature and pressure correction factor for conductance
 		double gcorr = 1.; //pow( (atmsd->ta +273.15)/293.15, 1.75); // * 101300/pa;
 		double gl_st = 0.;
 		ed_vegd->m_vpd=0.;
