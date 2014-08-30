@@ -280,9 +280,9 @@ void EnvOutputer::outputCohortEnvVars_dly(const int &ipft, snwstate_dim *d_snow,
 		soilfronttypeV->put_rec(&envod->d_sois.frontstype[0], tstepcnt);
 
 		soilwatertabV->put_rec(&envod->d_sois.watertab, tstepcnt);
-		permafrostV->put_rec(&envod->d_soid.permafrost, tstepcnt);
-		soilaldV->put_rec(&envod->d_soid.ald, tstepcnt);
-		soilalcV->put_rec(&envod->d_soid.alc, tstepcnt);
+		permafrostV->put_rec(&envod->d_sois.permafrost, tstepcnt);
+		soilaldV->put_rec(&envod->d_sois.ald, tstepcnt);
+		soilalcV->put_rec(&envod->d_sois.alc, tstepcnt);
 
 		soilgrowstartV->put_rec(&envod->d_soid.rtdpgrowstart, tstepcnt);
 		soilgrowendV->put_rec(&envod->d_soid.rtdpgrowend, tstepcnt);
@@ -434,9 +434,9 @@ void EnvOutputer::outputCohortEnvVars_mly(const int &ipft, snwstate_dim *m_snow,
 		soilfronttypeV->put_rec(&envod->m_sois.frontstype[0], tstepcnt);
 
 		soilwatertabV->put_rec(&envod->m_sois.watertab, tstepcnt);
-		permafrostV->put_rec(&envod->m_soid.permafrost, tstepcnt);
-		soilaldV->put_rec(&envod->m_soid.ald, tstepcnt);
-		soilalcV->put_rec(&envod->m_soid.alc, tstepcnt);
+		permafrostV->put_rec(&envod->m_sois.permafrost, tstepcnt);
+		soilaldV->put_rec(&envod->m_sois.ald, tstepcnt);
+		soilalcV->put_rec(&envod->m_sois.alc, tstepcnt);
 
 		soilgrowstartV->put_rec(&envod->m_soid.rtdpgrowstart, tstepcnt);
 		soilgrowendV->put_rec(&envod->m_soid.rtdpgrowend, tstepcnt);
@@ -589,9 +589,9 @@ void EnvOutputer::outputCohortEnvVars_yly(const int &ipft, snwstate_dim* y_snow,
 		soilfronttypeV->put_rec(&envod->y_sois.frontstype[0], tstepcnt);
 
 		soilwatertabV->put_rec(&envod->y_sois.watertab, tstepcnt);
-		permafrostV->put_rec(&envod->y_soid.permafrost, tstepcnt);
-		soilaldV->put_rec(&envod->y_soid.ald, tstepcnt);
-		soilalcV->put_rec(&envod->y_soid.alc, tstepcnt);
+		permafrostV->put_rec(&envod->y_sois.permafrost, tstepcnt);
+		soilaldV->put_rec(&envod->y_sois.ald, tstepcnt);
+		soilalcV->put_rec(&envod->y_sois.alc, tstepcnt);
 
 		soilgrowstartV->put_rec(&envod->y_soid.rtdpgrowstart, tstepcnt);
 		soilgrowendV->put_rec(&envod->y_soid.rtdpgrowend, tstepcnt);

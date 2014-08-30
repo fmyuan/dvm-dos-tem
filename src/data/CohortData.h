@@ -88,6 +88,7 @@ class CohortData{
   	    void beginOfMonth();
 
   	    void endOfDay(const int & dinm);
+  	    void endOfDay_snow(const int & dinm);
   	    void endOfMonth();
   	    void endOfYear();
 

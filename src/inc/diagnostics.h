@@ -66,11 +66,6 @@ struct snwdiag_env{
 
 struct soidiag_env{
 
-	int permafrost;
-	double unfrzcolumn;    // unfrozen soil column length (m)
-	double alc;            // active layer cap (m), i.e. the top of active layer - seasonal frezing front
-	double ald;            // active layer depth (m), i.e., the bottom of active layer - seasonal or permafrost
-
 	//variables used for estimating growing season and growth timing
 	double rtdpts;          // soil temperature over the active root zone depth 'rtdp4gdd'
 	double rtdpthawpct;     // soil thawing period percentage over 'rtdp4gdd'
@@ -120,6 +115,8 @@ struct soidiag_env{
 	double hkminea;
 	double hkmineb;
 	double hkminec;
+
+	double unfrzcolumn;    // un-frozen soil column length (m)
 
 };
 

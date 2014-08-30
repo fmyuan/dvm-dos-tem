@@ -47,7 +47,7 @@ class Soil_Env{
 
       	void getSoilTransFactor(double btran[MAX_SOI_LAY], Layer* fstsoill, const double vrootfr[MAX_SOI_LAY]);
 
-		void retrieveDailyTM(Layer* toplayer, Layer* lstsoill);
+		void retrieveDailyTM(const double & tdrv, Layer* toplayer, Layer* lstsoill);
 
 	private:
 

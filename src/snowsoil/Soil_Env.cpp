@@ -216,7 +216,7 @@ void Soil_Env::initializeState(){
 	ground->checkWaterValidity();
 
     // assign 'ground' data to 'ed'
-	retrieveDailyTM(ground->toplayer, ground->lstsoill);
+	retrieveDailyTM(ed_atms->ta, ground->toplayer, ground->lstsoill);
 	retrieveDailyFronts();
 
 	//misc. items
@@ -281,7 +281,7 @@ void Soil_Env::initializeState5restart(RestartData* resin){
 	ground->checkWaterValidity();
 
     // assign 'ground' data to 'ed'
-	retrieveDailyTM(ground->toplayer, ground->lstsoill);
+	retrieveDailyTM(ed_atms->ta, ground->toplayer, ground->lstsoill);
 	retrieveDailyFronts();
 
 	//
@@ -350,6 +350,7 @@ void Soil_Env::updateDailyGroundT(const double & tdrv, const double & dayl){
      }
 
 	// 3) at end of each day, 'ed' should be updated for thermal properties
+     // (better to do here, because some variables are needed for soil moisture module)
 	updateDailySoilThermal4Growth(ground->fstsoill, tsurface);  // this is needed for growing
 	updateLayerStateAfterThermal(ground->fstsoill, ground->lstsoill, ground->botlayer);  //this shall be done before the following
 	retrieveDailyFronts();  // update 'ed' with new soil thawing/freezing fronts, and daily 'ald', 'cld'
@@ -484,9 +485,9 @@ void Soil_Env::updateLayerStateAfterThermal(Layer* fstsoill, Layer *lstsoill, La
 	ed_soid->tbotrock = botlayer->tem;
 
 	if(lstsoill->frozen==-1){        //Yuan: -1 should be unfrozen
-		ed_soid->permafrost =0;
+		ed_sois->permafrost =0;
 	}else{
-		ed_soid->permafrost =1;
+		ed_sois->permafrost =1;
 	}
 
 }
@@ -504,34 +505,34 @@ void Soil_Env::retrieveDailyFronts(){
    }
 
    // determine the depth of daily active layer depth (seasonal or permafrost)
-   ed_soid->ald = MISSING_D;
+   ed_sois->ald = MISSING_D;
     for (int il =0; il<MAX_NUM_FNT; il++){
 	   if (il==0 && ed_soid->unfrzcolumn<=0.) {
-		   ed_soid->ald = 0.;
+		   ed_sois->ald = 0.;
 		   break;
 	   } else if (il==0 && ed_soid->unfrzcolumn>=cd_soil->totthick) {
-		   ed_soid->ald = cd_soil->totthick;
+		   ed_sois->ald = cd_soil->totthick;
 		   break;
 	   } else if(ed_sois->frontsz[il]>0. && ed_sois->frontstype[il]==-1){
-		   if(ed_soid->ald < ed_sois->frontsz[il]){    // assuming the deepest thawing front
-			   ed_soid->ald = ed_sois->frontsz[il];
+		   if(ed_sois->ald < ed_sois->frontsz[il]){    // assuming the deepest thawing front
+			   ed_sois->ald = ed_sois->frontsz[il];
 		   }
 	  }
 
 	}
 
    // determine the top depth of daily active layer (seasonal)
-    ed_soid->alc = 0.;
+    ed_sois->alc = 0.;
 	for (int il =0; il<MAX_NUM_FNT; il++){
 		  if (il==0 && ed_soid->unfrzcolumn==0.) {
-			  ed_soid->alc = 0.;
+			  ed_sois->alc = 0.;
 			  break;
 		  } else if (il==0 && ed_soid->unfrzcolumn>=cd_soil->totthick) {
-			  ed_soid->alc = cd_soil->totthick;
+			  ed_sois->alc = cd_soil->totthick;
 			  break;
 		  } else if(ed_sois->frontsz[il]>0. && ed_sois->frontstype[il]==1){
-		  	 if(ed_soid->alc < ed_sois->frontsz[il]){    // assuming the deepest freezing front
-		  	 	ed_soid->alc = ed_sois->frontsz[il];
+		  	 if(ed_sois->alc < ed_sois->frontsz[il]){    // assuming the deepest freezing front
+		  	 	ed_sois->alc = ed_sois->frontsz[il];
 		  	 }
 		  }
 	}
@@ -816,7 +817,7 @@ void Soil_Env::getSoilTransFactor(double btran[MAX_SOI_LAY], Layer* fstsoill, co
 }
 
 // refresh snow-soil 'ed' from double-linked layer matrix after Thermal/Hydrological processes are done
-void Soil_Env::retrieveDailyTM(Layer* toplayer, Layer *lstsoill){
+void Soil_Env::retrieveDailyTM(const double & tsurface, Layer* toplayer, Layer *lstsoill){
 	
 	//first empty the 'ed' arrays: the reason is that NOT ALL will be refreshed below (e.g., layer is melted or burned)
 	for (int i=0; i<MAX_SNW_LAY ; i++){
@@ -843,10 +844,6 @@ void Soil_Env::retrieveDailyTM(Layer* toplayer, Layer *lstsoill){
 	}
 	for (int i=0; i<MAX_ROC_LAY ; i++){
 	    ed_sois->trock[i]  = MISSING_D;
-	}
-	for (int i=0; i<MAX_NUM_FNT ; i++){
-	    ed_sois->frontstype[i]  = MISSING_I;
-	    ed_sois->frontsz[i]     = MISSING_D;
 	}
 
 	//
@@ -925,6 +922,10 @@ void Soil_Env::retrieveDailyTM(Layer* toplayer, Layer *lstsoill){
 
 	ed_sois->draindepth = ground->draindepth;
 
+	// the following may not be needed (already called in updateDailyGroundT, but just in case
+	updateDailySoilThermal4Growth(ground->fstsoill, tsurface);  // this is needed for growing
+	updateLayerStateAfterThermal(ground->fstsoill, ground->lstsoill, ground->botlayer);  //this shall be done before the following
+	retrieveDailyFronts();
 }
 
 void Soil_Env::setGround(Ground* grndp){

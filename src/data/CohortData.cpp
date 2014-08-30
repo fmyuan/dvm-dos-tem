@@ -204,14 +204,7 @@ void CohortData::endOfDay(const int & dinm){
     	}
 	}
 
-	//2) 'snow' dimension updates at daily timestep
-	// for layered-snow properties NOT updated monthly (not physically meaningful)
-	m_snow.thick += d_snow.thick/dinm;
-	m_snow.dense += d_snow.dense/dinm;
-	m_snow.extramass += d_snow.extramass/dinm;
-	m_snow.olds = d_snow.olds;   // 'd_snow.olds' IS cumulative since model starting.
-
-	// 3) soil: constant within a year, except for the root distribution/moss states
+	// 2) soil: constant within a year, except for the root distribution/moss states
 	m_soil = d_soil;
 	m_soil.mossthick =+d_soil.mossthick/dinm;
 	for (int ip=0; ip<NUM_PFT; ip++){
@@ -219,6 +212,17 @@ void CohortData::endOfDay(const int & dinm){
 			m_soil.frootfrac[il][ip] += d_soil.frootfrac[il][ip]/dinm;    // need to update 'rootfrac' in soil monthly
 		}
 	}
+
+}
+
+void CohortData::endOfDay_snow(const int & dinm){
+
+	//3) 'snow' dimension updates at daily timestep
+	// for layered-snow properties NOT updated monthly (not physically meaningful)
+	m_snow.thick += d_snow.thick/dinm;
+	m_snow.dense += d_snow.dense/dinm;
+	m_snow.extramass += d_snow.extramass/dinm;
+	m_snow.olds = d_snow.olds;   // 'd_snow.olds' IS cumulative since model starting.
 
 }
 

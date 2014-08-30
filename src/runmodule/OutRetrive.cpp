@@ -233,11 +233,11 @@ void OutRetrive::updateRegnOutputBuffer(const int & im, const int &idoy){
 	}
 
 	if (EOY && regnod->outvarlist[I_permafrost]==1) {
-		regnod->permafrost.push_back(edall->y_soid.permafrost);
+		regnod->permafrost.push_back(edall->y_sois.permafrost);
 	} else if (EOM && regnod->outvarlist[I_permafrost]==2) {
-		regnod->permafrost.push_back(edall->m_soid.permafrost);
+		regnod->permafrost.push_back(edall->m_sois.permafrost);
 	} else if (regnod->outvarlist[I_permafrost]==3) {
-		regnod->permafrost.push_back(edall->d_soid.permafrost);
+		regnod->permafrost.push_back(edall->d_sois.permafrost);
 	}
 
 	if (EOY && regnod->outvarlist[I_mossdz]==1){
@@ -457,19 +457,19 @@ void OutRetrive::updateRegnOutputBuffer(const int & im, const int &idoy){
 	}
 
 	if (EOY && regnod->outvarlist[I_alc]==1){
-		regnod->alc.push_back(edall->y_soid.alc);
+		regnod->alc.push_back(edall->y_sois.alc);
 	} else if (EOM && regnod->outvarlist[I_alc]==2) {
-		regnod->alc.push_back(edall->m_soid.alc);
+		regnod->alc.push_back(edall->m_sois.alc);
 	} else if (regnod->outvarlist[I_alc]==3) {
-		regnod->alc.push_back(edall->d_soid.alc);
+		regnod->alc.push_back(edall->d_sois.alc);
 	}
 
 	if (EOY && regnod->outvarlist[I_ald]==1){
-		regnod->ald.push_back(edall->y_soid.ald);
+		regnod->ald.push_back(edall->y_sois.ald);
 	} else if (EOM && regnod->outvarlist[I_ald]==2) {
-		regnod->ald.push_back(edall->m_soid.ald);
+		regnod->ald.push_back(edall->m_sois.ald);
 	} else if (regnod->outvarlist[I_ald]==3) {
-		regnod->ald.push_back(edall->d_soid.ald);
+		regnod->ald.push_back(edall->d_sois.ald);
 	}
 
 ///

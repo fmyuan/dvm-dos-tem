@@ -196,6 +196,9 @@ void EnvData::grnd_beginOfYear(){
    	}
 	y_sois.watertab   = 0.;
 	y_sois.draindepth = 0.;
+	y_sois.permafrost  = 1;
+	y_sois.alc = 0.;
+	y_sois.ald = MISSING_D;
 
    	for (int il=0; il<MAX_SOI_LAY; il++){
 		y_soid.vwc[il] = 0.;
@@ -207,12 +210,9 @@ void EnvData::grnd_beginOfYear(){
 		y_soid.fbtran[il] = 0.;
 	}
 
-	y_soid.permafrost  = 1;
 	y_soid.unfrzcolumn = 0;
-	y_soid.alc = 0.;
-	y_soid.ald = MISSING_D;
 
-   	y_soid.frasat = 0.;
+	y_soid.frasat = 0.;
 
 	y_soid.rtdpthawpct  = 0.;
 	y_soid.rtdpts   = 0.;
@@ -353,6 +353,9 @@ void EnvData::grnd_beginOfMonth(){
    	}
    	m_sois.watertab   = 0.;
    	m_sois.draindepth = 0.;
+	m_sois.permafrost  = MISSING_I;
+	m_sois.alc = 0.;
+	m_sois.ald = MISSING_D;
 
    	for (int il=0; il<MAX_SOI_LAY; il++){
 		m_soid.vwc[il] = 0.;
@@ -365,10 +368,7 @@ void EnvData::grnd_beginOfMonth(){
 	}
    	m_soid.frasat = 0.;
 
-	m_soid.permafrost  = MISSING_I;
 	m_soid.unfrzcolumn = 0.;
-	m_soid.alc = 0.;
-	m_soid.ald = MISSING_D;
 
 	m_soid.rtdpthawpct= 0.;
 	m_soid.rtdpts     = 0.;
@@ -471,13 +471,14 @@ void EnvData::grnd_endOfDay(const int & dinm, const int & doy){
 	// soils
 	int numsoi = cd->m_soil.numsl;
 	for(int il =0; il<numsoi; il++){
+      if(il<cd->d_soil.numsl){   // in case any 'daily' change of soil structure
 		m_sois.frozen[il] += d_sois.frozen[il]/dinm;   //so, if some days frozen, some day not, its value shall be between -1 and 1.
 		m_sois.frozenfrac[il] += d_sois.frozenfrac[il]/dinm;
 
 		m_sois.ts[il]  += d_sois.ts[il]/dinm;
 		m_sois.liq[il] += d_sois.liq[il]/dinm;
 		m_sois.ice[il] += d_sois.ice[il]/dinm;
-
+      }
 	}
 	m_sois.watertab += d_sois.watertab/dinm;
 	m_sois.draindepth += d_sois.draindepth/dinm;
@@ -493,6 +494,8 @@ void EnvData::grnd_endOfDay(const int & dinm, const int & doy){
 	d_soid.hkminea = 0.;  d_soid.hkmineb = 0.;  d_soid.hkminec = 0.;
 	int mlind = 0;
 	for(int il=0; il<numsoi; il++){
+
+	  if(il<cd->d_soil.numsl){   // in case any 'daily' change of soil structure
 		if (cd->d_soil.type[il]==1) {
 			d_soid.vwcshlw += d_soid.vwc[il]*cd->d_soil.dz[il]/cd->d_soil.shlwthick;
 			d_soid.tshlw   += d_sois.ts[il]*cd->d_soil.dz[il]/cd->d_soil.shlwthick;
@@ -522,12 +525,13 @@ void EnvData::grnd_endOfDay(const int & dinm, const int & doy){
 			}
 
 			mlind++;
-
 		}
 
+	  }
 	}
 
 	for(int il=0; il<numsoi; il++){
+      if(il<cd->d_soil.numsl){   // in case any 'daily' change of soil structure
 	   	m_soid.vwc[il] += d_soid.vwc[il]/dinm;
 	   	m_soid.lwc[il] += d_soid.lwc[il]/dinm;
 	   	m_soid.iwc[il] += d_soid.iwc[il]/dinm;
@@ -539,7 +543,7 @@ void EnvData::grnd_endOfDay(const int & dinm, const int & doy){
 		m_soid.liqsum += d_sois.liq[il]/dinm;
 		m_soid.icesum += d_sois.ice[il]/dinm;
 		m_soid.tsave  += d_sois.ts[il]/numsoi/dinm;
-
+      }
 	}
    	m_soid.frasat += d_soid.frasat/dinm;
 
@@ -571,31 +575,33 @@ void EnvData::grnd_endOfDay(const int & dinm, const int & doy){
    	m_soid.hkminec+= d_soid.hkminec/dinm;
 
     // determine if a permafrost or not
-    if (d_soid.permafrost==0){    // d_soid.permafrost is ONLY for indicating if the soil frozen, not really a permafrost
-    	m_soid.permafrost = 0;    // if no frozen soil, set both monthly permafrost to NO
-    	m_sois.monthsfrozen = 0;         // and, reset the frozen-soil-month counts to zero
+    if (d_sois.permafrost==0){    // d_soid.permafrost is ONLY for indicating if the soil frozen, not really a permafrost
+    	m_sois.permafrost = 0;           // if no frozen soil, set both monthly permafrost to NO
+    	d_sois.monthsfrozen = 0;         // and, reset the frozen-soil-month counts to zero
+    	m_sois.monthsfrozen = 0;
     } else {
-    	m_sois.monthsfrozen +=1./dinm;
+    	d_sois.monthsfrozen +=1./dinm;
+        m_sois.monthsfrozen +=1./dinm;
 
     	if (m_sois.monthsfrozen>=24.) {  // permafrost is frozen soil for at least 24 months
-    		m_soid.permafrost = 1;
+    		m_sois.permafrost = 1;
     	} else {
-    		m_soid.permafrost = 0;
+    		m_sois.permafrost = 0;
     	}
 
     }
 
     // determine the active layer depth for monthly (daily value is in 'Soil_Env.cpp')
-	if (m_soid.permafrost ==1){
-		if (m_soid.ald < d_soid.ald){          // assuming the max. daily value
-			m_soid.ald = d_soid.ald;
+	if (m_sois.permafrost ==1){
+		if (m_sois.ald < d_sois.ald){          // assuming the max. daily value
+			m_sois.ald = d_sois.ald;
 		}
-		if (m_soid.alc < d_soid.alc){          // assuming the max. daily value
-			m_soid.alc = d_soid.alc;
+		if (m_sois.alc < d_sois.alc){          // assuming the max. daily value
+			m_sois.alc = d_sois.alc;
 		}
 	} else {
-		m_soid.ald = cd->m_soil.totthick;     // NOTE: monthly 'ald' is for permafrost ONLY, but daily 'ald' for both seasonal and permafrost
-		m_soid.alc = 0.;                      // NOTE: monthly 'alc' is for permafrost ONLY, but daily 'alc' for both seasonal and permafrost
+		m_sois.ald = cd->m_soil.totthick;     // NOTE: monthly 'ald' is for permafrost ONLY, but daily 'ald' for both seasonal and permafrost
+		m_sois.alc = 0.;                      // NOTE: monthly 'alc' is for permafrost ONLY, but daily 'alc' for both seasonal and permafrost
 	}
 
     // determine the growing season based on top rootzone unfrozen time
@@ -731,20 +737,26 @@ void EnvData::grnd_endOfMonth(){
 	y_snw2soi.melt += m_snw2soi.melt;
 
 	// soils
-	int numsoi = cd->m_soil.numsl;
+	int numsoi = cd->y_soil.numsl;
 	for(int il =0; il<numsoi; il++){
+      if(il<cd->m_soil.numsl){   // in case any 'monthly' change of soil structure
 		y_sois.frozen[il] += m_sois.frozen[il]/12;   //so, if some months frozen, some months not, its value shall be between -1 and 1.
 		y_sois.frozenfrac[il] += m_sois.frozenfrac[il]/12;
 
 		y_sois.ts[il]  += m_sois.ts[il]/12.;
 		y_sois.liq[il] += m_sois.liq[il]/12.;
 		y_sois.ice[il] += m_sois.ice[il]/12.;
-
+      }
 	}
 	y_sois.watertab  += m_sois.watertab/12.;
 	y_sois.draindepth+= m_sois.draindepth/12.;
 
+	// determine if a permafrost or not
+    y_sois.permafrost = m_sois.permafrost;
+    y_sois.monthsfrozen = m_sois.monthsfrozen;
+
 	for(int il=0; il<numsoi; il++){
+      if(il<cd->m_soil.numsl){   // in case any 'monthly' change of soil structure
 		y_soid.liqsum += m_sois.liq[il]/12.;
 		y_soid.icesum += m_sois.ice[il]/12.;
 		y_soid.tsave  += m_sois.ts[il]/numsoi/12.;
@@ -756,7 +768,7 @@ void EnvData::grnd_endOfMonth(){
 	   	y_soid.aws[il] += m_soid.aws[il]/12.;
 
 	   	y_soid.fbtran[il] += m_soid.fbtran[il]/12.;
-
+      }
 	}
    	y_soid.frasat    += m_soid.frasat/12.;
 
@@ -787,21 +799,18 @@ void EnvData::grnd_endOfMonth(){
    	y_soid.hkmineb+= m_soid.hkmineb/12.;
    	y_soid.hkminec+= m_soid.hkminec/12.;
 
-    // determine if a permafrost or not
-    y_soid.permafrost = m_soid.permafrost;
-
     // determine the active layer depth for daily/monthly
-	if (y_soid.permafrost ==1){
-		if (y_soid.ald < m_soid.ald){          // assuming the max. daily value
-			y_soid.ald = m_soid.ald;
+	if (y_sois.permafrost ==1){
+		if (y_sois.ald < m_sois.ald){          // assuming the max. monthly value
+			y_sois.ald = m_sois.ald;
 		}
 
-		if (y_soid.alc < m_soid.alc){          // assuming the max. daily value
-			y_soid.alc = m_soid.alc;
+		if (y_sois.alc < m_sois.alc){          // assuming the max. monthly value
+			y_sois.alc = m_sois.alc;
 		}
 	} else {
-		y_soid.ald = cd->m_soil.totthick;
-		y_soid.alc = 0.;
+		y_sois.ald = cd->m_soil.totthick;
+		y_sois.alc = 0.;
 	}
 
 	//
@@ -818,8 +827,4 @@ void EnvData::grnd_endOfMonth(){
 	y_soi2l.qdrain += m_soi2l.qdrain;
 
 };
-
-
-
-
 

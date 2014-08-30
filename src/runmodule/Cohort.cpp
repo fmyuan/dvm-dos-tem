@@ -355,7 +355,12 @@ void Cohort::updateOneTimestep(const int & yrcnt, const int & currmind, const in
    	   	updateFir(yrcnt, currmind);
    	}
 
-   	if(md->timestep==DAILY) cd.endOfDay(dinmcurr);
+   	if(md->timestep==DAILY) {
+   		cd.endOfDay(dinmcurr);
+   	} else if (md->timestep==MONTHLY){
+   		cd.d_soil = cd.m_soil;    // just in case needed somewhere
+   		cd.d_veg  = cd.m_veg;
+   	}
 	if(currdinm==dinmcurr-1) cd.endOfMonth();
 	if(currmind==11 && currdinm==dinmcurr-1) cd.endOfYear();
 
@@ -489,19 +494,20 @@ void Cohort::updateEnv(const int & currmind, const int & currdinm){
 	snowenv.updateDailyM(tdrv);                  // snow water/thickness changing - must be done after 'T' because of melting
 
 	// get the new bottom drainage layer and its depth, which needed for soil moisture calculation
-	ground.setDrainL(ground.lstsoill, edall->d_soid.ald, edall->d_sois.watertab);
+	ground.setDrainL(ground.lstsoill, edall->d_sois.ald, edall->d_sois.watertab);
 	soilenv.updateDailySM();  //soil moisture
 
 	// save the variables to daily 'edall' (Note: not PFT specified)
-	soilenv.retrieveDailyTM(ground.toplayer, ground.lstsoill);
+	soilenv.retrieveDailyTM(tdrv, ground.toplayer, ground.lstsoill);
 	solprntenv.retrieveDailyTM(ground.lstsoill);   //assuming rock layer's temperature equal to that of lstsoill
 
 	assignGroundEd2pfts_daily();      //sharing the 'ground' portion in 'edall' with each pft 'ed'
 
 	getEd4land_daily();  // integrating 'veg' and 'ground' into 'land'
 
-	ground.retrieveSnowDimension(&cd.d_snow);   // update Snow structure at daily timestep (for soil structure at yearly timestep in ::updateMonthly_DIMgrd)
-	cd.endOfDay(dinmcurr);   // this must be done first, because it's needed for below
+	// update Snow structure at daily time-step due to its direct connection with T-M
+	ground.retrieveSnowDimension(&cd.d_snow);
+	cd.endOfDay_snow(dinmcurr);
 
 	//accumulate daily vars into monthly for 'ed' of each PFT
 	for (int ip=0; ip<NUM_PFT; ip++){
@@ -596,7 +602,11 @@ void Cohort::updateBgc(const int & currmind, const int & currdinm){
 				vegbgc[ip].afterIntegration();
 
 				// monthly data accumulation from daily simulation
-				if (md->timestep == DAILY) bd[ip].veg_endOfDay(dinmcurr);
+				if (md->timestep == DAILY) {
+					bd[ip].veg_endOfDay(dinmcurr);
+				} else if (md->timestep==MONTHLY){
+					bd[ip].d_vegs = bd[ip].m_vegs;    // just in case needed somewhere
+				}
 
 				// yearly data accumulation from either daily or monthly simulation
 				if (currdinm == dinmcurr-1) bd[ip].veg_endOfMonth();
@@ -610,7 +620,11 @@ void Cohort::updateBgc(const int & currmind, const int & currdinm){
 
 		getBd4allveg();             // integrating the pfts' 'bd' to allveg 'bdall'
 
-		if(md->timestep==DAILY) bdall->veg_endOfDay(dinmcurr); // monthly data accumulation
+		if(md->timestep==DAILY) {
+			bdall->veg_endOfDay(dinmcurr); // monthly data accumulation
+		} else if (md->timestep==MONTHLY){
+	   		bdall->d_vegs = bdall->m_vegs;    // just in case needed somewhere
+		}
 		if(currdinm==dinmcurr-1) bdall->veg_endOfMonth();      // yearly data accumulation
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -623,7 +637,11 @@ void Cohort::updateBgc(const int & currmind, const int & currdinm){
 		soilbgc.afterIntegration();
 
 		// monthly data updating
-		if(md->timestep==DAILY) bdall->soil_endOfDay(dinmcurr);
+		if(md->timestep==DAILY) {
+			bdall->soil_endOfDay(dinmcurr);
+		} else if (md->timestep==MONTHLY){
+			bdall->d_sois = bdall->m_sois;   //just in case needed somewhere
+		}
 
 		// yearly data accumulation
 		if (currdinm==dinmcurr-1) {
