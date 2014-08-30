@@ -49,7 +49,7 @@ void Stefan::updateFronts(const double & tdrv, const double &timestep){
     if(tdrv1>0.0){
     	freezing1 = -1;
    	}else {
-   		freezing1 =1;
+   		freezing1 = 1;
    	}
 
     // find the new front
@@ -94,8 +94,8 @@ void Stefan::updateFronts(const double & tdrv, const double &timestep){
 	// post-front-positioning adjustments
 	combineExtraFronts();    // it is possible that there are too many fronts exist to hold in 'ed's 'frontz' and 'fronttype', so combine them if there are too many
 
-	updateLayerFrozenState(ground->toplayer);     // this must be done before the following call
-	updateWaterAfterFront(ground->toplayer);	  // after fronts processed, need to update 'ice' and 'liq' water in a layer due to phase change
+	updateLayerFrozenState(ground->toplayer, freezing1);     // this must be done before the following call
+	updateWaterAfterFront(ground->toplayer, freezing1);	     // after fronts processed, need to update 'ice' and 'liq' water in a layer due to phase change
 
 	ground->setFstLstFrontLayers();
 
@@ -158,8 +158,8 @@ void Stefan::updateFronts(const double & tdrv, const double &timestep){
  	 	// post-front-positioning adjustments
  	 	combineExtraFronts();    // it is possible that there are too many fronts exist to hold in 'ed's 'frontz' and 'fronttype', so combine them if there are too many
 
- 	 	updateLayerFrozenState(ground->toplayer);     // this must be done before the following call
- 	 	updateWaterAfterFront(ground->toplayer);	  // after fronts processed, need to update 'ice' and 'liq' water in a layer due to phase change
+ 	 	updateLayerFrozenState(ground->toplayer, freezing2);     // this must be done before the following call
+ 	 	updateWaterAfterFront(ground->toplayer, freezing2);	  // after fronts processed, need to update 'ice' and 'liq' water in a layer due to phase change
 
  	 	ground->setFstLstFrontLayers();
  	}
@@ -648,7 +648,7 @@ void Stefan::combineExtraFronts() {
 
 // update frozen status and the fraction of frozen portion (thickness) for each layer in a column,
 // based on two fronts deques: 'ground->frontsz' and 'ground->frontstype'
-void Stefan::updateLayerFrozenState(Layer * toplayer){
+void Stefan::updateLayerFrozenState(Layer * toplayer, const bool & freezing){
 
 	int fntnum = ground->frontsz.size();
 
@@ -701,12 +701,15 @@ void Stefan::updateLayerFrozenState(Layer * toplayer){
 				 if (fntoutdz>=currl->dz) {
 					 currl->frozen = fntouttype;    // layer's frozen status is SAME as the nearest below front type
 				 } else if (fntoutdz<=0.){
-					 currl->frozen = -fntouttype;    // layer's frozen status is OPPOSITE as the nearset above front type
+					 currl->frozen = -fntouttype;    // layer's frozen status is OPPOSITE as the nearest above front type
 				 }
 
-			 } else {                        // no front at all
-				 if (currl->tem>0.) currl->frozen = -1;
-				 if (currl->tem<=0.) currl->frozen = 1;
+			 } else {                        // no front at all, then depending upon thermal force
+				 if (freezing) {             // freezing force
+					 currl->frozen = 1;
+				 } else {                    // thawing force
+				     currl->frozen = -1;
+				 }
 			 }
 
 			 //
@@ -721,7 +724,7 @@ void Stefan::updateLayerFrozenState(Layer * toplayer){
 
 // when a front moves through or in a layer
 // the corresponding liq and ice content should be changed due to phase change (no total water amount change)
-void Stefan::updateWaterAfterFront(Layer* toplayer){
+void Stefan::updateWaterAfterFront(Layer* toplayer, const bool & freezing){
 	Layer * currl = toplayer;
     double tice = 0.;
  	double tliq = 0.;

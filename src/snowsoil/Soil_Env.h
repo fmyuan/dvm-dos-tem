@@ -84,9 +84,6 @@ class Soil_Env{
 		 double getWaterTable(Layer* fstsoil);
 		 double getRunoff(Layer* fstsoill, Layer* drainl, const double & rnth, const double & melt);
 
-		 // the following codes not used anymore
-		 double getInflFrozen(Layer *fstminl, const double &  rnth, const double & melt);
-		 double updateLayerTemp5Lat(Layer* currl, const double & infil);
 
 };
 

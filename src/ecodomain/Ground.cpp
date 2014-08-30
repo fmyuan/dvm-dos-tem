@@ -272,22 +272,6 @@ void Ground::initLayerStructure5restart(snwstate_dim *snowdim, soistate_dim *soi
 
 	}
 
-  	//
-  	frontsz.clear();
-  	frontstype.clear();
-	int frontFT[MAX_NUM_FNT];
-	double frontZ[MAX_NUM_FNT];
-	for (int i=0; i<MAX_NUM_FNT; i++){
-		frontZ[i]=resin->frontZ[i];
-		frontFT[i]=resin->frontFT[i];
-	}
-   	for(int ifnt = 0; ifnt<MAX_NUM_FNT; ifnt++){
-   	    if(frontZ[ifnt]>0.){
-   	    	frontsz.push_front(frontZ[ifnt]);
-   	    	frontstype.push_front(frontFT[ifnt]);
-   	    }
-   	}
-
 	//
 	resortGroundLayers();
 

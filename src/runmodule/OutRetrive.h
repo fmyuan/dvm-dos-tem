@@ -33,7 +33,7 @@
 	    	//
 	    	void updateRegnOutputBuffer(const int &im, const int &idoy);
 
-	    	void updateRestartOutputBuffer();
+	    	void updateRestartOutputBuffer(ModelData *md);
 
 	    private:
 	    	//
