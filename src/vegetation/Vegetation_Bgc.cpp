@@ -357,7 +357,7 @@ void Vegetation_Bgc::deltanfeed(){
 	  	double avln = totrzavln;   // NOTE: 'totrzavln' already updated in calling 'getNuptake()' above
 	  	if (del_soi2v.innuptake > 0.95*avln) del_soi2v.innuptake = 0.95*avln;
 
-		// N litterfall and accompanying resorbtion
+		// N litterfall and accompanying re-absorption
 		for (int i=0; i<NUM_PFT_PART; i++){
 			if (calpar.nfall[i]>0.) {
 				// assuming 'calpar.nfall' is the max. monthly fraction, and allowing the following seasonal variation

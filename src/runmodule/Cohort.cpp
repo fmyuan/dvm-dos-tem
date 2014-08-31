@@ -694,8 +694,13 @@ void Cohort::updateFir(const int & yrind, const int & currmind){
    				bdall->m_vegs.deadc   += bd[ip].m_vegs.deadc * cd.m_veg.vegcov[ip];
    				bdall->m_vegs.deadn   += bd[ip].m_vegs.deadn * cd.m_veg.vegcov[ip];
 
+
    			}
    		}
+
+   	    // changing lai/fpc due to burning
+   		veg.updateLai(currmind, DINM[currmind]-1);
+   		veg.updateFpc();
 
    		// assign the updated soil C/N pools during firing to double-linked layer matrix in 'ground'
         if(md->timestep==DAILY) {
@@ -748,8 +753,12 @@ void Cohort::updateDIMveg(const int & currmind, const int & currdinm, const bool
 	veg.phenology(currmind, currdinm);
 	veg.updateLai(currmind, currdinm);    // this must be done only after phenology
 
-	// LAI updated above for each PFT, but FPC (foliage percent cover) may need adjustment
+	// LAI updated above for each PFT,
+	//but FPC (foliage percent cover) may need dynamically adjusted
 	veg.updateFpc();
+
+	// note: 'vegcov' can be regarded as max. fpc
+	// during life-time, unless disturbance/harvest
 	veg.updateVegcov();
 
 	veg.updateFrootfrac();
@@ -852,7 +861,7 @@ void Cohort::getSoilFineRootFrac(vegstate_dim *cd_veg, soistate_dim *cd_soil){
 					layerbot = cd_soil->z[il]+cd_soil->dz[il]-mossthick;
 
 					cd_soil->frootfrac[il][ip] = assignSoilLayerRootFrac(layertop, layerbot, cumrootfrac, ROOTTHICK);  //fraction
-					cd_soil->frootfrac[il][ip] *= cd_veg->fpc[ip];
+					cd_soil->frootfrac[il][ip] *= cd_veg->vegcov[ip];
 
 					if(md->bgcmodule){
 						if(md->timestep==DAILY){
@@ -980,7 +989,8 @@ void Cohort::assignGroundEd2pfts_daily(){
 	}
 }
 
-// integrating (fpc weighted) 'soid.fbtran' in each 'ed' to 'edall'
+// integrating (vegcov weighted) 'soid.fbtran' in each 'ed' to 'edall'
+// note: 'vegcov' can be regarded as max. fpc during life-time, unless disturbance/harvest
 void Cohort::getSoilTransfactor4all_daily(){
 
 	for (int il=0; il<MAX_SOI_LAY; il++) {
@@ -993,7 +1003,8 @@ void Cohort::getSoilTransfactor4all_daily(){
 	}
 }
 
-// integrating (fpc weighted) 'veg' portion in 'edall' to all PFT's 'ed'
+// integrating (vegcov weighted) 'veg' portion in 'edall' to all PFT's 'ed'
+// note: 'vegcov' can be regarded as max. fpc during life-time, unless disturbance/harvest
 void Cohort::getEd4allveg_daily(){
 
 	edall->d_vegs.rwater  = 0.;

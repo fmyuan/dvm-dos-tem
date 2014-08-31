@@ -210,7 +210,8 @@ void WildFire::burn(){
  	double burnedsolc=0.;
  	double burnedsoln=0.;
 
- 	double r_burn2bg_cn[NUM_PFT]; //ratio of dead veg. after burning
+ 	double r_burn2bg_cn[NUM_PFT]; //ratio of burned below-ground veg. (root) after burning
+ 	double r_dead2bg_cn[NUM_PFT]; //ratio of burn-caused dead below-ground veg. (root) after burning
  	for (int ip=0; ip<NUM_PFT; ip++) {
  		r_burn2bg_cn[ip] = 0.; //used for vegetation below-ground (root) loss, and calculated below
  	}
@@ -335,7 +336,7 @@ void WildFire::burn(){
     		getBurnAbgVegetation(ip);
 
     		//root death ratio: must be called after both above-ground and below-ground burning
-    		double r_dead2bg_cn = 1.0-r_burn2bg_cn[ip]- r_live_cn;   //r_live_cn is same for both above-ground and below-ground
+    		r_dead2bg_cn[ip] = 1.0-r_burn2bg_cn[ip]- r_live_cn;   //r_live_cn is same for both above-ground and below-ground
 
     		// dead veg c/n
     		comb_deadc += bd[ip]->m_vegs.deadc*cd->m_veg.vegcov[ip];         //assuming all previous deadc burned
@@ -362,8 +363,10 @@ void WildFire::burn(){
     		bd[ip]->m_vegs.strn[I_stem] *= (1.0-r_burn2ag_cn-r_dead2ag_cn);
 
     		// below-ground veg. (root) burning/death during fire
-    		comb_vegc += bd[ip]->m_vegs.c[I_root]*r_burn2bg_cn[ip]*cd->m_veg.vegcov[ip];
-    		double deadc_tmp = bd[ip]->m_vegs.c[I_root]*r_dead2bg_cn*cd->m_veg.vegcov[ip];
+    		comb_vegc += bd[ip]->m_vegs.c[I_root]*r_burn2bg_cn[ip]
+    		            *cd->m_veg.vegcov[ip];
+    		double deadc_tmp = bd[ip]->m_vegs.c[I_root]*r_dead2bg_cn[ip]
+    		                  *cd->m_veg.vegcov[ip];
     		for (int il =0; il <cd->m_soil.numsl; il++){
 	    	// for the dead below-ground C/N caused by fire, they are put into original layer
     			if (cd->m_soil.frootfrac[il][ip]>0.)
@@ -371,19 +374,21 @@ void WildFire::burn(){
     		}
     		dead_bg_vegc +=deadc_tmp;
 
-    		bd[ip]->m_vegs.c[I_root] *= (1.0-r_burn2bg_cn[ip]-r_dead2bg_cn);
+    		bd[ip]->m_vegs.c[I_root] *= (1.0-r_burn2bg_cn[ip]-r_dead2bg_cn[ip]);
 
-    		comb_vegn += bd[ip]->m_vegs.strn[I_root]*r_burn2bg_cn[ip]*cd->m_veg.vegcov[ip];
-    		double deadn_tmp = bd[ip]->m_vegs.strn[I_root]*r_dead2bg_cn*cd->m_veg.vegcov[ip];   // this is needed below
+    		comb_vegn += bd[ip]->m_vegs.strn[I_root]*r_burn2bg_cn[ip]
+    		            *cd->m_veg.vegcov[ip];
+    		double deadn_tmp = bd[ip]->m_vegs.strn[I_root]*r_dead2bg_cn[ip]
+    		            *cd->m_veg.vegcov[ip];   // this is needed below
     		for (int il =0; il <cd->m_soil.numsl; il++){
     			// for the dead below-ground C/N caused by fire, they are put into original layer
     			if (cd->m_soil.frootfrac[il][ip]>0.)
 	    		bdall->m_sois.somcr[il] += deadn_tmp*cd->m_soil.frootfrac[il][ip];   //'rootfrac' must be updated above
     		}
     		dead_bg_vegn +=deadn_tmp;
-    		bd[ip]->m_vegs.strn[I_root] *= (1.0-r_burn2bg_cn[ip]-r_dead2bg_cn);
+    		bd[ip]->m_vegs.strn[I_root] *= (1.0-r_burn2bg_cn[ip]-r_dead2bg_cn[ip]);
 
-    		// one more veg N pool (labile N)
+    		// one more veg. N pool (labile N)
     		comb_vegn += bd[ip]->m_vegs.labn*(1.-r_live_cn)*cd->m_veg.vegcov[ip];  //assuming all labn emitted, leaving none into deadn
     		bd[ip]->m_vegs.labn *= r_live_cn;
 
@@ -399,7 +404,7 @@ void WildFire::burn(){
 
 /////////////////////////////////////////////////////////////////////////////////
 
-    // save the fire emission and return (data into 'fd'
+    // save the fire emission and return data into 'fd'
 	fd->fire_v2a.orgc =  comb_vegc - reta_vegc;
 	fd->fire_v2a.orgn =  comb_vegn - reta_vegn;
 
@@ -436,7 +441,14 @@ void WildFire::burn(){
     	}
     }
 
-	
+    // finally, changing 'vegcov' due to burning
+    // here, it's simply related with live root fraction (may need more though here)
+    for (int ip=0; ip<NUM_PFT; ip++) {
+    	if (cd->m_veg.vegcov[ip]>0.){
+    		cd->m_veg.vegcov[ip] *= (1.0-r_burn2bg_cn[ip]-r_dead2bg_cn[ip]);
+    	}
+    }
+
 };
 
 //derive fire severity based on landscape drainage condition, fire season and fire size
