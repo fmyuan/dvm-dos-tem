@@ -117,14 +117,17 @@ struct soistate_env{
 
 	double trock[MAX_ROC_LAY];
 
-	int frontstype[MAX_NUM_FNT];   //type of fronts (1: freezing, -1: thawing)
-	double frontsz[MAX_NUM_FNT];   //depth from ground surface
-
 	double watertab;       // water table depth below ground surface (m)
 	double draindepth;     // drainage depth below ground surface (m)
 
+	int permafrost;
+	int frontstype[MAX_NUM_FNT];   //type of fronts (1: freezing, -1: thawing)
+	double frontsz[MAX_NUM_FNT];   //depth from ground surface
+	double alc;            // active layer cap (m), i.e. the top of active layer - seasonal frezing front
+	double ald;            // active layer depth (m), i.e., the bottom of active layer - seasonal or permafrost
     double monthsfrozen;      // months since bottom soil frozen started - 24 months is the criterial for permafrost
-	int rtfrozendays;         // soil top root-zone continuously frozen days
+
+    int rtfrozendays;         // soil top root-zone continuously frozen days
 	int rtunfrozendays;       // soil top root-zone continuously thaw days
 
 };

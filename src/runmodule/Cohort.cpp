@@ -332,8 +332,11 @@ void Cohort::updateOneTimestep(const int & yrcnt, const int & currmind, const in
 	int dinmcurr = DINM[currmind];
 	int doy = timer->getDOYIndex(currmind, currdinm+1);
 
+	// note: do the 'cd' initializing timely accumulators here,
+	// because 'cd' are for both 'veg' (multiple-pfts) and 'soil',
+	// except for 'cd_snow' (which are directly associated with 'ed').
+	if(md->timestep==DAILY && currdinm==0) cd.beginOfMonth();
 	if(currmind==0 && currdinm==0) cd.beginOfYear();
-	if(currdinm==0) cd.beginOfMonth();
 
  	// first, update the current dimension/structure of veg-snow/soil column (domain)
    	updateDIMveg(currmind, currdinm, md->dvmmodule);
@@ -342,16 +345,7 @@ void Cohort::updateOneTimestep(const int & yrcnt, const int & currmind, const in
 
    	// secondly, update the water/thermal process to get (bio)physical conditions
  	if(md->envmodule){
-
- 		if(currmind==5 && currdinm==12){
- 			edall->d_soid.permafrost=1;
- 		}
-
  		updateEnv(currmind, currdinm);
-
-  		if(edall->d_soid.permafrost==0) {
-  			edall->d_soid.permafrost=0;
-  		}
   	}
 
    	//thirdly, update the BGC process to get the C/N states and fluxes
@@ -364,7 +358,15 @@ void Cohort::updateOneTimestep(const int & yrcnt, const int & currmind, const in
    	   	updateFir(yrcnt, currmind);
    	}
 
-   	if(md->timestep==DAILY) cd.endOfDay(dinmcurr);
+	// note: do the 'cd' updating timely accumulators here,
+	// because 'cd' are for both 'veg' (multiple-pfts) and 'soil',
+	// except for 'cd_snow' (which are directly associated with 'ed').
+   	if(md->timestep==DAILY) {
+   		cd.endOfDay(dinmcurr);
+   	} else if (md->timestep==MONTHLY){
+   		cd.d_soil = cd.m_soil;    // just in case needed somewhere
+   		cd.d_veg  = cd.m_veg;
+   	}
 	if(currdinm==dinmcurr-1) cd.endOfMonth();
 	if(currmind==11 && currdinm==dinmcurr-1) cd.endOfYear();
 
@@ -498,19 +500,20 @@ void Cohort::updateEnv(const int & currmind, const int & currdinm){
 	snowenv.updateDailyM(tdrv);                  // snow water/thickness changing - must be done after 'T' because of melting
 
 	// get the new bottom drainage layer and its depth, which needed for soil moisture calculation
-	ground.setDrainL(ground.lstsoill, edall->d_soid.ald, edall->d_sois.watertab);
+	ground.setDrainL(ground.lstsoill, edall->d_sois.ald, edall->d_sois.watertab);
 	soilenv.updateDailySM();  //soil moisture
 
 	// save the variables to daily 'edall' (Note: not PFT specified)
-	soilenv.retrieveDailyTM(ground.toplayer, ground.lstsoill);
+	soilenv.retrieveDailyTM(tdrv, ground.toplayer, ground.lstsoill);
 	solprntenv.retrieveDailyTM(ground.lstsoill);   //assuming rock layer's temperature equal to that of lstsoill
 
 	assignGroundEd2pfts_daily();      //sharing the 'ground' portion in 'edall' with each pft 'ed'
 
 	getEd4land_daily();  // integrating 'veg' and 'ground' into 'land'
 
-	ground.retrieveSnowDimension(&cd.d_snow);   // update Snow structure at daily timestep (for soil structure at yearly timestep in ::updateMonthly_DIMgrd)
-	cd.endOfDay(dinmcurr);   // this must be done first, because it's needed for below
+	// update Snow structure at daily time-step due to its direct connection with T-M
+	ground.retrieveSnowDimension(&cd.d_snow);
+	cd.endOfDay_snow(dinmcurr);
 
 	//accumulate daily vars into monthly for 'ed' of each PFT
 	for (int ip=0; ip<NUM_PFT; ip++){
@@ -605,7 +608,11 @@ void Cohort::updateBgc(const int & currmind, const int & currdinm){
 				vegbgc[ip].afterIntegration();
 
 				// monthly data accumulation from daily simulation
-				if (md->timestep == DAILY) bd[ip].veg_endOfDay(dinmcurr);
+				if (md->timestep == DAILY) {
+					bd[ip].veg_endOfDay(dinmcurr);
+				} else if (md->timestep==MONTHLY){
+					bd[ip].d_vegs = bd[ip].m_vegs;    // just in case needed somewhere
+				}
 
 				// yearly data accumulation from either daily or monthly simulation
 				if (currdinm == dinmcurr-1) bd[ip].veg_endOfMonth();
@@ -619,7 +626,11 @@ void Cohort::updateBgc(const int & currmind, const int & currdinm){
 
 		getBd4allveg();             // integrating the pfts' 'bd' to allveg 'bdall'
 
-		if(md->timestep==DAILY) bdall->veg_endOfDay(dinmcurr); // monthly data accumulation
+		if(md->timestep==DAILY) {
+			bdall->veg_endOfDay(dinmcurr); // monthly data accumulation
+		} else if (md->timestep==MONTHLY){
+	   		bdall->d_vegs = bdall->m_vegs;    // just in case needed somewhere
+		}
 		if(currdinm==dinmcurr-1) bdall->veg_endOfMonth();      // yearly data accumulation
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -632,7 +643,11 @@ void Cohort::updateBgc(const int & currmind, const int & currdinm){
 		soilbgc.afterIntegration();
 
 		// monthly data updating
-		if(md->timestep==DAILY) bdall->soil_endOfDay(dinmcurr);
+		if(md->timestep==DAILY) {
+			bdall->soil_endOfDay(dinmcurr);
+		} else if (md->timestep==MONTHLY){
+			bdall->d_sois = bdall->m_sois;   //just in case needed somewhere
+		}
 
 		// yearly data accumulation
 		if (currdinm==dinmcurr-1) {
@@ -679,8 +694,13 @@ void Cohort::updateFir(const int & yrind, const int & currmind){
    				bdall->m_vegs.deadc   += bd[ip].m_vegs.deadc * cd.m_veg.vegcov[ip];
    				bdall->m_vegs.deadn   += bd[ip].m_vegs.deadn * cd.m_veg.vegcov[ip];
 
+
    			}
    		}
+
+   	    // changing lai/fpc due to burning
+   		veg.updateLai(currmind, DINM[currmind]-1);
+   		veg.updateFpc();
 
    		// assign the updated soil C/N pools during firing to double-linked layer matrix in 'ground'
         if(md->timestep==DAILY) {
@@ -733,8 +753,12 @@ void Cohort::updateDIMveg(const int & currmind, const int & currdinm, const bool
 	veg.phenology(currmind, currdinm);
 	veg.updateLai(currmind, currdinm);    // this must be done only after phenology
 
-	// LAI updated above for each PFT, but FPC (foliage percent cover) may need adjustment
+	// LAI updated above for each PFT,
+	//but FPC (foliage percent cover) may need dynamically adjusted
 	veg.updateFpc();
+
+	// note: 'vegcov' can be regarded as max. fpc
+	// during life-time, unless disturbance/harvest
 	veg.updateVegcov();
 
 	veg.updateFrootfrac();
@@ -762,7 +786,7 @@ void Cohort::updateDIMgrd(const int & currmind, const int & currdinm, const bool
 
 	// re-call the 'bdall' soil C contents
 	// and assign them to the double-linked layer matrix each time-step
-	soilbgc.assignCarbonBd2Layer();
+	if(md->bgcmodule) soilbgc.assignCarbonBd2Layer();
 
 	// only update the thickness at begin of year, since it is a slow process
 	// NOTE: the following performance IS on 'ground', which not associated with time-step
@@ -799,7 +823,7 @@ void Cohort::updateDIMgrd(const int & currmind, const int & currdinm, const bool
 	} else if (md->timestep==DAILY){
 		ground.retrieveSoilDimension(&cd.d_soil);
 		getSoilFineRootFrac(&cd.d_veg, &cd.d_soil);
-	} else {
+	} else if (currmind==0 && currdinm==0){
 		ground.retrieveSoilDimension(&cd.y_soil);
 		getSoilFineRootFrac(&cd.y_veg, &cd.y_soil);
 		cd.m_soil = cd.y_soil;
@@ -837,12 +861,16 @@ void Cohort::getSoilFineRootFrac(vegstate_dim *cd_veg, soistate_dim *cd_soil){
 					layerbot = cd_soil->z[il]+cd_soil->dz[il]-mossthick;
 
 					cd_soil->frootfrac[il][ip] = assignSoilLayerRootFrac(layertop, layerbot, cumrootfrac, ROOTTHICK);  //fraction
-					if(md->timestep==DAILY){
-					    cd_soil->frootfrac[il][ip] *= bd[ip].d_vegs.c[I_root];  //root C
-					} else if(md->timestep==MONTHLY){
-					    cd_soil->frootfrac[il][ip] *= bd[ip].m_vegs.c[I_root];  //root C
-					} else {
-					    cd_soil->frootfrac[il][ip] *= bd[ip].y_vegs.c[I_root];  //root C
+					cd_soil->frootfrac[il][ip] *= cd_veg->vegcov[ip];
+
+					if(md->bgcmodule){
+						if(md->timestep==DAILY){
+					    	cd_soil->frootfrac[il][ip] *= bd[ip].d_vegs.c[I_root];  //root C
+						} else if(md->timestep==MONTHLY){
+					    	cd_soil->frootfrac[il][ip] *= bd[ip].m_vegs.c[I_root];  //root C
+						} else {
+					    	cd_soil->frootfrac[il][ip] *= bd[ip].y_vegs.c[I_root];  //root C
+						}
 					}
 					totfrootc += cd_soil->frootfrac[il][ip];
 
@@ -961,7 +989,8 @@ void Cohort::assignGroundEd2pfts_daily(){
 	}
 }
 
-// integrating (fpc weighted) 'soid.fbtran' in each 'ed' to 'edall'
+// integrating (vegcov weighted) 'soid.fbtran' in each 'ed' to 'edall'
+// note: 'vegcov' can be regarded as max. fpc during life-time, unless disturbance/harvest
 void Cohort::getSoilTransfactor4all_daily(){
 
 	for (int il=0; il<MAX_SOI_LAY; il++) {
@@ -974,7 +1003,8 @@ void Cohort::getSoilTransfactor4all_daily(){
 	}
 }
 
-// integrating (fpc weighted) 'veg' portion in 'edall' to all PFT's 'ed'
+// integrating (vegcov weighted) 'veg' portion in 'edall' to all PFT's 'ed'
+// note: 'vegcov' can be regarded as max. fpc during life-time, unless disturbance/harvest
 void Cohort::getEd4allveg_daily(){
 
 	edall->d_vegs.rwater  = 0.;

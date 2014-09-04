@@ -47,7 +47,7 @@ class Soil_Env{
 
       	void getSoilTransFactor(double btran[MAX_SOI_LAY], Layer* fstsoill, const double vrootfr[MAX_SOI_LAY]);
 
-		void retrieveDailyTM(Layer* toplayer, Layer* lstsoill);
+		void retrieveDailyTM(const double & tdrv, Layer* toplayer, Layer* lstsoill);
 
 	private:
 
@@ -84,9 +84,6 @@ class Soil_Env{
 		 double getWaterTable(Layer* fstsoil);
 		 double getRunoff(Layer* fstsoill, Layer* drainl, const double & rnth, const double & melt);
 
-		 // the following codes not used anymore
-		 double getInflFrozen(Layer *fstminl, const double &  rnth, const double & melt);
-		 double updateLayerTemp5Lat(Layer* currl, const double & infil);
 
 };
 

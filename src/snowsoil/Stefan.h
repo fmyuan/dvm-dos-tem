@@ -48,8 +48,8 @@ class Stefan{
  								const double & sumresabv, const double & dse);
 
         void combineExtraFronts();
-        void updateLayerFrozenState(Layer* toplayer);
-        void updateWaterAfterFront(Layer* toplayer);
+        void updateLayerFrozenState(Layer* toplayer, const bool & freezing);
+        void updateWaterAfterFront(Layer* toplayer, const bool & freezing);
 
  		
 };

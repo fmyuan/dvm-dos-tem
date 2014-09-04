@@ -67,7 +67,7 @@ void Soil_Env::initializeState(){
 
 	bool sitein = false;
 	if (sitein) {
-		//in 'chtlu', intial soil tem and vwc are in each 10 cm thickness of layers for at most 10 layers
+		//in 'chtlu', initial soil tem and vwc are in each 10 cm thickness of layers for at most 10 layers
 		// here, these 10 layers of 10 cm are thickness-weightedly assigned to the soil structure already set in 'ground.cpp' (which already in cd->m_soil)
 		double Zsoil[10];
 		double TSsoil[10];
@@ -112,8 +112,8 @@ void Soil_Env::initializeState(){
 					currl->ice = 0.;
 					currl->frozen = -1;
 				} else {
-					currl->ice = fmax(0., fmax(currl->maxice, vwc*currl->dz*DENICE));
-					currl->liq = 0.;
+					currl->ice = fmax(0., fmax(currl->maxice, vwc*currl->dz*DENICE))-currl->minliq;
+					currl->liq = currl->minliq;
 					currl->frozen = 1;
 				}
 
@@ -132,6 +132,9 @@ void Soil_Env::initializeState(){
 				break;
 			}
 
+			currl->frozenfrac = 0.;
+			if(currl->frozen == 1) currl->frozenfrac = 1.0;
+
 			currl = currl->nextl;
 		}
 
@@ -141,8 +144,8 @@ void Soil_Env::initializeState(){
 		Layer* currl = ground->fstsoill;
 		while(currl!=NULL){
 			if(currl->isSoil){
-				double ts  = ed_atms->ta;
-				double psifc = -2.e6;  // filed capacity of -2MPsi
+				double ts  = ed_atms->ta - 1.0;  // colder soil so that water won't be losing; otherwise it's hard to get it back when spinup
+				double psifc = -2.e6;  // field capacity of -2MPsi
 				psifc /=currl->psisat;
 			  	double vwc = pow(abs(psifc), -1.0/currl->bsw);
 
@@ -172,6 +175,9 @@ void Soil_Env::initializeState(){
 			}else{
 				break;
 			}
+
+			currl->frozenfrac = 0.;
+			if(currl->frozen == 1) currl->frozenfrac = 1.0;
 
 			currl = currl->nextl;
 		}
@@ -207,6 +213,11 @@ void Soil_Env::initializeState(){
   	}
 
 	ground->setFstLstFrontLayers();
+	ground->checkWaterValidity();
+
+    // assign 'ground' data to 'ed'
+	retrieveDailyTM(ed_atms->ta, ground->toplayer, ground->lstsoill);
+	retrieveDailyFronts();
 
 	//misc. items
 	ed_atms->dsr     = 0;
@@ -214,8 +225,6 @@ void Soil_Env::initializeState(){
 	ed_sois->rtfrozendays   = 0;
 	ed_sois->rtunfrozendays = 0;
 
-	//
-	ground->checkWaterValidity();
 
 };
 
@@ -252,6 +261,28 @@ void Soil_Env::initializeState5restart(RestartData* resin){
 
 		currl = currl->nextl;
 	}
+
+  	// fronts
+  	ground->frontsz.clear();
+  	ground->frontstype.clear();
+	int frontFT[MAX_NUM_FNT];
+	double frontZ[MAX_NUM_FNT];
+	for (int i=0; i<MAX_NUM_FNT; i++){
+		frontZ[i]=resin->frontZ[i];
+		frontFT[i]=resin->frontFT[i];
+	}
+   	for(int ifnt = 0; ifnt<MAX_NUM_FNT; ifnt++){
+   	    if(frontZ[ifnt]>0.){
+   	    	ground->frontsz.push_front(frontZ[ifnt]);
+   	    	ground->frontstype.push_front(frontFT[ifnt]);
+   	    }
+   	}
+	ground->setFstLstFrontLayers();
+	ground->checkWaterValidity();
+
+    // assign 'ground' data to 'ed'
+	retrieveDailyTM(ed_atms->ta, ground->toplayer, ground->lstsoill);
+	retrieveDailyFronts();
 
 	//
 	ed_atms->dsr     = resin->dsr;
@@ -314,12 +345,12 @@ void Soil_Env::updateDailyGroundT(const double & tdrv, const double & dayl){
        	// checking
        	ground->checkWaterValidity();
 
+       	ground->updateWholeFrozenStatus();        // for the whole column
+
      }
 
-   	ground->updateWholeFrozenStatus();        // for the whole column
-
-
 	// 3) at end of each day, 'ed' should be updated for thermal properties
+     // (better to do here, because some variables are needed for soil moisture module)
 	updateDailySoilThermal4Growth(ground->fstsoill, tsurface);  // this is needed for growing
 	updateLayerStateAfterThermal(ground->fstsoill, ground->lstsoill, ground->botlayer);  //this shall be done before the following
 	retrieveDailyFronts();  // update 'ed' with new soil thawing/freezing fronts, and daily 'ald', 'cld'
@@ -454,9 +485,9 @@ void Soil_Env::updateLayerStateAfterThermal(Layer* fstsoill, Layer *lstsoill, La
 	ed_soid->tbotrock = botlayer->tem;
 
 	if(lstsoill->frozen==-1){        //Yuan: -1 should be unfrozen
-		ed_soid->permafrost =0;
+		ed_sois->permafrost =0;
 	}else{
-		ed_soid->permafrost =1;
+		ed_sois->permafrost =1;
 	}
 
 }
@@ -474,34 +505,34 @@ void Soil_Env::retrieveDailyFronts(){
    }
 
    // determine the depth of daily active layer depth (seasonal or permafrost)
-   ed_soid->ald = MISSING_D;
+   ed_sois->ald = MISSING_D;
     for (int il =0; il<MAX_NUM_FNT; il++){
 	   if (il==0 && ed_soid->unfrzcolumn<=0.) {
-		   ed_soid->ald = 0.;
+		   ed_sois->ald = 0.;
 		   break;
 	   } else if (il==0 && ed_soid->unfrzcolumn>=cd_soil->totthick) {
-		   ed_soid->ald = cd_soil->totthick;
+		   ed_sois->ald = cd_soil->totthick;
 		   break;
 	   } else if(ed_sois->frontsz[il]>0. && ed_sois->frontstype[il]==-1){
-		   if(ed_soid->ald < ed_sois->frontsz[il]){    // assuming the deepest thawing front
-			   ed_soid->ald = ed_sois->frontsz[il];
+		   if(ed_sois->ald < ed_sois->frontsz[il]){    // assuming the deepest thawing front
+			   ed_sois->ald = ed_sois->frontsz[il];
 		   }
 	  }
 
 	}
 
    // determine the top depth of daily active layer (seasonal)
-    ed_soid->alc = 0.;
+    ed_sois->alc = 0.;
 	for (int il =0; il<MAX_NUM_FNT; il++){
 		  if (il==0 && ed_soid->unfrzcolumn==0.) {
-			  ed_soid->alc = 0.;
+			  ed_sois->alc = 0.;
 			  break;
 		  } else if (il==0 && ed_soid->unfrzcolumn>=cd_soil->totthick) {
-			  ed_soid->alc = cd_soil->totthick;
+			  ed_sois->alc = cd_soil->totthick;
 			  break;
 		  } else if(ed_sois->frontsz[il]>0. && ed_sois->frontstype[il]==1){
-		  	 if(ed_soid->alc < ed_sois->frontsz[il]){    // assuming the deepest freezing front
-		  	 	ed_soid->alc = ed_sois->frontsz[il];
+		  	 if(ed_sois->alc < ed_sois->frontsz[il]){    // assuming the deepest freezing front
+		  	 	ed_sois->alc = ed_sois->frontsz[il];
 		  	 }
 		  }
 	}
@@ -606,7 +637,7 @@ double Soil_Env::getEvaporation(const double & dayl, const double &rad){
 	double tair = ed_atms->ta;
 	double vpdpa = ed_atmd->vpd;
 	double daylsec = dayl*3600;
-	if (daylsec < 0.1) { // 0.1 sec for mathmatical purpose, otherwise 'daytimerad' below will be 'inf'
+	if (daylsec < 0.1) { // 0.1 sec for mathematical purpose, otherwise 'daytimerad' below will be 'inf'
 		return (0.);
 	}
 	double daytimerad = rad*86400/daylsec; //w/m2
@@ -617,6 +648,7 @@ double Soil_Env::getEvaporation(const double & dayl, const double &rad){
 	double rbl = 107 * rcorr;
 	
 	double pmet = getPenMonET( tair, vpdpa, daytimerad,rbl, rbl);
+	ed_soi2a->evap_pet = pmet;
 	double dsr = ed_atms->dsr;
 	if (dsr<=1.0) dsr=1.0;
 	double ratiomin =envpar.evapmin;
@@ -786,7 +818,7 @@ void Soil_Env::getSoilTransFactor(double btran[MAX_SOI_LAY], Layer* fstsoill, co
 }
 
 // refresh snow-soil 'ed' from double-linked layer matrix after Thermal/Hydrological processes are done
-void Soil_Env::retrieveDailyTM(Layer* toplayer, Layer *lstsoill){
+void Soil_Env::retrieveDailyTM(const double & tsurface, Layer* toplayer, Layer *lstsoill){
 	
 	//first empty the 'ed' arrays: the reason is that NOT ALL will be refreshed below (e.g., layer is melted or burned)
 	for (int i=0; i<MAX_SNW_LAY ; i++){
@@ -813,10 +845,6 @@ void Soil_Env::retrieveDailyTM(Layer* toplayer, Layer *lstsoill){
 	}
 	for (int i=0; i<MAX_ROC_LAY ; i++){
 	    ed_sois->trock[i]  = MISSING_D;
-	}
-	for (int i=0; i<MAX_NUM_FNT ; i++){
-	    ed_sois->frontstype[i]  = MISSING_I;
-	    ed_sois->frontsz[i]     = MISSING_D;
 	}
 
 	//
@@ -846,9 +874,11 @@ void Soil_Env::retrieveDailyTM(Layer* toplayer, Layer *lstsoill){
 		  ed_soid->vwc[soilind]= curr2->getVolWater();
 	  	  ed_soid->iwc[soilind]= curr2->getVolIce();
 	  	  ed_soid->lwc[soilind]= curr2->getVolLiq();
+		  ed_soid->minliq[soilind] = curr2->minliq;
 	  	  	
 	  	  ed_soid->sws[soilind]= curr2->getVolLiq()/curr2->poro;
-	  	  ed_soid->aws[soilind]= curr2->getVolLiq()/(curr2->poro-curr2->getVolIce());
+	  	  ed_soid->aws[soilind]= curr2->getVolLiq()/
+	  			  fmax(curr2->minliq,curr2->poro-curr2->getVolIce());
 
 	  	  ed_soid->tcond[soilind] = curr2->tcond;
 	  	  ed_soid->hcond[soilind] = curr2->hcond;
@@ -893,6 +923,10 @@ void Soil_Env::retrieveDailyTM(Layer* toplayer, Layer *lstsoill){
 
 	ed_sois->draindepth = ground->draindepth;
 
+	// the following may not be needed (already called in updateDailyGroundT, but just in case
+	updateDailySoilThermal4Growth(ground->fstsoill, tsurface);  // this is needed for growing
+	updateLayerStateAfterThermal(ground->fstsoill, ground->lstsoill, ground->botlayer);  //this shall be done before the following
+	retrieveDailyFronts();
 }
 
 void Soil_Env::setGround(Ground* grndp){
@@ -932,117 +966,4 @@ void Soil_Env::setEnvData(EnvData* edp){
 	ed_soi2a = &edp->d_soi2a;
 	ed_soi2l = &edp->d_soi2l;
 };
-
-/////////////////////////////////////////////////////////////////////////
-// The following codes NOT used
-
-/*when soil column is frozen and there is snowmelt, assume that infiltration will
- * saturate first 3 layers (change to all organic layers and first layer mineral
- */
-double Soil_Env::getInflFrozen(Layer *fstnoinfil, const double &  rnth, const double & melt){
-	double infilf;
-	double totinfl =rnth +melt;
-	double tempinfl;
-
-    infilf=0.;
-
-    // determine the last layer
-	 Layer * currl = fstnoinfil;
-	 while(currl->indl<=fstnoinfil->indl && totinfl>0){
-	  if(currl->isSnow)break;
-	  if(currl->frozen==0){
-	  	 if(totinfl>(currl->maxice - currl->ice-currl->liq)&& (currl->maxice - currl->ice-currl->liq)>0 ){
-	  	   tempinfl = (currl->maxice - currl->ice- currl->liq);
-	  	   totinfl -=tempinfl;
-	  	   infilf +=  tempinfl;
-	  	   double leftinfl = updateLayerTemp5Lat(currl, tempinfl);
-	  	   currl->ice += (tempinfl - leftinfl) ;
-	  	   currl->liq += leftinfl;
-
-	  	   // change temperature by phase change
-	  	 }else if((currl->maxice - currl->ice-currl->liq)>0){
-	  	   tempinfl =totinfl;
-	  	   totinfl -=tempinfl;
-	  	   infilf +=  tempinfl;
-	  	   double leftinfl = updateLayerTemp5Lat(currl, tempinfl);
-	  	   currl->ice += (tempinfl-leftinfl);
-	  	   currl->liq += leftinfl;
-
-	  	 }
-
-	  }else if(currl->frozen==1){ // totally frozen
-	  	if(totinfl>(currl->maxice - currl->ice-currl->liq) && (currl->maxice - currl->ice-currl->liq)>0){
-	  	   tempinfl = (currl->maxice - currl->ice -currl->liq);
-	  	   totinfl -=tempinfl;
-	  	   infilf +=  tempinfl;
-	  	   double leftinfl =  updateLayerTemp5Lat(currl, tempinfl);
-	  	   currl->ice += (tempinfl - leftinfl) ;
-	  	   currl->liq += leftinfl;
-
-	  	   // change temperature by phase change
-	  	 }else if ((currl->maxice - currl->ice)>0){
-	  	   tempinfl =totinfl;
-	  	   totinfl -=tempinfl;
-	  	   infilf +=  tempinfl;
-	  	   double leftinfl =	  updateLayerTemp5Lat(currl, tempinfl);
-	  	   currl->ice += (tempinfl-leftinfl);
-	  	   currl->liq += leftinfl;
-
-	  	 }
-
-	  }else if (currl->frozen ==-1){//unfrozen
-	  	//fill the layer until saturated
-	  	if(currl->ice>0){
-	  	  currl->liq +=currl->ice;
-	  	  currl->ice =0.;
-	  	}
-	  	if(totinfl > currl->maxliq -currl->liq && currl->maxliq -currl->liq>0){
-	  	   tempinfl = (currl->maxliq - currl->liq);
-	  	   totinfl -=tempinfl;
-	  	   infilf +=  tempinfl;
-	  	   currl->liq += tempinfl;
-
-	  	}else if(currl->maxliq -currl->liq>0){
-	  	   tempinfl =totinfl;
-	  	   totinfl -=tempinfl;
-	  	   infilf +=  tempinfl;
-	  	   currl->liq += tempinfl;
-
-	  	}
-
-	  }
-
-	  currl=currl->prevl;
-	  if(currl==NULL) break;
-	}
-
-	return (infilf);
-};
-
-double  Soil_Env::updateLayerTemp5Lat(Layer* currl, const double & infil){
-	double extraliq =infil;
-	int frozen = currl->frozen;
-
-	if(frozen==1 || frozen ==0){ //frozen or partly frozen;
-		double tem = currl->tem;
-
-		//SoilLayer* sl = dynamic_cast<SoilLayer*>(currl);
-		double vhp = currl->getHeatCapacity();
-		double heatprovide = infil * 3.34e5; // provide latent heat
-		double heatneed = fabs(tem) * vhp * currl->dz; // needed heat for increasing temperature from minus to zero
-		if(heatprovide >=heatneed){
-		  currl->tem =0.;
-		  extraliq = (heatprovide -heatneed)/3.34e5;
-
-		}else{
-		  if(currl->tem<0){ // a double check
-		  	currl->tem += heatprovide/(vhp *currl->dz);
-		  }
-		  extraliq =0.;
-		}
-	};
-
-	return (extraliq);
-};
-
 
