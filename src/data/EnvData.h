@@ -98,9 +98,6 @@ class EnvData{
     void veg_beginOfMonth();
     void grnd_beginOfMonth();
 
-    // initializing some daily variables
-    void grnd_beginOfDay();
-
     // accumulating/averaging monthly variables at the end of day
 	void atm_endOfDay(const int & dinm);
 	void veg_endOfDay(const int & dinm);
