@@ -320,7 +320,7 @@ public class RunCohort {
 		return 0;
 	};
 	
-	public void run_cohortly(){
+	public void run_OneCohort(){
 
 		if(cht.getMd().getRuneq()){
 			// a quick pre-run to get reasonably-well 'env' conditions, which may be good for 'eq' run
@@ -428,56 +428,58 @@ public class RunCohort {
 			int yrindex = cht.getTimer().getCurrentYearIndex();   //starting from 0
 			cht.getCd().setYear(cht.getTimer().getCalendarYear());
 
+			if (cht.getMd().getAct_clmstep() == ConstTime.DINY) { //if climate data is in daily time-step, read it yearly
+				int clmyrcount = yrindex%usedatmyr;  // this will recycle climate data series
+				cinputer.getClimate(cht.getCd().getD_tair(), cht.getCd().getD_prec(), 
+							        cht.getCd().getD_nirr(), cht.getCd().getD_vapo(), 
+							        clmyrcount, 1, clmrecno);
+			}
 			cht.prepareDayDrivingData(yrindex, usedatmyr);
 
 			int outputyrind = cht.getTimer().getOutputYearIndex();
-			for (int im=0; im<12;im++){
+			for (int im=0; im<ConstTime.MINY; im++){
 
 				int currmind=  im;
 				cht.getCd().setMonth(im+1);
 				int dinmcurr = ConstTime.DINM[im];
 
-				cht.updateMonthly(yrindex, currmind, dinmcurr);
-				cht.getTimer().advanceOneMonth();
+				for (int id=0; id<dinmcurr; id++) {             // day index starting from 0
+				   cht.updateOneTimestep(yrindex, currmind, id);
 
-				// site output module calling
-				if (outputyrind >=0) {
-					if (cht.getMd().getOutSiteDay()){
-						for (int id=0; id<dinmcurr; id++) {
-							for (int ip=0; ip<ConstCohort.NUM_PFT; ip++) {
-								
-								//cht.getOutbuffer().getEnvoddly()[ip][id].chtid = cht.cd.chtid;
-								//EnvDataDly *envoddly = &cht.outbuffer.envoddly[ip][id];
-								//envdlyouter.outputCohortEnvVars_dly(envoddly, icalyr, im, id, ip, dstepcnt);
-							}
-
-							dstepcnt++;
-						}
-					}
-
-					//
-					if (cht.getMd().getOutSiteMonth()){
-						//dimmlyouter.outputCohortDimVars_mly(&cht.cd, mstepcnt);
+				   // site output module calling
+				   if (outputyrind >=0 && cht.getMd().getOutSiteDay()){
 						for (int ip=0; ip<ConstCohort.NUM_PFT; ip++) {
+								
+							//cht.getOutbuffer().getEnvoddly()[ip][id].chtid = cht.cd.chtid;
+							//EnvDataDly *envoddly = &cht.outbuffer.envoddly[ip][id];
+							//envdlyouter.outputCohortEnvVars_dly(envoddly, icalyr, im, id, ip, dstepcnt);
+						}
+
+						dstepcnt++;
+					}
+				}
+
+				//
+				if (cht.getMd().getOutSiteMonth()){
+					for (int ip=0; ip<ConstCohort.NUM_PFT; ip++) {
 							//envmlyouter.outputCohortEnvVars_mly(&cht.cd.m_snow, &cht.ed[ip], icalyr, im, ip, mstepcnt);
 							//bgcmlyouter.outputCohortBgcVars_mly(&cht.bd[ip], icalyr, im, ip, mstepcnt);
-						}
-						mstepcnt++;
 					}
+					mstepcnt++;
+				}
 
-					//
-					if (cht.getMd().getOutSiteYear() && im==11){
-						//dimylyouter.outputCohortDimVars_yly(&cht.cd, ystepcnt);
-						for (int ip=0; ip<ConstCohort.NUM_PFT; ip++) {
+				//
+				if (cht.getMd().getOutSiteYear() && im==11){
+					//dimylyouter.outputCohortDimVars_yly(&cht.cd, ystepcnt);
+					for (int ip=0; ip<ConstCohort.NUM_PFT; ip++) {
 							//envylyouter.outputCohortEnvVars_yly(&cht.cd.y_snow, &cht.ed[ip], icalyr, ip, ystepcnt);
 							//bgcylyouter.outputCohortBgcVars_yly(&cht.bd[ip], icalyr, ip, ystepcnt);
-						}
-						ystepcnt++;
-
 					}
+					ystepcnt++;
 
-				} // end of site calling output modules
+				}
 
+				cht.getTimer().advanceOneMonth();
 			}
 
 			if (cht.getMd().getOutRegn() && outputyrind >=0){

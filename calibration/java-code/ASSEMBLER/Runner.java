@@ -480,7 +480,7 @@ public class Runner {
 			}
 
 			System.out.println("cohort: "+ chtid+ " - running! \n");
-			runcht.run_cohortly();
+			runcht.run_OneCohort();
 		
 		} catch (Exception ex) {
 	  		System.err.println("Error in Runner::run_siter() " + ex);
@@ -546,7 +546,7 @@ public class Runner {
 				}
 
 				System.out.println("cohort: "+ chtid+ " - running! \n");
-				runcht.run_cohortly();
+				runcht.run_OneCohort();
 				
 				runcht.cohortcount++;
 			

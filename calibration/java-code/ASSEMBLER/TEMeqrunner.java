@@ -152,29 +152,45 @@ public class TEMeqrunner implements Runnable{
 	private void yearlyrun(){					
 		System.out.println("TEM EQ RUN: year "+yrcnt);
 
-		// process module calling
-		int yrindex = eqrunner.runcht.cht.getTimer().getCurrentYearIndex();   //starting from 0
-		eqrunner.runcht.cht.getCd().setYear(eqrunner.runcht.cht.getTimer().getCalendarYear());
+			// process module calling
+			int yrindex = eqrunner.runcht.cht.getTimer().getCurrentYearIndex();   //starting from 0
+			eqrunner.runcht.cht.getCd().
+				setYear(eqrunner.runcht.cht.getTimer().getCalendarYear());
+			
+			int usedatmyr = Math.min(ConstTime.MAX_ATM_DRV_YR, ConstTime.MAX_ATM_NOM_YR);
+			if (eqrunner.runcht.cht.getMd().getAct_clmstep() == ConstTime.DINY) { //if climate data is in daily time-step, read it yearly
+				int clmyrcount = yrindex%usedatmyr;  // this will recycle climate data series
+				eqrunner.runcht.cinputer.getClimate(
+						eqrunner.runcht.cht.getCd().getD_tair(), 
+						eqrunner.runcht.cht.getCd().getD_prec(), 
+						eqrunner.runcht.cht.getCd().getD_nirr(), 
+						eqrunner.runcht.cht.getCd().getD_vapo(), 
+						clmyrcount, 1, eqrunner.runcht.clmrecno);
+			}
+			eqrunner.runcht.cht.prepareDayDrivingData(yrindex, usedatmyr);
 
-		int usedatmyr = Math.min(ConstTime.MAX_ATM_DRV_YR, ConstTime.MAX_ATM_NOM_YR);
-		eqrunner.runcht.cht.prepareDayDrivingData(yrindex, usedatmyr);
-
-			for (int im=0; im<12;im++){
+			for (int im=0; im<ConstTime.MINY;im++){
 
 				int currmind=  im;
 				eqrunner.runcht.cht.getCd().setMonth(im+1);
 				int dinmcurr = ConstTime.DINM[im];
 
-				eqrunner.runcht.cht.updateMonthly(yrindex, currmind, dinmcurr);
-				eqrunner.runcht.cht.getTimer().advanceOneMonth();
-				
-				temcj.getData1pft(ipft);			
-				plotting.updateDlyBioGraph(yrcnt, im, temcj.getBd1pft(), eqrunner.runcht.cht.getBdall());
-				plotting.updateDlyPhyGraph(yrcnt, im, eqrunner.runcht.cht.getEdall());
+				for (int id=0; id<dinmcurr; id++) {             // day index starting from 0
+					int doy = ConstTime.DOYINDFST[im]+id;
+					eqrunner.runcht.cht.updateOneTimestep(yrindex, currmind, id);
+					temcj.getData1pft(ipft);			
+					plotting.updateDlyBioGraph(yrcnt, doy, 
+							temcj.getBd1pft(), eqrunner.runcht.cht.getBdall());
+					plotting.updateDlyPhyGraph(yrcnt, doy, 
+							eqrunner.runcht.cht.getEdall());
+				}
+				eqrunner.runcht.cht.getTimer().advanceOneMonth();			
 				
 			}
-			plotting.updateYlyBioGraph(yrcnt, eqrunner.runcht.cht.getCd(), temcj.getBd1pft(), ipft, eqrunner.runcht.cht.getBdall());
-			plotting.updateYlyPhyGraph(yrcnt, eqrunner.runcht.cht.getCd(), eqrunner.runcht.cht.getEdall());
+			plotting.updateYlyBioGraph(yrcnt, eqrunner.runcht.cht.getCd(), 
+					temcj.getBd1pft(), ipft, eqrunner.runcht.cht.getBdall());
+			plotting.updateYlyPhyGraph(yrcnt, eqrunner.runcht.cht.getCd(), 
+					eqrunner.runcht.cht.getEdall());
 			
 			yrcnt++;
 			
@@ -206,24 +222,38 @@ public class TEMeqrunner implements Runnable{
 			eqrunner.runcht.cht.getCd().setYear(eqrunner.runcht.cht.getTimer().getCalendarYear());
 
 			int usedatmyr = Math.min(ConstTime.MAX_ATM_DRV_YR, ConstTime.MAX_ATM_NOM_YR);
+			if (eqrunner.runcht.cht.getMd().getAct_clmstep() == ConstTime.DINY) { //if climate data is in daily time-step, read it yearly
+				int clmyrcount = yrindex%usedatmyr;  // this will recycle climate data series
+				eqrunner.runcht.cinputer.getClimate(
+						eqrunner.runcht.cht.getCd().getD_tair(), 
+						eqrunner.runcht.cht.getCd().getD_prec(), 
+						eqrunner.runcht.cht.getCd().getD_nirr(), 
+						eqrunner.runcht.cht.getCd().getD_vapo(), 
+						clmyrcount, 1, eqrunner.runcht.clmrecno);
+			}
 			eqrunner.runcht.cht.prepareDayDrivingData(yrindex, usedatmyr);
 
-			for (int im=0; im<12;im++){
+			for (int im=0; im<ConstTime.MINY;im++){
 
 				int currmind=  im;
 				eqrunner.runcht.cht.getCd().setMonth(im+1);
 				int dinmcurr = ConstTime.DINM[im];
 
-				eqrunner.runcht.cht.updateMonthly(yrindex, currmind, dinmcurr);
-				eqrunner.runcht.cht.getTimer().advanceOneMonth();
-
-				temcj.getData1pft(ipft);
+				for (int id=0; id<dinmcurr; id++) {             // day index starting from 0
+					int doy = ConstTime.DOYINDFST[im]+id;
+					eqrunner.runcht.cht.updateOneTimestep(yrindex, currmind, id);
+					temcj.getData1pft(ipft);			
+					plotting.updateDlyBioGraph(yrcnt, doy, temcj.getBd1pft(), 
+							eqrunner.runcht.cht.getBdall());
+					plotting.updateDlyPhyGraph(yrcnt, doy, eqrunner.runcht.cht.getEdall());
+				}
+				eqrunner.runcht.cht.getTimer().advanceOneMonth();			
 				
-				plotting.updateDlyBioGraph(yrcnt, im, temcj.getBd1pft(), eqrunner.runcht.cht.getBdall());
-				plotting.updateDlyPhyGraph(yrcnt, im, eqrunner.runcht.cht.getEdall());
 			}
-			plotting.updateYlyBioGraph(yrcnt, eqrunner.runcht.cht.getCd(), temcj.getBd1pft(), ipft, eqrunner.runcht.cht.getBdall());
-			plotting.updateYlyPhyGraph(yrcnt, eqrunner.runcht.cht.getCd(), eqrunner.runcht.cht.getEdall());
+			plotting.updateYlyBioGraph(yrcnt, eqrunner.runcht.cht.getCd(), 
+					temcj.getBd1pft(), ipft, eqrunner.runcht.cht.getBdall());
+			plotting.updateYlyPhyGraph(yrcnt, eqrunner.runcht.cht.getCd(), 
+					eqrunner.runcht.cht.getEdall());
 
 			yrcnt++;
 			
