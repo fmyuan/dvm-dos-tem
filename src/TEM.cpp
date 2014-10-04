@@ -28,7 +28,7 @@
  *    Environmental Science Division
  *    Oak Ridge National Laboratory
  *
- * last modified: 02/18/2014
+ * last modified: 10/3/2014
 */
 
 #include <string>

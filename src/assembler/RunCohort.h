@@ -72,6 +72,7 @@ class RunCohort {
  		RestartInputer resinputer;
  		//SiteInputer *sinputer;
 
+ 		ChtOutputer dimdlyouter;
  		ChtOutputer dimmlyouter;
  		ChtOutputer dimylyouter;
 

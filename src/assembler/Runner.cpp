@@ -103,6 +103,9 @@ void Runner::initOutput() {
 	    	string bgcfname ="";
 
 			if (md.outSiteDay){
+				dimfname = md.outputdir+"cmtdim_dly"+stage+".nc";
+				runcht.dimdlyouter.init(dimfname);				// set netcdf files for output
+
 				envfname = md.outputdir+"cmtenv_dly"+stage+".nc";
 				runcht.envdlyouter.init(envfname);				// set netcdf files for output
 

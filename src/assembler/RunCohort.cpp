@@ -290,7 +290,7 @@ void RunCohort::run_OneCohort(){
 		    	yrend = MAX_EQ_YR;
 		    }
 
-		    run_timeseries();
+		    //run_timeseries();
 
 		}
 
@@ -407,7 +407,7 @@ void RunCohort::run_timeseries(){
 
 				   // the following NOT always available
 				   if(md->timestep==DAILY){
-		    		   dimmlyouter.outputCohortDimVars_dly(&cht.cd, dstepcnt);
+		    		   dimmlyouter.outputCohortDimVars_dly(&cht.cd, cohortcount, dstepcnt);
 				       bgcdlyouter.outputCohortBgcVars_dly(-1, &cht.cd, cht.bdall,
 						   icalyr, im, id, dstepcnt);     // this will output non-veg (multiple PFT) related variables
 				   }
