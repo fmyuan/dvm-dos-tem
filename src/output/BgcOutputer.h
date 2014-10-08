@@ -21,16 +21,18 @@ class BgcOutputer{
 		BgcOutputer();
 		~BgcOutputer();
 				
-		void init(string & dirfile);
-		void outputCohortBgcVars_dly(const int &ipft, CohortData *cd, BgcData *bgcod, const int & calyr, const int & calmon, const int & calday, const int & recordcnt);
-		void outputCohortBgcVars_mly(const int &ipft, BgcData *bgcod, FirData *fod, const int & calyr, const int & calmon, const int & recordcnt);
-		void outputCohortBgcVars_yly(const int &ipft, BgcData *bgcod, FirData *fod, const int & calyr, const int & recordcnt);
+		void init(string & dirfile, const int &numpft);
+		void outputCohortBgcVars(const int &outtstep, const int &ipft,
+				BgcData *bgcod, FirData *fod,
+				const int & calyr, const int & calmon, const int & calday,
+				const int & recordcnt);
 
 		string ncfname;
+		bool pftintegrated;
 
 	private :
 
-		NcFile * ncfileenv;
+		NcFile * ncfile;
 
 		NcDim * timeD;
 		NcDim * pftD;

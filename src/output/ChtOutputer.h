@@ -17,17 +17,20 @@ class ChtOutputer{
 		~ChtOutputer();
 				
 		void init(string & dirfile);
-		void outputCohortDimVars_dly(CohortData *cdp, const int & chtcount, const int & recordcnt);
-		void outputCohortDimVars_mly(CohortData *cdp, const int & recordcnt);
-		void outputCohortDimVars_yly(CohortData *cdp, const int & recordcnt);
-
- 		void reinit();
+		void outputCohortDimVars(const int & recordcnt);
+		void setOutData(const int &outtstep, CohortData *cdp);
 
 		string ncfname;
 
 	private :
 
-		NcFile * ncfile;
+		CohortData *dimod;
+	 	vegstate_dim *vegs;
+	 	vegdiag_dim *vegd;
+	 	snwstate_dim *snws;
+	 	soistate_dim *sois;
+
+	 	NcFile * ncfile;
 
 		NcDim * timeD;
 		NcDim * pftD;
@@ -47,6 +50,7 @@ class ChtOutputer{
 		NcVar* ifdeciwoodyV;
 		NcVar* ifperenialV;
 		NcVar* nonvascularV;
+		NcVar* aerenchymaV;
 		NcVar* vegcovV;
 	   	NcVar* laiV;
 	   	NcVar* fpcV;
@@ -55,7 +59,11 @@ class ChtOutputer{
 	   	NcVar* ffoliageV;
 
 	   	//
-		NcVar* snwthickV;
+	   	NcVar* snwlynumV;
+	   	NcVar* snwlydzV;
+	   	NcVar* snwlyrhoV;
+	   	NcVar* snwlyporV;
+	   	NcVar* snwthickV;
 		NcVar* snwdenseV;
 		NcVar* snwextramassV;
 		NcVar* snwageV;

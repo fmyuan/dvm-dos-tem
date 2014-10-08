@@ -707,51 +707,51 @@ void OutRetrive::updateRegnOutputBuffer(const int & im, const int &idoy){
 	}
 
 	if (EOY && regnod->outvarlist[I_ch4prod]==1){
-		regnod->ch4.push_back(bdall->y_soi2a.totProd_m);
+		regnod->ch4prod.push_back(bdall->y_soi2a.totProd_m);
 	} else if (EOM && regnod->outvarlist[I_ch4prod]==2) {
-		regnod->ch4.push_back(bdall->m_soi2a.totProd_m);
+		regnod->ch4prod.push_back(bdall->m_soi2a.totProd_m);
 	} else if (regnod->outvarlist[I_ch4prod]==3) {
-		regnod->ch4.push_back(bdall->d_soi2a.totProd_m);
+		regnod->ch4prod.push_back(bdall->d_soi2a.totProd_m);
 	}
 
 	if (EOY && regnod->outvarlist[I_ch4oxid]==1){
-		regnod->ch4.push_back(bdall->y_soi2a.totOxid_m);
+		regnod->ch4oxid.push_back(bdall->y_soi2a.totOxid_m);
 	} else if (EOM && regnod->outvarlist[I_ch4oxid]==2) {
-		regnod->ch4.push_back(bdall->m_soi2a.totOxid_m);
+		regnod->ch4oxid.push_back(bdall->m_soi2a.totOxid_m);
 	} else if (regnod->outvarlist[I_ch4oxid]==3) {
-		regnod->ch4.push_back(bdall->d_soi2a.totOxid_m);
+		regnod->ch4oxid.push_back(bdall->d_soi2a.totOxid_m);
 	}
 
 	if (EOY && regnod->outvarlist[I_ch4flx]==1){
-		regnod->ch4.push_back(bdall->y_soi2a.totCH4Flux_m);
+		regnod->ch4flux.push_back(bdall->y_soi2a.totCH4Flux_m);
 	} else if (EOM && regnod->outvarlist[I_ch4flx]==2) {
-		regnod->ch4.push_back(bdall->m_soi2a.totCH4Flux_m);
+		regnod->ch4flux.push_back(bdall->m_soi2a.totCH4Flux_m);
 	} else if (regnod->outvarlist[I_ch4flx]==3) {
-		regnod->ch4.push_back(bdall->d_soi2a.totCH4Flux_m);
+		regnod->ch4flux.push_back(bdall->d_soi2a.totCH4Flux_m);
 	}
 
 	if (EOY && regnod->outvarlist[I_ch4flx2a]==1){
-		regnod->ch4.push_back(bdall->y_soi2a.totFlux2A_m);
+		regnod->ch4flux2a.push_back(bdall->y_soi2a.totFlux2A_m);
 	} else if (EOM && regnod->outvarlist[I_ch4flx2a]==2) {
-		regnod->ch4.push_back(bdall->m_soi2a.totFlux2A_m);
+		regnod->ch4flux2a.push_back(bdall->m_soi2a.totFlux2A_m);
 	} else if (regnod->outvarlist[I_ch4flx2a]==3) {
-		regnod->ch4.push_back(bdall->d_soi2a.totFlux2A_m);
+		regnod->ch4flux2a.push_back(bdall->d_soi2a.totFlux2A_m);
 	}
 
 	if (EOY && regnod->outvarlist[I_ch4flx2p]==1){
-		regnod->ch4.push_back(bdall->y_soi2a.totPlant_m);
+		regnod->ch4flux2p.push_back(bdall->y_soi2a.totPlant_m);
 	} else if (EOM && regnod->outvarlist[I_ch4flx2p]==2) {
-		regnod->ch4.push_back(bdall->m_soi2a.totPlant_m);
+		regnod->ch4flux2p.push_back(bdall->m_soi2a.totPlant_m);
 	} else if (regnod->outvarlist[I_ch4flx2p]==3) {
-		regnod->ch4.push_back(bdall->d_soi2a.totPlant_m);
+		regnod->ch4flux2p.push_back(bdall->d_soi2a.totPlant_m);
 	}
 
 	if (EOY && regnod->outvarlist[I_ch4flx2b]==1){
-		regnod->ch4.push_back(bdall->y_soi2a.totEbul_m);
+		regnod->ch4flux2b.push_back(bdall->y_soi2a.totEbul_m);
 	} else if (EOM && regnod->outvarlist[I_ch4flx2b]==2) {
-		regnod->ch4.push_back(bdall->m_soi2a.totEbul_m);
+		regnod->ch4flux2b.push_back(bdall->m_soi2a.totEbul_m);
 	} else if (regnod->outvarlist[I_ch4flx2b]==3) {
-		regnod->ch4.push_back(bdall->d_soi2a.totEbul_m);
+		regnod->ch4flux2b.push_back(bdall->d_soi2a.totEbul_m);
 	}
 
 };

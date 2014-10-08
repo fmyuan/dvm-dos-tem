@@ -290,7 +290,7 @@ void RunCohort::run_OneCohort(){
 		    	yrend = MAX_EQ_YR;
 		    }
 
-		    //run_timeseries();
+		    run_timeseries();
 
 		}
 
@@ -396,61 +396,115 @@ void RunCohort::run_timeseries(){
 
 			   // site-daily output
 			   if (outputyrind >=0 && md->outSiteDay){
-				   envdlyouter.outputCohortEnvVars_dly(-1, &cht.cd.d_snow, cht.edall,
-						   icalyr, im, id, dstepcnt);     // this will output non-veg (multiple PFT) related variables
-				   for (int ip=0; ip<NUM_PFT; ip++) {
-					   if (cht.cd.d_veg.vegcov[ip]>0.){
-	    			    	envdlyouter.outputCohortEnvVars_dly(ip,&cht.cd.d_snow, cht.edall,
-	    			    			icalyr, im, id, dstepcnt);
+
+				   if (envdlyouter.pftintegrated){
+					   envdlyouter.outputCohortEnvVars(DAILY, -1,
+							   &cht.cd.d_snow, cht.edall,
+							   icalyr, im, id, dstepcnt);
+				   } else {
+					   for (int ip=0; ip<NUM_PFT; ip++) {
+						   if (cht.cd.d_veg.vegcov[ip]>0.){
+							   envdlyouter.outputCohortEnvVars(DAILY, ip,
+									   &cht.cd.d_snow, &cht.ed[ip],
+									   icalyr, im, id, dstepcnt);
+						   }
 	    			   }
 				   }
 
 				   // the following NOT always available
 				   if(md->timestep==DAILY){
-		    		   dimmlyouter.outputCohortDimVars_dly(&cht.cd, cohortcount, dstepcnt);
-				       bgcdlyouter.outputCohortBgcVars_dly(-1, &cht.cd, cht.bdall,
-						   icalyr, im, id, dstepcnt);     // this will output non-veg (multiple PFT) related variables
+
+					   dimdlyouter.outputCohortDimVars(dstepcnt);
+
+					   if(bgcdlyouter.pftintegrated){
+						   bgcdlyouter.outputCohortBgcVars(DAILY, -1,
+				        		cht.bdall, cht.fd,
+						        icalyr, im, id, dstepcnt);
+					   } else {
+						   for (int ip=0; ip<NUM_PFT; ip++) {
+							   if (cht.cd.d_veg.vegcov[ip]>0.){
+								   bgcdlyouter.outputCohortBgcVars(DAILY, ip,
+								       &cht.bd[ip], cht.fd,
+									   icalyr, im, id, dstepcnt);
+							   }
+						   }
+					   }
 				   }
+
 				   dstepcnt++;
-	    	   }
+  			    } // end of daily output
+
 		   } // end of for loop of daily
 		   cht.timer->advanceOneMonth();
 
 		   // site-monthly output
 		   if (outputyrind >=0 && md->outSiteMonth){
-	    		   dimmlyouter.outputCohortDimVars_mly(&cht.cd, mstepcnt);
-	    		   envmlyouter.outputCohortEnvVars_mly(-1, &cht.cd.m_snow, cht.edall,
-	    				                               icalyr, im, mstepcnt);
-		    	   bgcmlyouter.outputCohortBgcVars_mly(-1, cht.bdall, cht.fd,
-		    			                               icalyr, im, mstepcnt);
+			   dimmlyouter.outputCohortDimVars(mstepcnt);
 
+			   if(envmlyouter.pftintegrated){
+	    		   envmlyouter.outputCohortEnvVars(MONTHLY, -1,
+	    				   &cht.cd.m_snow, cht.edall,
+	    				   icalyr, im, 0, mstepcnt);
+			   } else {
 		    	   for (int ip=0; ip<NUM_PFT; ip++) {
 	    		    	if (cht.cd.m_veg.vegcov[ip]>0.){
-	    		    		envmlyouter.outputCohortEnvVars_mly(ip, &cht.cd.m_snow, &cht.ed[ip],
-	    		    				icalyr, im, mstepcnt);
-	    		    		bgcmlyouter.outputCohortBgcVars_mly(ip, &cht.bd[ip], cht.fd,
-	    		    				icalyr, im, mstepcnt);
+    		    		    envmlyouter.outputCohortEnvVars(MONTHLY, ip,
+    		    		    		&cht.cd.m_snow, &cht.ed[ip],
+    		    		    		icalyr, im, 0, mstepcnt);
 	    		    	}
 	    		   }
-	    		   mstepcnt++;
-		   }
+			   }
+
+		       //
+			   if(bgcmlyouter.pftintegrated){
+				   bgcmlyouter.outputCohortBgcVars(MONTHLY, -1,
+						   cht.bdall, cht.fd,
+		    			   icalyr, im, 0, mstepcnt);
+			   } else {
+				   for (int ip=0; ip<NUM_PFT; ip++) {
+	    		    	if (cht.cd.m_veg.vegcov[ip]>0.){
+	    		    		bgcmlyouter.outputCohortBgcVars(MONTHLY, ip,
+	    		    				&cht.bd[ip], cht.fd,
+	    		    				icalyr, im, 0, mstepcnt);
+	    		    	}
+				   }
+	    	   }
+
+		       mstepcnt++;
+		   } // end of monthly output
 
 		   // site-yearly output
 		   if (outputyrind >= 0 && md->outSiteYear && im==11){
-	    		   dimylyouter.outputCohortDimVars_yly(&cht.cd, ystepcnt);
-	    		   envylyouter.outputCohortEnvVars_yly(-1, &cht.cd.y_snow, cht.edall, icalyr, ystepcnt);
-		    	   bgcylyouter.outputCohortBgcVars_yly(-1, cht.bdall, cht.fd, icalyr, ystepcnt);
+			   dimylyouter.outputCohortDimVars(ystepcnt);
 
+			   if(envylyouter.pftintegrated) {
+	    		   envylyouter.outputCohortEnvVars(YEARLY, -1,
+	    				   &cht.cd.y_snow, cht.edall, icalyr, 0, 0, ystepcnt);
+			   } else {
 		    	   for (int ip=0; ip<NUM_PFT; ip++) {
 	    		    	if (cht.cd.y_veg.vegcov[ip]>0.){
-	    		    		envylyouter.outputCohortEnvVars_yly(ip, &cht.cd.y_snow, &cht.ed[ip],
-	    		    				icalyr, ystepcnt);
-	    		    		bgcylyouter.outputCohortBgcVars_yly(ip, &cht.bd[ip], cht.fd,
-	    		    				icalyr, ystepcnt);
+	    		    		   envylyouter.outputCohortEnvVars(YEARLY, ip,
+	    						&cht.cd.y_snow, &cht.ed[ip], icalyr, 0, 0, ystepcnt);
 	    		    	}
 	    		   }
-	    		   ystepcnt++;
-	       }
+			   }
+
+		       //
+			   if(bgcylyouter.pftintegrated){
+				   bgcylyouter.outputCohortBgcVars(YEARLY, -1,
+		    		   cht.bdall, cht.fd, icalyr, 0, 0, ystepcnt);
+			   } else {
+				   for (int ip=0; ip<NUM_PFT; ip++) {
+					   if (cht.cd.y_veg.vegcov[ip]>0.){
+						   bgcylyouter.outputCohortBgcVars(YEARLY, ip,
+    		    				&cht.bd[ip], cht.fd,
+    		    				icalyr, 0, 0, ystepcnt);
+					   }
+				   }
+    		   }
+
+		       ystepcnt++;
+	       } // end of yearly output
 
 		 } // end of for loop of monthly
 

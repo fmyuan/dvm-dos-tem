@@ -110,6 +110,7 @@ class OutDataRegn{
    		vector<double> ch4flux2a;
    		vector<double> ch4flux2p;
    		vector<double> ch4flux2b;
+
    		vector<double> netnmin;
 
    		vector<double> orgninput;

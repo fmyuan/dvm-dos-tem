@@ -105,34 +105,37 @@ void Runner::initOutput() {
 			if (md.outSiteDay){
 				dimfname = md.outputdir+"cmtdim_dly"+stage+".nc";
 				runcht.dimdlyouter.init(dimfname);				// set netcdf files for output
+	    		runcht.dimdlyouter.setOutData(DAILY, &runcht.cht.cd);
 
 				envfname = md.outputdir+"cmtenv_dly"+stage+".nc";
-				runcht.envdlyouter.init(envfname);				// set netcdf files for output
+				runcht.envdlyouter.init(envfname, NUM_PFT);				// set netcdf files for output
 
 				bgcfname = md.outputdir+"cmtbgc_dly"+stage+".nc";
-				runcht.bgcdlyouter.init(bgcfname);				// set netcdf files for output
+				runcht.bgcdlyouter.init(bgcfname, NUM_PFT);				// set netcdf files for output
 			}
 
 			if (md.outSiteMonth){
 				dimfname = md.outputdir+"cmtdim_mly"+stage+".nc";
 				runcht.dimmlyouter.init(dimfname);				// set netcdf files for output
+	    		runcht.dimmlyouter.setOutData(MONTHLY, &runcht.cht.cd);
 
 				envfname = md.outputdir+"cmtenv_mly"+stage+".nc";
-				runcht.envmlyouter.init(envfname);				// set netcdf files for output
+				runcht.envmlyouter.init(envfname, NUM_PFT);				// set netcdf files for output
 
 				bgcfname = md.outputdir+"cmtbgc_mly"+stage+".nc";
-				runcht.bgcmlyouter.init(bgcfname);				// set netcdf files for output
+				runcht.bgcmlyouter.init(bgcfname, NUM_PFT);				// set netcdf files for output
 			}
 
 			if (md.outSiteYear){
 				dimfname = md.outputdir+"cmtdim_yly"+stage+".nc";
 				runcht.dimylyouter.init(dimfname);				// set netcdf files for output
+	    		runcht.dimylyouter.setOutData(YEARLY, &runcht.cht.cd);
 
 				envfname = md.outputdir+"cmtenv_yly"+stage+".nc";
-				runcht.envylyouter.init(envfname);				// set netcdf files for output
+				runcht.envylyouter.init(envfname, NUM_PFT);				// set netcdf files for output
 
 				bgcfname = md.outputdir+"cmtbgc_yly"+stage+".nc";
-				runcht.bgcylyouter.init(bgcfname);				// set netcdf files for output
+				runcht.bgcylyouter.init(bgcfname, NUM_PFT);				// set netcdf files for output
 			}
 
 	     } else if ((md.runmode==2 || md.runmode==3) && (!md.runeq)){
@@ -153,11 +156,14 @@ void Runner::initOutput() {
 		if (md.outRegn) {
 
 			// varlist
-			 string outlistfile = "config/outvarlist.txt";
+			 string outlistfile = md.configdir+"outvarlist.txt";
 			 createOutvarList(outlistfile);
 
 			// output years
 			int maxoutyrs = 0;
+			if (md.runeq) {
+				maxoutyrs += 100;     // the last 100 years for eq runs
+			}
 			if (md.runsp) {
 				maxoutyrs += MAX_SP_YR;
 			}

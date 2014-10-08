@@ -3,6 +3,7 @@
 
 	const int MONTHLY=1;
 	const int DAILY  =2;
+	const int YEARLY =3;
 
 	const int DINY =365;
 	const int MINY =12;

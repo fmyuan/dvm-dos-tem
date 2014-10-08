@@ -4,6 +4,7 @@
 #ifndef ENVOUTPUTER_H_
 #define ENVOUTPUTER_H_
 #include <iostream>
+#include <cstdlib>
 #include <netcdfcpp.h>
 
 #include "../data/EnvData.h"
@@ -18,14 +19,34 @@ class EnvOutputer{
 		EnvOutputer();
 		~EnvOutputer();
 				
-		void init(string & dirfile);
-		void outputCohortEnvVars_dly(const int &ipft, snwstate_dim *d_snow, EnvData * envod, const int&iy, const int&im, const int &id, const int & tstepcnt);
-		void outputCohortEnvVars_mly(const int &ipft, snwstate_dim *m_snow, EnvData * envod, const int&iy, const int&im, const int & tstepcnt);
-		void outputCohortEnvVars_yly(const int &ipft, snwstate_dim *y_snow, EnvData * envod, const int &iy, const int & tstepcnt);
+		void init(string & dirfile, const int &numpft);
+		void outputCohortEnvVars(const int &outtstep, const int &ipft,
+				snwstate_dim *dsnow, EnvData * envod,
+				const int&iy, const int&im, const int &id,
+				const int & tstepcnt);
 
 		string ncfname;
+		bool pftintegrated;
 
 	private :
+
+		atmstate_env *atms;
+		atmdiag_env *atmd;
+		atm2lnd_env *a2l;
+		atm2veg_env *a2v;
+		lnd2atm_env *l2a;
+
+		vegstate_env *vegs;
+		vegdiag_env *vegd;
+		veg2atm_env *v2a;
+		veg2gnd_env *v2g;
+
+		snwstate_env *snws;
+		snw2atm_env *snw2a;
+	    soistate_env *sois;
+	    soidiag_env *soid;
+	    soi2atm_env *soi2a;
+	    soi2lnd_env *soi2l;
 
 		NcFile * ncfileenv;
 
@@ -83,15 +104,10 @@ class EnvOutputer{
 	   	NcVar* vegsthflV;
 
 		//snow
-		NcVar* snwlnumV;
-		NcVar* snwthickV;
+	   	NcVar* snwthickV;
 		NcVar* snwdenseV;
 		NcVar* snwextramassV;
-		NcVar* snwdzV;
 		NcVar* snwageV;
-		NcVar* snwrhoV;
-		NcVar* snwporV;
-
 		NcVar* sweV;
 	   	NcVar* tsnwV;
 	   	NcVar* swesumV;
