@@ -1,24 +1,20 @@
 #ifndef VEGETATION_H_
-	#define VEGETATION_H_
-	#include "../lookup/CohortLookup.h"
+#define VEGETATION_H_
+#include "../lookup/CohortLookup.h"
 
-	#include "../data/EnvData.h"
-	#include "../data/BgcData.h"
-	#include "../data/CohortData.h"
-	#include "../data/RestartData.h"
+#include "../data/EnvData.h"
+#include "../data/BgcData.h"
+#include "../data/CohortData.h"
+#include "../data/RestartData.h"
 
-	#include "../inc/errorcode.h"
-	#include "../inc/parameters.h"
+#include "../../include/ModelData.h"
 
-	#include <cmath>
+#include "../inc/errorcode.h"
+#include "../inc/parameters.h"
 
-	class Vegetation{
-  		public:
-   			Vegetation();
-   			~Vegetation();
-  	
-   			vegpar_dim vegdimpar;
+#include <cmath>
 
+<<<<<<< HEAD
    			bool updateLAI5vegc;
    			int tstepmode;
 
@@ -37,11 +33,27 @@
 			void setCohortData(CohortData * cdp);
 			void setEnvData(const int &ip, EnvData * edp);
 			void setBgcData(const int &ip, BgcData * bdp);
+=======
+class Vegetation {
+public:
+  Vegetation();
+  
+  /** */
+  Vegetation(int cmtnum, const ModelData* mdp);
 
-  		private:
-  			CohortLookup * chtlu;
-  			CohortData * cd;
+  ~Vegetation();
 
+  vegpar_dim vegdimpar;
+
+  bool updateLAI5vegc;
+
+  void initializeParameter();
+  void initializeState();
+>>>>>>> master
+
+  void set_state_from_restartdata(const RestartData & rd);
+
+<<<<<<< HEAD
   			vegstate_dim *cd_vegs;
   			vegdiag_dim *cd_vegd;
 
@@ -53,12 +65,36 @@
 
   			vegstate_bgc *bd_vegs[NUM_PFT];
   			vegdiag_bgc *bd_vegd[NUM_PFT];
+=======
+  void updateLai(const int & currmind);
+  void updateFpc();
+  void updateVegcov();
+  void updateFrootfrac();
+>>>>>>> master
 
-			double getFleaf(const int &ipft, const double & unnormleaf, const double &prvunnormleafmx);
-   			double getUnnormleaf(const int& ipft, double &prveetmx, const double & eet, const double & prvunleaf);
-			double getFfoliage(const int &ipft, const bool & ifwoody, const bool &ifperenial, const double &vegc);
-			double getYearlyMaxLAI(const int &ipft);
+  void phenology(const int &currmind);
 
-	};
+  void setCohortLookup(CohortLookup* chtlup);
+  void setCohortData(CohortData * cdp);
+
+  void setEnvData(const int &ip, EnvData * edp);
+  void setBgcData(const int &ip, BgcData * bdp);
+
+private:
+  CohortLookup * chtlu;
+  CohortData * cd;
+
+  EnvData * ed[NUM_PFT];
+  BgcData * bd[NUM_PFT];
+
+  double getFleaf(const int &ipft, const double & unnormleaf,
+                  const double &prvunnormleafmx);
+  double getUnnormleaf(const int& ipft, double &prveetmx,
+                       const double & eet, const double & prvunleaf);
+  double getFfoliage(const int &ipft, const bool & ifwoody,
+                     const bool &ifperenial, const double &vegc);
+  double getYearlyMaxLAI(const int &ipft);
+
+};
 
 #endif /*VEGETATION_H_*/

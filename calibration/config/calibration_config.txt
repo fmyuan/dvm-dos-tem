@@ -1,7 +1,0 @@
-Barrow-IBP1972                                   /* TEM running case */
-config_coastaltundra/        /* directory of initial states and parameter files (9 files - cmt_calveg.txt, cmt_calsoil.txt, cmt_dimvegetation.txt, cmt_dimground.txt, cmt_envcanopy.txt, cmt_envground.txt, cmt_bgcvegetation.txt, cmt_begsoil.txt, cmt_firepar.txt) */
-Site_Barrow/output/                     /* directory of outputs */
-Site_Barrow/dataregion/                 /* directory of regional-level inputs */
-Site_Barrow/datagrid/                   /* directory of grided data inputs */
-Site_Barrow/datacht/                    /* directory of cohort inputs */
-1                                                    /* cohort ID */

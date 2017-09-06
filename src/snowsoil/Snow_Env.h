@@ -8,31 +8,36 @@
 #include "../ecodomain/Ground.h"
 #include "../lookup/CohortLookup.h"
 
-class Snow_Env{
-	public:
-		Snow_Env();
-		~Snow_Env();
+class Snow_Env {
+public:
+  Snow_Env();
+  ~Snow_Env();
 
+<<<<<<< HEAD
 		int tstepmode;
+=======
+  double wind;     /*! the wind speed class (0, 1)? of a vegetation type*/
+>>>>>>> master
 
-	    // parameters for snow physics
-	    snwpar_env snowenvpar;
+  // parameters for snow physics
+  snwpar_env snowenvpar;
 
-	    void setGround(Ground* grndp);
+  void setGround(Ground* grndp);
 
-	    void setCohortLookup(CohortLookup* chtlup);
-	    void setCohortData(CohortData* cdp);
-	    void setEnvData(EnvData* edp);
+  void setCohortLookup(CohortLookup* chtlup);
+  void setCohortData(CohortData* cdp);
+  void setEnvData(EnvData* edp);
 
-	    void initializeParameter();
-	    void initializeNewSnowState();
-	    void initializeState5restart(RestartData* resin);
+  void initializeParameter();
+  void initializeNewSnowState();
+  void set_state_from_restartdata(const RestartData & rdata);
 
-	    void updateDailyM(const double & tdrv);
-	    void checkSnowLayersT(Layer* frontl);
+  void updateDailyM(const double & tdrv);
+  void checkSnowLayersT(Layer* frontl);
 
-  private:
+private:
 
+<<<<<<< HEAD
 	    CohortLookup * chtlu;
 
 	    vegdiag_dim *cd_vegd;
@@ -46,18 +51,25 @@ class Snow_Env{
 		soidiag_env *ed_soid;
 		soi2atm_env *ed_soi2a;
 		soi2lnd_env *ed_soi2l;
+=======
+  CohortLookup * chtlu;
+  CohortData * cd;
+  EnvData * ed;
+>>>>>>> master
 
-	    Ground * ground;
+  Ground * ground;
 
-	    void updateSnowEd(Layer * frontl);
-		double meltSnowLayersAfterT(Layer * frontl);
+  void updateSnowEd(Layer * frontl);
+  double meltSnowLayersAfterT(Layer * frontl);
 
-	    void updateDailySurfFlux( Layer* frontl, const double & tdrv);
+  void updateDailySurfFlux( Layer* frontl, const double & tdrv);
 
-	    double getSublimation(double const & rn, double const & swe, double const & ta);
+  double getSublimation(double const & rn, double const & swe,
+                        double const & ta);
 
-	    double getAlbedoVis(const double & tem);    // get albedo of visible radition of snow
-		double getAlbedoNir(const double & tem);   // get albedo of Nir radition of snow
+  double getAlbedoVis(const double & tem); //get albedo of visible
+                                           //  radition of snow
+  double getAlbedoNir(const double & tem); //get albedo of Nir radition of snow
 
 };
 
